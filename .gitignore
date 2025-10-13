@@ -3,8 +3,8 @@
 /local.properties
 /.idea/caches
 /.idea/libraries
-/.idea/modules.xml
 /.idea/workspace.xml
+/.idea/modules.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
 .DS_Store
@@ -13,3 +13,23 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Gradle files
+.gradle/
+build/
+
+.idea/
+
+# Kotlin/Android specific
+/captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.ap_
+
+# Firebase files
+google-services.json
+
+# NDK (if used)
+obj/
+libs/
