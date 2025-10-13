@@ -1,101 +1,61 @@
 package com.example.sharkflow.ui.components
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.*
+import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
+import androidx.compose.ui.unit.*
 
 @Composable
 fun ContactForm() {
-    var email by remember { mutableStateOf(TextFieldValue("")) }
-    var name by remember { mutableStateOf(TextFieldValue("")) }
-    var question by remember { mutableStateOf(TextFieldValue("")) }
+    var email by remember { mutableStateOf("") }
+    var name by remember { mutableStateOf("") }
+    var question by remember { mutableStateOf("") }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(width = 2.dp, color = colorScheme.primary, shape = RoundedCornerShape(16.dp)),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        TextField(
-            value = email,
-            onValueChange = { email = it },
-            label = { Text("Ваша почта") },
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
-                disabledTextColor = Color.Gray,
-                errorTextColor = Color.Red,
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                cursorColor = Color.Blue,
-                focusedIndicatorColor = Color.Blue,
-                unfocusedIndicatorColor = Color.Gray,
-                focusedLabelColor = Color.Blue,
-                unfocusedLabelColor = Color.Gray
-            )
+        Column(
+            modifier = Modifier.padding(top = 8.dp, start = 4.dp, end = 4.dp, bottom = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         )
-        TextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Ваше имя") },
-            modifier = Modifier.fillMaxWidth(),
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
-                disabledTextColor = Color.Gray,
-                errorTextColor = Color.Red,
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                cursorColor = Color.Blue,
-                focusedIndicatorColor = Color.Blue,
-                unfocusedIndicatorColor = Color.Gray,
-                focusedLabelColor = Color.Blue,
-                unfocusedLabelColor = Color.Gray
+        {
+            Text(
+                text = "Нужна помощь?", style = typography.headlineLarge,
+                modifier = Modifier.padding(top = 20.dp)
             )
-        )
-        TextField(
-            value = question,
-            onValueChange = { question = it },
-            label = { Text("Ваш вопрос") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(120.dp),
-            colors = TextFieldDefaults.colors(
-                focusedTextColor = Color.Black,
-                unfocusedTextColor = Color.Black,
-                disabledTextColor = Color.Gray,
-                errorTextColor = Color.Red,
-                focusedContainerColor = Color.White,
-                unfocusedContainerColor = Color.White,
-                cursorColor = Color.Blue,
-                focusedIndicatorColor = Color.Blue,
-                unfocusedIndicatorColor = Color.Gray,
-                focusedLabelColor = Color.Blue,
-                unfocusedLabelColor = Color.Gray
+            AppField(
+                value = email,
+                onValueChange = { email = it },
+                label = "Ваша почта",
             )
-        )
 
-        Button(
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
-            modifier = Modifier.fillMaxWidth(),
-            onClick = { /* запрос типо*/ }
-        ) {
-            Text("Отправить", fontSize = 18.sp, color = Color.White)
+            AppField(
+                value = name,
+                onValueChange = { name = it },
+                label = "Ваше имя",
+            )
+
+            AppField(
+                value = question,
+                onValueChange = { question = it },
+                label = "Ваш вопрос",
+                singleLine = false,
+            )
+
+            AppButton(
+                onClick = { /* запрос типо*/ },
+                variant = AppButtonVariant.Primary,
+                text = "Отправить",
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }

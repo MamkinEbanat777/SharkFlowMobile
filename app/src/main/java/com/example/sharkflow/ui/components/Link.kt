@@ -1,17 +1,19 @@
 package com.example.sharkflow.ui.components
 
-import android.content.Intent
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.text.ClickableText
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.core.net.toUri
+import android.content.*
+import androidx.compose.foundation.gestures.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.platform.*
+import androidx.compose.ui.text.*
+import androidx.compose.ui.text.font.*
+import androidx.compose.ui.text.style.*
+import androidx.core.net.*
+
 
 @Composable
 fun Link(
@@ -21,41 +23,56 @@ fun Link(
 ) {
     val context = LocalContext.current
 
-    val annotatedText = buildAnnotatedString {
-        val startIndex = fullText.indexOf(linkText)
-        val endIndex = startIndex + linkText.length
+    val annotatedText = remember(fullText, linkText, url) {
+        buildAnnotatedString {
+            val startIndex = fullText.indexOf(linkText).coerceAtLeast(0)
+            val endIndex = (startIndex + linkText.length).coerceAtLeast(startIndex)
 
-        append(fullText)
+            append(fullText)
 
-        addStyle(
-            style = SpanStyle(
-                color = Color.Blue,
-                textDecoration = TextDecoration.Underline
-            ),
-            start = startIndex,
-            end = endIndex
-        )
+            if (startIndex < endIndex) {
+                addStyle(
+                    style = SpanStyle(
+                        color = Color.Blue,
+                        textDecoration = TextDecoration.Underline,
+                        fontWeight = FontWeight.Medium
+                    ),
+                    start = startIndex,
+                    end = endIndex
+                )
 
-        addStringAnnotation(
-            tag = "URL",
-            annotation = url,
-            start = startIndex,
-            end = endIndex
-        )
+                addStringAnnotation(
+                    tag = "URL",
+                    annotation = url,
+                    start = startIndex,
+                    end = endIndex
+                )
+            }
+        }
     }
 
-    ClickableText(
+    var textLayoutResult by remember { mutableStateOf<TextLayoutResult?>(null) }
+
+    Text(
         text = annotatedText,
-        modifier = Modifier.fillMaxWidth(),
-        style = androidx.compose.ui.text.TextStyle(
-            textAlign = TextAlign.Center,
-        ),
-        onClick = { offset ->
-            annotatedText.getStringAnnotations("URL", offset, offset)
-                .firstOrNull()?.let { annotation ->
-                    val intent = Intent(Intent.ACTION_VIEW, annotation.item.toUri())
-                    context.startActivity(intent)
+        modifier = Modifier
+            .fillMaxWidth()
+            .pointerInput(annotatedText) {
+                detectTapGestures { offset ->
+                    val layoutResult = textLayoutResult ?: return@detectTapGestures
+                    val position = layoutResult.getOffsetForPosition(offset)
+                    annotatedText.getStringAnnotations(
+                        tag = "URL",
+                        start = position,
+                        end = position
+                    ).firstOrNull()?.let { stringAnnotation ->
+                        val intent = Intent(Intent.ACTION_VIEW, stringAnnotation.item.toUri())
+                        context.startActivity(intent)
+                    }
                 }
-        }
+            },
+        onTextLayout = { textLayoutResult = it },
+        maxLines = Int.MAX_VALUE,
+        overflow = TextOverflow.Ellipsis
     )
 }

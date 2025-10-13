@@ -1,5 +1,5 @@
-/*package com.example.sharkflow.ui.components
-
+package com.example.sharkflow.ui.components
+/*
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

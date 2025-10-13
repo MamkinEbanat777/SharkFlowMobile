@@ -1,46 +1,42 @@
 package com.example.sharkflow.ui.theme
 
-import android.app.Activity
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
-import androidx.compose.material3.lightColorScheme
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import android.os.*
+import androidx.compose.foundation.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.*
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+val LightColorScheme = lightColorScheme(
+    primary = Blue700,       // Акценты, кнопки
+    secondary = Blue500,     // Вторичные кнопки и чекбоксы
+    background = White,      // Фон приложения
+    surface = Gray100,       // Карточки, панели, диалоги
+    onPrimary = White,       // Текст/иконки на primary
+    onSecondary = White,     // Текст/иконки на secondary
+    onBackground = Black,    // Основной текст
+    onSurface = Black,       // Текст на карточках и панелях
+    error = ErrorRed,
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
-
-    /* Other default colors to override
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    onPrimary = Color.White,
-    onSecondary = Color.White,
-    onTertiary = Color.White,
-    onBackground = Color(0xFF1C1B1F),
-    onSurface = Color(0xFF1C1B1F),
-    */
+val DarkColorScheme = darkColorScheme(
+    primary = Blue700,       // Акценты, кнопки
+    secondary = Blue500,     // Вторичные кнопки и чекбоксы
+    background = Gray900,    // Фон приложения
+    surface = Gray800,       // Карточки, панели, диалоги
+    onPrimary = White,       // Текст/иконки на primary
+    onSecondary = White,     // Текст/иконки на secondary
+    onBackground = White,    // Основной текст
+    onSurface = White,       // Текст на карточках и панелях
+    error = ErrorRed,
 )
 
 @Composable
 fun SharkFlowTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
+    val targetScheme = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
@@ -51,7 +47,7 @@ fun SharkFlowTheme(
     }
 
     MaterialTheme(
-        colorScheme = colorScheme,
+        colorScheme = targetScheme,
         typography = Typography,
         content = content
     )

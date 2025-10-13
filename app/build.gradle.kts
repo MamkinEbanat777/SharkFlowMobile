@@ -1,9 +1,11 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.*
 
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    id("org.jetbrains.kotlin.kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -20,18 +22,49 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     buildTypes {
+        debug {
+            buildConfigField(
+                type = "String",
+                name = "BASE_URL",
+                value = "\"http://10.0.2.2:8080/api/v1/\""
+            )
+        }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField(
+                type = "String",
+                name = "BASE_URL",
+                value = "\"https://sharkflow-api.onrender.com/api/v1/\""
+            )
+
         }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    packaging {
+        resources {
+            excludes += listOf(
+                "META-INF/INDEX.LIST",
+                "META-INF/DEPENDENCIES",
+                "META-INF/io.netty.versions.properties",
+                "META-INF/LICENSE",
+                "META-INF/LICENSE.txt",
+                "META-INF/NOTICE",
+                "META-INF/NOTICE.txt"
+            )
+        }
     }
     kotlin {
         compilerOptions {
@@ -58,11 +91,29 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose)
-    implementation(libs.androidx.runtime)
-    implementation(libs.androidx.scenecore)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.material3)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
+    implementation(libs.kotlinx.coroutines.android)
+    implementation(libs.firebase.appdistribution.gradle)
+    implementation(libs.converter.scalars)
+    implementation(libs.androidx.security.crypto)
+    implementation(libs.toasty)
+    implementation(libs.androidx.compose.animation)
+    implementation(libs.androidx.lifecycle.viewmodel.ktx)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.tink.android)
+    implementation(libs.androidx.media3.common.ktx)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.hilt.lifecycle.viewmodel)
+    implementation("com.google.dagger:hilt-android:2.57.2")
+    implementation(libs.androidx.media3.exoplayer.dash)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.appcompat)
+    kapt("com.google.dagger:hilt-compiler:2.57.2")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -71,3 +122,4 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
+

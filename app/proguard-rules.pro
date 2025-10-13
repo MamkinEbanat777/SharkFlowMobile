@@ -19,3 +19,11 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Игнорировать BlockHound (используется только в debug)
+# Release rules
+# Игнорируем BlockHound и debug-only Netty интеграции
+-dontwarn reactor.blockhound.**
+-dontwarn io.netty.util.internal.Hidden$NettyBlockHoundIntegration
+-keep class io.netty.** { *; }    # для классов Netty, которые реально в зависимостях
+-keep class reactor.** { *; }     # для классов Reactor, которые реально в зависимостях

@@ -1,30 +1,28 @@
 package com.example.sharkflow.ui.screens
 
-import android.annotation.SuppressLint
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-
+import android.annotation.*
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.runtime.*
+import androidx.compose.ui.*
+import androidx.compose.ui.platform.*
+import androidx.compose.ui.text.style.*
+import androidx.compose.ui.unit.*
+import androidx.hilt.lifecycle.viewmodel.compose.*
+import androidx.navigation.*
+import com.example.sharkflow.ui.components.*
+import com.example.sharkflow.viewmodel.*
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
-fun HeroScreen(onStartClick: () -> Unit) {
+fun HeroScreen(
+    navController: NavController
+) {
+    val authStateViewModel: AuthStateViewModel = hiltViewModel()
+
+    val isLoggedIn by remember { derivedStateOf { authStateViewModel.isLoggedIn } }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -39,7 +37,7 @@ fun HeroScreen(onStartClick: () -> Unit) {
                 text = "SharkFlow",
                 style = MaterialTheme.typography.displayMedium,
                 textAlign = TextAlign.Center,
-                color = Color.Blue,
+                color = colorScheme.primary,
             )
             Text(
                 text = "управляй задачами как акула",
@@ -53,12 +51,21 @@ fun HeroScreen(onStartClick: () -> Unit) {
                 }
             }
             Spacer(modifier = Modifier.height(15.dp))
-            Button(
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
-                onClick = onStartClick
-            ) {
-                Text("Начать охоту", fontSize = 18.sp, color = Color.White)
-            }
+            AppButton(
+                onClick = {
+                    if (isLoggedIn) {
+                        navController.navigate("dashboard") {
+                            popUpTo("hero") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("login") {
+                            popUpTo("hero") { inclusive = true }
+                        }
+                    }
+                },
+                variant = AppButtonVariant.Primary,
+                text = "Начать охоту"
+            )
         }
     }
 }
