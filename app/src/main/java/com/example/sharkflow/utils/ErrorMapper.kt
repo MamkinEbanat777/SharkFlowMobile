@@ -1,7 +1,6 @@
 package com.example.sharkflow.utils
 
-import android.util.*
-import com.google.gson.*
+import com.google.gson.Gson
 
 object ErrorMapper {
     private val defaultMessages = mapOf(
@@ -37,7 +36,7 @@ object ErrorMapper {
                 else -> null
             }
         } catch (e: Exception) {
-            Log.e("ErrorMapper", "Failed to parse error body: $errorBody", e)
+            AppLog.e("Failed to parse error body: $errorBody", e)
             null
         }
     }

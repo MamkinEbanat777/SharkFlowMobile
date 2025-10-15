@@ -24,4 +24,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "SharkFlow"
-include(":app")
+include(":app", ":baselineprofile")
+

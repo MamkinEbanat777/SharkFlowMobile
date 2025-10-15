@@ -1,35 +1,32 @@
 package com.example.sharkflow.ui.components
 
-import android.annotation.*
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
-import androidx.compose.foundation.*
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.text.style.*
-import androidx.compose.ui.unit.*
-import androidx.hilt.lifecycle.viewmodel.compose.*
-import androidx.navigation.*
-import androidx.navigation.compose.*
-import com.example.sharkflow.ui.navigation.*
-import com.example.sharkflow.viewmodel.*
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.sharkflow.data.local.language.Lang
+import com.example.sharkflow.ui.navigation.NavScreen
+import com.example.sharkflow.viewmodel.AuthStateViewModel
 
-@SuppressLint("Range", "ConfigurationScreenWidthHeight")
 @Composable
 fun BottomNavBar(
     navController: NavHostController,
     items: List<NavScreen>,
+    authStateViewModel: AuthStateViewModel
 ) {
-    val authStateViewModel: AuthStateViewModel = hiltViewModel()
-
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
     val selectedIndex = items.indexOfFirst { it.route == currentRoute }.coerceAtLeast(0)
-    val isLoggedIn by authStateViewModel::isLoggedIn
 
+    val isLoggedIn by remember { derivedStateOf { authStateViewModel.isLoggedIn } }
 
     Surface(color = colorScheme.primary, tonalElevation = 8.dp) {
         Box(
@@ -97,12 +94,12 @@ fun BottomNavBar(
                         ) {
                             Icon(
                                 imageVector = screen.icon,
-                                contentDescription = screen.label,
+                                contentDescription = Lang.string(screen.label),
                                 tint = iconColor,
                                 modifier = Modifier.size(26.dp)
                             )
                             Text(
-                                text = screen.label,
+                                text = Lang.string(screen.label),
                                 color = textColor,
                                 fontSize = MaterialTheme.typography.labelSmall.fontSize,
                                 textAlign = TextAlign.Center,

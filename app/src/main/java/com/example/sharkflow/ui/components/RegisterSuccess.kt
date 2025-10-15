@@ -1,19 +1,23 @@
 package com.example.sharkflow.ui.components
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.*
-import androidx.compose.material.icons.*
-import androidx.compose.material.icons.filled.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
-import androidx.compose.ui.text.style.*
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.example.sharkflow.R
+import com.example.sharkflow.data.local.language.Lang
 
 @Composable
 fun RegistrationSuccess() {
+    val successText = Lang.string(R.string.registration_success_message)
+
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -23,7 +27,7 @@ fun RegistrationSuccess() {
     ) {
         Icon(
             imageVector = Icons.Filled.Check,
-            contentDescription = "Успех",
+            contentDescription = successText,
             tint = colorScheme.onPrimary,
             modifier = Modifier
                 .size(120.dp)
@@ -34,7 +38,7 @@ fun RegistrationSuccess() {
                 )
         )
         Text(
-            text = "Вы успешно зарегистрировались",
+            text = successText,
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.displaySmall
         )

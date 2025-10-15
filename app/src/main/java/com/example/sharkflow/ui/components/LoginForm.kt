@@ -1,26 +1,29 @@
 package com.example.sharkflow.ui.components
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.platform.*
-import androidx.compose.ui.unit.*
-import androidx.hilt.lifecycle.viewmodel.compose.*
-import androidx.navigation.*
-import com.example.sharkflow.ui.screens.auth.viewmodel.*
-import com.example.sharkflow.utils.*
-import com.example.sharkflow.viewmodel.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.sharkflow.R
+import com.example.sharkflow.data.local.language.Lang
+import com.example.sharkflow.ui.screens.auth.viewmodel.LoginViewModel
+import com.example.sharkflow.utils.ToastManager
+import com.example.sharkflow.viewmodel.AuthStateViewModel
 
 @Composable
 fun LoginForm(
     navController: NavController,
+    authStateViewModel: AuthStateViewModel
 ) {
     val loginViewModel: LoginViewModel = hiltViewModel()
-    val authStateViewModel: AuthStateViewModel = hiltViewModel()
+    val emptyFieldWarning = Lang.string(R.string.login_empty_fields_warning)
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -40,7 +43,7 @@ fun LoginForm(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Логин",
+            text = Lang.string(R.string.login_title),
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.padding(top = 20.dp)
         )
@@ -48,26 +51,29 @@ fun LoginForm(
         AppField(
             value = email,
             onValueChange = { email = it },
-            label = "Введите почту",
+            label = Lang.string(R.string.login_email_label),
         )
 
         AppField(
             value = password,
             onValueChange = { password = it },
-            label = "Введите пароль",
+            label = Lang.string(R.string.login_password_label),
             isPassword = true,
             showPassword = passwordVisible,
             onToggleVisibility = { passwordVisible = !passwordVisible }
         )
 
-        if (loginViewModel.errorMessage != null) {
-            Text(loginViewModel.errorMessage!!, color = colorScheme.error)
+        loginViewModel.errorMessage?.let {
+            Text(it, color = colorScheme.error)
         }
 
         AppButton(
             onClick = {
                 if (email.isEmpty() || password.isEmpty()) {
-                    ToastManager.warning(context, "Не все поля заполнены")
+                    ToastManager.warning(
+                        context,
+                        emptyFieldWarning
+                    )
                 } else {
                     loginViewModel.login(email, password) { user ->
                         authStateViewModel.setUser(user)
@@ -76,7 +82,10 @@ fun LoginForm(
             },
             modifier = Modifier.fillMaxWidth(),
             variant = AppButtonVariant.Primary,
-            text = (if (loginViewModel.isLoading) "Отправка..." else "Войти"),
+            text = if (loginViewModel.isLoading)
+                Lang.string(R.string.login_button_sending)
+            else
+                Lang.string(R.string.login_button_send),
             enabled = !loginViewModel.isLoading
         )
 
@@ -87,10 +96,10 @@ fun LoginForm(
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
         ) {
-            Text("Нет аккаунта?")
+            Text(Lang.string(R.string.login_no_account))
             Spacer(modifier = Modifier.width(4.dp))
             TextButton(onClick = { navController.navigate("register") }) {
-                Text("Создать", color = colorScheme.primary)
+                Text(Lang.string(R.string.login_create_account), color = colorScheme.primary)
             }
         }
     }

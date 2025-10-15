@@ -1,34 +1,36 @@
 package com.example.sharkflow.ui.navigation
 
 import androidx.compose.animation.*
-import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.*
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.unit.*
-import androidx.hilt.lifecycle.viewmodel.compose.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.*
+import com.example.sharkflow.R
+import com.example.sharkflow.data.local.language.Lang
 import com.example.sharkflow.ui.components.*
-import com.example.sharkflow.ui.screens.*
 import com.example.sharkflow.ui.screens.auth.*
+import com.example.sharkflow.ui.screens.common.*
+import com.example.sharkflow.ui.screens.dashboard.DashboardScreen
 import com.example.sharkflow.ui.screens.marketing.*
-import com.example.sharkflow.viewmodel.*
+import com.example.sharkflow.ui.screens.profile.ProfileScreen
+import com.example.sharkflow.viewmodel.AuthStateViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavHost(
+    authStateViewModel: AuthStateViewModel,
     isDarkTheme: Boolean,
     onThemeChange: (Boolean) -> Unit
 ) {
-    val authStateViewModel: AuthStateViewModel = hiltViewModel()
-
     val navController = rememberNavController()
-    val isLoggedIn = authStateViewModel.isLoggedIn
-    val currentUser = authStateViewModel.currentUser
+
+    val isLoggedIn by remember { derivedStateOf { authStateViewModel.isLoggedIn } }
+    val currentUser by remember { derivedStateOf { authStateViewModel.currentUser } }
 
     val bottomNavItems = if (isLoggedIn) userBottomNavItems else publicBottomNavItems
     val startDestination = if (isLoggedIn) "dashboard" else "hero"
@@ -37,41 +39,31 @@ fun AppNavHost(
         topBar = {
             TopAppBar(
                 title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
+                    Text(
+                        text = Lang.string(R.string.common_app_name),
+                        color = colorScheme.onPrimary,
                         modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            "SharkFlow",
-                            color = colorScheme.onPrimary,
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
-                        IconButton(onClick = {
-                            onThemeChange(!isDarkTheme)
-                        }) {
-                            Crossfade(targetState = isDarkTheme) { darkMode ->
-                                Icon(
-                                    if (darkMode) {
-                                        Icons.Filled.DarkMode
-                                    } else {
-                                        Icons.Filled.LightMode
-                                    },
-                                    contentDescription = if (darkMode) {
-                                        "Темная тема"
-                                    } else {
-                                        "Светлая тема"
-                                    },
-                                    modifier = Modifier.animateContentSize()
-                                )
-                            }
+                    )
+                },
+                actions = {
+                    IconButton(onClick = { onThemeChange(!isDarkTheme) }) {
+                        Crossfade(targetState = isDarkTheme) { darkMode ->
+                            Icon(
+                                imageVector = if (darkMode) Icons.Filled.DarkMode else Icons.Filled.LightMode,
+                                contentDescription = if (darkMode)
+                                    Lang.string(R.string.common_dark_mode)
+                                else
+                                    Lang.string(R.string.common_light_mode),
+                                modifier = Modifier.animateContentSize()
+                            )
                         }
                     }
+                    LanguageButton()
                 },
-                modifier = Modifier.background(colorScheme.primary),
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = colorScheme.primary,
-                    titleContentColor = colorScheme.onPrimary
+                    titleContentColor = colorScheme.onPrimary,
+                    actionIconContentColor = colorScheme.onPrimary
                 )
             )
         },
@@ -79,6 +71,7 @@ fun AppNavHost(
             BottomNavBar(
                 navController,
                 bottomNavItems,
+                authStateViewModel
             )
         },
     ) { innerPadding ->
@@ -97,7 +90,7 @@ fun AppNavHost(
             composable("security") { SecurityScreen() }
             composable("faq") { FAQScreen() }
             composable("support") { SupportScreen() }
-            composable("login") { LoginScreen(navController) }
+            composable("login") { LoginScreen(navController, authStateViewModel) }
             composable("register") { RegisterScreen(navController = navController) }
             composable("dashboard") { DashboardScreen() }
             composable("profile") { ProfileScreen(currentUser) }

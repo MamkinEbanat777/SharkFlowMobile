@@ -1,0 +1,210 @@
+<resources>
+    <!-- About Screen -->
+    <string name="about_title">会社について</string>
+    <string name="about_app_desc">SharkFlow — 使いやすいサービスを作るプロフェッショナルチーム</string>
+    <string name="about_member_andrey_name">Andrey Ivanov</string>
+    <string name="about_member_andrey_role">フロントエンド開発者</string>
+    <string name="about_member_andrey_desc">ユーザーインターフェースの開発と最適化を担当。React と TypeScript の経験が 5 年以上あります。</string>
+    <string name="about_member_andrey_content_desc">フロントエンド開発者 Andrey Ivanov の写真</string>
+    <string name="about_member_katerina_name">Ekaterina Smirnova</string>
+    <string name="about_member_katerina_role">バックエンド開発者</string>
+    <string name="about_member_katerina_desc">サーバーサイドのロジックとデータベースの構築・保守を担当。Node.js と Postgres の専門家です。</string>
+    <string name="about_member_katerina_content_desc">バックエンド開発者 Ekaterina Smirnova の写真</string>
+    <string name="about_member_igor_name">Igor Petrov</string>
+    <string name="about_member_igor_role">DevOps エンジニア</string>
+    <string name="about_member_igor_desc">インフラ、CI/CD、セキュリティを担当。自動化を導入し、サービスの安定性を維持します。</string>
+    <string name="about_member_igor_content_desc">DevOps エンジニア Igor Petrov の写真</string>
+    <string name="about_member_olga_name">Olga Vasilieva</string>
+    <string name="about_member_olga_role">UI/UX デザイナー</string>
+    <string name="about_member_olga_desc">分かりやすく使いやすいインターフェースを作り、ユーザー体験を向上させます。ビジュアル部分とプロトタイプを担当。</string>
+    <string name="about_member_olga_content_desc">UI/UX デザイナー Olga Vasilieva の写真</string>
+
+    <!-- Advantages Screen -->
+    <string name="advantages_title">利点</string>
+    <string name="advantages_desc">SharkFlow — タスク管理のための信頼できるツール</string>
+    <string name="advantages_free_title">無料で利用可能</string>
+    <string name="advantages_free_desc">支払いなしで全機能にフルアクセスできます。</string>
+    <string name="advantages_open_source_title">オープンソース</string>
+    <string name="advantages_open_source_desc">プロジェクトは完全にオープンソースで、簡単にカスタマイズできます。</string>
+    <string name="advantages_simplicity_title">使いやすさ</string>
+    <string name="advantages_simplicity_desc">トレーニングなしでもわかるインターフェース。</string>
+    <string name="advantages_security_title">セキュリティ</string>
+    <string name="advantages_security_desc">外部解析は行いません — データはあなたの管理下にあります。</string>
+    <string name="advantages_no_install_title">インストール不要</string>
+    <string name="advantages_no_install_desc">ブラウザで直接動作し、モバイルでも利用可能です。</string>
+    <string name="advantages_open_source_link">open-source</string>
+
+    <!-- FAQ Screen -->
+    <string name="faq_title">よくある質問</string>
+    <string name="faq_desc">SharkFlow — ユーザーのよくある疑問に答えます</string>
+    <string-array name="faq_array_question">
+        <item>ユーザーデータの暗号化はどのように行われていますか？</item>
+        <item>データベースの情報には誰がアクセスできますか？</item>
+        <item>バックアップはどの頻度で、どこに保存されますか？</item>
+        <item>監視と異常検知はどのように行われますか？</item>
+        <item>DDoS 攻撃からの保護対策は何ですか？</item>
+        <item>サーバーはどこにあり、セキュリティ基準に準拠していますか？</item>
+        <item>インシデントや侵害通知はどのように処理されますか？</item>
+        <item>ユーザーに対するプライバシーの保証は何ですか？</item>
+        <item>不正アクセス対策はどのように実装されていますか？</item>
+        <item>システムのスケーリングとアップデートはどのように計画されていますか？</item>
+    </string-array>
+    <string-array name="faq_array_answer">
+        <item>すべてのデータは TLS 暗号化された HTTPS 経由で送信され、パスワードはソルト付き bcrypt ハッシュでのみ保存されます。</item>
+        <item>アクセスは厳しく制限されており、サービスコンポーネントと多要素認証を使用する管理者のみがデータを扱えます。</item>
+        <item>バックアップは 6 時間ごとに行われ、オブジェクトレベルで暗号化された地理的に分散したストレージに保存されます。</item>
+        <item>ログシステムは SIEM プラットフォームと統合され、24 時間体制で監視し、疑わしい活動時に自動アラートを送ります。</item>
+        <item>分散型 CDN、WAF、オートスケーリングを組み合わせて、標的型の負荷をフィルタ・緩和します。</item>
+        <item>サーバーは Tier III 認定のデータセンターにあり、ISO 27001 や SOC 2 の基準に準拠しています。</item>
+        <item>インシデント発生時は ICS 手順が作動します：対応チームへの通知、分析、修正、24 時間以内の報告。</item>
+        <item>データを第三者に渡さず、サービス提供の範囲内でのみ使用することを約束します（GDPR に準拠）。</item>
+        <item>厳格なロールポリシー、セッション管理、IP によるブロック、ログイン試行回数の制限を適用しています。</item>
+        <item>アップデートは CI/CD パイプラインを通じて Canary リリースと自動負荷テストで順次展開され、サービスへの影響を避けます。</item>
+    </string-array>
+
+    <!-- Features Screen -->
+    <string name="features_title">主な機能</string>
+    <string name="features_desc">SharkFlow — 便利な機能を備えた実用ツール</string>
+    <string-array name="features_array_title">
+        <item>タスクの計画</item>
+        <item>チームでの協力</item>
+        <item>リマインダーと締め切り</item>
+        <item>進捗と指標</item>
+    </string-array>
+    <string-array name="features_array_desc">
+        <item>タスクを作成・割り当て、優先度と締め切りを設定 — すべて一か所で管理。</item>
+        <item>コミュニケーション、役割の割当、各メンバーの貢献を追跡します。</item>
+        <item>重要な期限を見逃さないよう、自動通知が適切にリマインドします。</item>
+        <item>タスクの完了状況を追跡し、効率を分析してワークフローを改善します。</item>
+    </string-array>
+
+    <!-- How it works Screen -->
+    <string name="how_it_works_title">使い方</string>
+    <string name="how_it_works_subtitle">SharkFlow — タスクとプロセスをシンプルに分かりやすく表示します</string>
+    <string-array name="how_it_works_array_step_number">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+    <string-array name="how_it_works_array_step_title">
+        <item>登録</item>
+        <item>タスク追加</item>
+        <item>通知</item>
+        <item>実績</item>
+    </string-array>
+    <string-array name="how_it_works_array_step_desc">
+        <item>数秒でアカウントを作成できます</item>
+        <item>タスクを説明し、締め切りを設定します</item>
+        <item>適切な時刻にリマインダーを受け取ります</item>
+        <item>完了したタスクにチェックを入れて目標を達成しましょう</item>
+    </string-array>
+
+    <!-- Security Screen -->
+    <string name="security_title">セキュリティ</string>
+    <string name="security_subtitle">SharkFlow — あらゆるレベルでデータを保護します</string>
+    <string-array name="security_array_title">
+        <item>パスワードのハッシュ化</item>
+        <item>安全な接続</item>
+        <item>データベースアクセス</item>
+        <item>プライバシー</item>
+        <item>バックアップ</item>
+    </string-array>
+    <string-array name="security_array_desc">
+        <item>ユーザーのパスワードは平文で保存されず、ソルト付き bcrypt を使用します。</item>
+        <item>すべてのデータは TLS 暗号化された HTTPS 経由で送信され、傍受を防止します。</item>
+        <item>許可されたユーザーと限定された権限のサービスのみがデータにアクセスできます。</item>
+        <item>個人データを第三者に提供・販売・使用することはありません。</item>
+        <item>データベースは定期的にバックアップされ、障害やデータ損失から保護します。</item>
+    </string-array>
+
+    <!-- Hero Screen -->
+    <string name="hero_title">SharkFlow</string>
+    <string name="hero_subtitle">サメのようにタスクを管理しよう</string>
+    <string name="hero_button">狩りを始める</string>
+    <string-array name="hero_array_step">
+        <item>目標設定</item>
+        <item>計画</item>
+        <item>実行</item>
+    </string-array>
+
+    <!-- Support Screen -->
+    <string name="support_title">サポートとフィードバック</string>
+    <string name="support_subtitle">いつでもご連絡ください。サポートいたします。</string>
+    <string name="support_desc">ご質問、提案、技術的な問題がある場合は、ご都合の良い方法でご連絡ください：</string>
+    <string name="support_contacts_title">連絡先</string>
+    <string name="support_email">E-mail: support@sharkflow.app</string>
+    <string name="support_telegram">Telegram: @sharkflow_support</string>
+    <string name="support_discord">Discord: discord.gg/sharkflow</string>
+    <string name="support_form_prompt">具体的なご質問がある場合は、フォームにご記入ください：</string>
+    <string name="contact_form_title">ヘルプが必要ですか？</string>
+    <string name="contact_form_email">あなたのメール</string>
+    <string name="contact_form_name">あなたの名前</string>
+    <string name="contact_form_question">ご質問</string>
+    <string name="contact_form_send">送信</string>
+
+    <!-- Register Screen -->
+    <string name="code_confirmation_title">確認コードを入力してください</string>
+    <string name="code_confirmation_label">確認コード</string>
+    <string name="code_confirmation_back">戻る</string>
+    <string name="code_confirmation_send">送信</string>
+    <string name="code_confirmation_checking">確認中…</string>
+    <string name="code_confirmation_warning">確認コードを入力してください</string>
+    <string name="register_title">登録</string>
+    <string name="register_label_login">ユーザー名を入力</string>
+    <string name="register_label_email">メールアドレスを入力</string>
+    <string name="register_label_password">パスワードを入力</string>
+    <string name="register_label_confirm_password">パスワードを確認</string>
+    <string name="register_button_register">登録する</string>
+    <string name="register_button_sending">送信中…</string>
+    <string name="register_warning_empty_fields">未入力の項目があります！</string>
+    <string name="register_text_have_account">既にアカウントをお持ちですか？</string>
+    <string name="register_text_login">ログイン</string>
+    <string name="registration_success_message">登録が完了しました</string>
+
+    <!-- Login Screen -->
+    <string name="login_title">ログイン</string>
+    <string name="login_email_label">メールアドレスを入力</string>
+    <string name="login_password_label">パスワードを入力</string>
+    <string name="login_empty_fields_warning">未入力の項目があります</string>
+    <string name="login_button_send">ログイン</string>
+    <string name="login_button_sending">送信中…</string>
+    <string name="login_no_account">アカウントをお持ちでないですか？</string>
+    <string name="login_create_account">作成</string>
+
+    <!-- NavScreen -->
+    <string name="nav_hero">ホーム</string>
+    <string name="nav_login">ログイン</string>
+    <string name="nav_register">登録</string>
+    <string name="nav_how_it_works">使い方</string>
+    <string name="nav_features">機能</string>
+    <string name="nav_advantages">利点</string>
+    <string name="nav_about">会社について</string>
+    <string name="nav_security">セキュリティ</string>
+    <string name="nav_faq">よくある質問</string>
+    <string name="nav_support">サポート</string>
+    <string name="nav_dashboard">マイボード</string>
+    <string name="nav_profile">プロフィール</string>
+    <string name="logout_button_text">ログアウト</string>
+    <string name="logout_button_desc">アカウントからログアウトするボタン</string>
+    <string name="logout_modal_title">ログアウトの確認</string>
+    <string name="logout_modal_message">アカウントからログアウトしてもよろしいですか？</string>
+
+    <!-- Common -->
+    <string name="common_app_name">SharkFlow</string>
+    <string name="common_dark_mode">ダークモード</string>
+    <string name="common_light_mode">ライトモード</string>
+    <string name="common_ok">OK</string>
+    <string name="common_yes">はい</string>
+    <string name="common_no">いいえ</string>
+    <string name="common_cancel">キャンセル</string>
+    <string name="common_close">閉じる</string>
+    <string name="common_error">エラー</string>
+    <string name="common_show_password">パスワードを表示</string>
+    <string name="common_hide_password">パスワードを非表示</string>
+
+    <!-- errors -->
+    <string name="error_tokens_not_received">トークンの取得に失敗しました</string>
+    <string name="error_user_not_loaded">ユーザーの読み込みに失敗しました</string>
+    <string name="error_user_data">ユーザーデータの取得エラー</string>
+</resources>

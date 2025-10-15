@@ -1,10 +1,10 @@
-package com.example.sharkflow.ui.screens
+package com.example.sharkflow.ui.screens.profile
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
-import com.example.sharkflow.model.*
+import com.example.sharkflow.model.UserResponse
 
 @Composable
 fun ProfileScreen(currentUser: UserResponse?) {

@@ -1,6 +1,6 @@
 @file:Suppress("FunctionName")
 
-package com.example.sharkflow.ui.screens
+package com.example.sharkflow.ui.screens.common
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
@@ -8,13 +8,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.geometry.*
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.drawscope.*
-import androidx.compose.ui.res.*
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.graphics.drawscope.Fill
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import com.example.sharkflow.R
-import kotlinx.coroutines.*
+import com.example.sharkflow.data.local.language.Lang
+import kotlinx.coroutines.delay
 import kotlin.math.*
 
 @Composable
@@ -103,7 +104,7 @@ fun SplashScreen(
             )
             Spacer(modifier = Modifier.height(14.dp))
             Text(
-                text = "SharkFlow",
+                text = Lang.string(R.string.common_app_name),
                 color = fg,
                 style = MaterialTheme.typography.titleLarge
             )

@@ -3,27 +3,17 @@ package com.example.sharkflow.ui.screens.auth
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.unit.*
-import androidx.hilt.lifecycle.viewmodel.compose.*
-import androidx.navigation.*
-import com.example.sharkflow.ui.components.*
-import com.example.sharkflow.viewmodel.*
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.sharkflow.ui.components.LoginForm
+import com.example.sharkflow.viewmodel.AuthStateViewModel
 
 @Composable
 fun LoginScreen(
     navController: NavController,
+    authStateViewModel: AuthStateViewModel
 ) {
-    val authStateViewModel: AuthStateViewModel = hiltViewModel()
-
     val isLoggedIn by remember { derivedStateOf { authStateViewModel.isLoggedIn } }
-
-    LaunchedEffect(isLoggedIn) {
-        if (isLoggedIn) {
-            navController.navigate("dashboard") {
-                popUpTo("login") { inclusive = true }
-            }
-        }
-    }
 
     if (!isLoggedIn) {
         Column(
@@ -32,8 +22,7 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Spacer(modifier = Modifier.height(24.dp))
-            LoginForm(navController)
+            LoginForm(navController, authStateViewModel)
         }
     }
-
 }

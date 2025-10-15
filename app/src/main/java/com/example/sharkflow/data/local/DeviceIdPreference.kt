@@ -1,11 +1,11 @@
 package com.example.sharkflow.data.local
 
-import android.content.*
-import androidx.core.content.*
-import java.util.*
-import javax.inject.*
+import android.content.Context
+import androidx.core.content.edit
+import java.util.UUID
+import javax.inject.Inject
 
-class DeviceIdProvider @Inject constructor(context: Context) {
+class DeviceIdPreference @Inject constructor(context: Context) {
     private val prefs =
         context.applicationContext.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
 

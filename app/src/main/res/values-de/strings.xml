@@ -1,0 +1,210 @@
+<resources>
+    <!-- About Screen -->
+    <string name="about_title">Über uns</string>
+    <string name="about_app_desc">SharkFlow — ein Team von Profis, das benutzerfreundliche Dienste erstellt</string>
+    <string name="about_member_andrey_name">Andrej Iwanow</string>
+    <string name="about_member_andrey_role">Frontend-Entwickler</string>
+    <string name="about_member_andrey_desc">Verantwortlich für die Entwicklung und Optimierung der Benutzeroberfläche. Erfahrung in React und TypeScript über 5 Jahre.</string>
+    <string name="about_member_andrey_content_desc">Foto von Andrej Iwanow, Frontend-Entwickler</string>
+    <string name="about_member_katerina_name">Ekaterina Smirnowa</string>
+    <string name="about_member_katerina_role">Backend-Entwicklerin</string>
+    <string name="about_member_katerina_desc">Spezialistin für die Erstellung und Wartung der Serverlogik und Datenbanken. Expertin in Node.js und Postgres.</string>
+    <string name="about_member_katerina_content_desc">Foto von Ekaterina Smirnowa, Backend-Entwicklerin</string>
+    <string name="about_member_igor_name">Igor Petrow</string>
+    <string name="about_member_igor_role">DevOps-Ingenieur</string>
+    <string name="about_member_igor_desc">Verantwortlich für Infrastruktur, CI/CD und Sicherheit. Implementiert Automatisierung und gewährleistet die Stabilität der Dienste.</string>
+    <string name="about_member_igor_content_desc">Foto von Igor Petrow, DevOps-Ingenieur</string>
+    <string name="about_member_olga_name">Olga Wassiljewa</string>
+    <string name="about_member_olga_role">UI/UX-Designerin</string>
+    <string name="about_member_olga_desc">Erstellt benutzerfreundliche Interfaces und verbessert die User Experience. Arbeitet an visuellen Komponenten und Prototypen.</string>
+    <string name="about_member_olga_content_desc">Foto von Olga Wassiljewa, UI/UX-Designerin</string>
+
+    <!-- Advantages Screen -->
+    <string name="advantages_title">Vorteile</string>
+    <string name="advantages_desc">SharkFlow — ein zuverlässiges Tool für Aufgabenmanagement</string>
+    <string name="advantages_free_title">Kostenlose Nutzung</string>
+    <string name="advantages_free_desc">Voller Zugriff auf alle Funktionen ohne Bezahlung.</string>
+    <string name="advantages_open_source_title">Open-Source</string>
+    <string name="advantages_open_source_desc">Das Projekt ist vollständig Open-Source und leicht anpassbar.</string>
+    <string name="advantages_simplicity_title">Einfachheit</string>
+    <string name="advantages_simplicity_desc">Eine intuitive Oberfläche, verständlich ohne Schulung.</string>
+    <string name="advantages_security_title">Sicherheit</string>
+    <string name="advantages_security_desc">Keine externe Analyse — Ihre Daten bleiben unter Kontrolle.</string>
+    <string name="advantages_no_install_title">Keine Installation nötig</string>
+    <string name="advantages_no_install_desc">Läuft direkt im Browser, auch auf mobilen Geräten.</string>
+    <string name="advantages_open_source_link">open-source</string>
+
+    <!-- FAQ Screen -->
+    <string name="faq_title">Häufig gestellte Fragen</string>
+    <string name="faq_desc">SharkFlow — beantwortet alle häufigen Fragen der Nutzer</string>
+    <string-array name="faq_array_question">
+        <item>Wie wird die Verschlüsselung der Nutzerdaten gewährleistet?</item>
+        <item>Wer hat Zugriff auf die Datenbankinformationen?</item>
+        <item>Wie oft werden Backups erstellt und wo werden sie gespeichert?</item>
+        <item>Wie erfolgt die Überwachung und Erkennung von Anomalien?</item>
+        <item>Welche Maßnahmen werden zum Schutz vor DDoS-Angriffen ergriffen?</item>
+        <item>Wo befinden sich die Server und entsprechen sie den Sicherheitsstandards?</item>
+        <item>Wie werden Vorfälle und Benachrichtigungen über Verstöße verarbeitet?</item>
+        <item>Welche Datenschutzgarantien werden den Nutzern gegeben?</item>
+        <item>Wie wird der unbefugte Zugriff verhindert?</item>
+        <item>Wie ist die Skalierung und Systemaktualisierung geplant?</item>
+    </string-array>
+    <string-array name="faq_array_answer">
+        <item>Alle Daten werden über HTTPS mit TLS-Verschlüsselung übertragen, Passwörter werden nur als bcrypt-Hashes mit Salt gespeichert.</item>
+        <item>Zugriff ist streng begrenzt: Nur Servicekomponenten und Administratoren mit Multi-Faktor-Authentifizierung können Daten verwenden.</item>
+        <item>Backups werden alle 6 Stunden erstellt und in georedundanten Speicherorten mit Objektverschlüsselung aufbewahrt.</item>
+        <item>Das Logging-System ist in eine SIEM-Plattform integriert für 24/7 Überwachung und automatische Warnungen bei verdächtiger Aktivität.</item>
+        <item>Ein verteiltes CDN-Netzwerk mit eingebautem WAF und automatischer Skalierung filtert gezielte Lasten.</item>
+        <item>Die Server befinden sich in zertifizierten Tier-III-Rechenzentren, die ISO 27001 und SOC 2 Standards erfüllen.</item>
+        <item>Im Falle eines Vorfalls wird das ICS-Verfahren aktiviert: Benachrichtigung des Reaktionsteams, Analyse, Behebung und Bericht innerhalb von 24 Stunden.</item>
+        <item>Wir verpflichten uns, keine Daten an Dritte weiterzugeben und sie ausschließlich im Rahmen der Dienstleistung gemäß unserer GDPR-Richtlinie zu verwenden.</item>
+        <item>Es gelten strenge Rollenrichtlinien, Sitzungsüberwachung, IP-Blockierung und Begrenzung der Login-Versuche.</item>
+        <item>Updates werden über einen CI/CD-Pipeline mit Canary-Releases und automatisierten Belastungstests ausgerollt, um die Systemfunktion nicht zu beeinträchtigen.</item>
+    </string-array>
+
+    <!-- Features Screen -->
+    <string name="features_title">Hauptfunktionen</string>
+    <string name="features_desc">SharkFlow — ein funktionales Tool mit nützlichen Features</string>
+    <string-array name="features_array_title">
+        <item>Aufgabenplanung</item>
+        <item>Teamarbeit</item>
+        <item>Erinnerungen und Deadlines</item>
+        <item>Fortschritt und Metriken</item>
+    </string-array>
+    <string-array name="features_array_desc">
+        <item>Erstellen und verteilen Sie Aufgaben, setzen Sie Prioritäten und Fristen – alles an einem Ort.</item>
+        <item>Kommunizieren Sie, weisen Sie Rollen zu und verfolgen Sie den Beitrag jedes Teammitglieds.</item>
+        <item>Verpassen Sie keine wichtigen Termine — automatische Benachrichtigungen erinnern rechtzeitig.</item>
+        <item>Überwachen Sie den Fortschritt, analysieren Sie die Effizienz und verbessern Sie Arbeitsprozesse.</item>
+    </string-array>
+
+    <!-- How it works Screen -->
+    <string name="how_it_works_title">Wie es funktioniert</string>
+    <string name="how_it_works_subtitle">SharkFlow — zeigt alle Aufgaben und Prozesse einfach und verständlich</string>
+    <string-array name="how_it_works_array_step_number">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+    </string-array>
+    <string-array name="how_it_works_array_step_title">
+        <item>Registrierung</item>
+        <item>Aufgabe hinzufügen</item>
+        <item>Benachrichtigungen</item>
+        <item>Erfolge</item>
+    </string-array>
+    <string-array name="how_it_works_array_step_desc">
+        <item>Erstellen Sie ein Konto in wenigen Sekunden</item>
+        <item>Beschreiben Sie die Aufgabe und setzen Sie eine Frist</item>
+        <item>Erhalten Sie Erinnerungen zur richtigen Zeit</item>
+        <item>Markieren Sie abgeschlossene Aufgaben und erreichen Sie Ihre Ziele</item>
+    </string-array>
+
+    <!-- Security Screen -->
+    <string name="security_title">Sicherheit</string>
+    <string name="security_subtitle">SharkFlow — schützt Ihre Daten auf allen Ebenen</string>
+    <string-array name="security_array_title">
+        <item>Passwortverschlüsselung</item>
+        <item>Sichere Verbindung</item>
+        <item>Datenbankzugriff</item>
+        <item>Datenschutz</item>
+        <item>Backups</item>
+    </string-array>
+    <string-array name="security_array_desc">
+        <item>Passwörter werden niemals im Klartext gespeichert — bcrypt mit Salt wird verwendet.</item>
+        <item>Alle Daten werden über HTTPS mit TLS-Verschlüsselung übertragen.</item>
+        <item>Zugriff haben nur autorisierte Benutzer und Dienste mit eingeschränkten Rechten.</item>
+        <item>Wir geben keine personenbezogenen Daten weiter und nutzen sie nicht für Dritte.</item>
+        <item>Die Datenbank wird regelmäßig gesichert, um Datenverlust zu verhindern.</item>
+    </string-array>
+
+    <!-- Hero Screen -->
+    <string name="hero_title">SharkFlow</string>
+    <string name="hero_subtitle">Verwalte Aufgaben wie ein Hai</string>
+    <string name="hero_button">Jagd starten</string>
+    <string-array name="hero_array_step">
+        <item>Zielen</item>
+        <item>Planen</item>
+        <item>Handeln</item>
+    </string-array>
+
+    <!-- Support Screen -->
+    <string name="support_title">Support und Feedback</string>
+    <string name="support_subtitle">Wir sind offen für Fragen und helfen gerne</string>
+    <string name="support_desc">Wenn Sie Fragen, Vorschläge oder technische Probleme haben, kontaktieren Sie uns auf folgende Weise:</string>
+    <string name="support_contacts_title">Kontaktdaten</string>
+    <string name="support_email">E-Mail: support@sharkflow.app</string>
+    <string name="support_telegram">Telegram: @sharkflow_support</string>
+    <string name="support_discord">Discord: discord.gg/sharkflow</string>
+    <string name="support_form_prompt">Falls Sie eine spezielle Frage haben — füllen Sie das Formular aus:</string>
+    <string name="contact_form_title">Brauchen Sie Hilfe?</string>
+    <string name="contact_form_email">Ihre E-Mail</string>
+    <string name="contact_form_name">Ihr Name</string>
+    <string name="contact_form_question">Ihre Frage</string>
+    <string name="contact_form_send">Senden</string>
+
+    <!-- Register Screen -->
+    <string name="code_confirmation_title">Bestätigungscode eingeben</string>
+    <string name="code_confirmation_label">Bestätigungscode</string>
+    <string name="code_confirmation_back">Zurück</string>
+    <string name="code_confirmation_send">Senden</string>
+    <string name="code_confirmation_checking">Prüfung…</string>
+    <string name="code_confirmation_warning">Bitte geben Sie den Bestätigungscode ein</string>
+    <string name="register_title">Registrierung</string>
+    <string name="register_label_login">Benutzernamen eingeben</string>
+    <string name="register_label_email">E-Mail eingeben</string>
+    <string name="register_label_password">Passwort eingeben</string>
+    <string name="register_label_confirm_password">Passwort bestätigen</string>
+    <string name="register_button_register">Registrieren</string>
+    <string name="register_button_sending">Senden…</string>
+    <string name="register_warning_empty_fields">Nicht alle Felder sind ausgefüllt!</string>
+    <string name="register_text_have_account">Bereits registriert?</string>
+    <string name="register_text_login">Anmelden</string>
+    <string name="registration_success_message">Sie haben sich erfolgreich registriert</string>
+
+    <!-- Login Screen -->
+    <string name="login_title">Login</string>
+    <string name="login_email_label">E-Mail eingeben</string>
+    <string name="login_password_label">Passwort eingeben</string>
+    <string name="login_empty_fields_warning">Nicht alle Felder sind ausgefüllt</string>
+    <string name="login_button_send">Anmelden</string>
+    <string name="login_button_sending">Senden…</string>
+    <string name="login_no_account">Kein Konto?</string>
+    <string name="login_create_account">Erstellen</string>
+
+    <!-- NavScreen -->
+    <string name="nav_hero">Startseite</string>
+    <string name="nav_login">Login</string>
+    <string name="nav_register">Registrierung</string>
+    <string name="nav_how_it_works">Wie es funktioniert</string>
+    <string name="nav_features">Funktionen</string>
+    <string name="nav_advantages">Vorteile</string>
+    <string name="nav_about">Über uns</string>
+    <string name="nav_security">Sicherheit</string>
+    <string name="nav_faq">FAQ</string>
+    <string name="nav_support">Support</string>
+    <string name="nav_dashboard">Meine Boards</string>
+    <string name="nav_profile">Profil</string>
+    <string name="logout_button_text">Abmelden</string>
+    <string name="logout_button_desc">Button zum Abmelden</string>
+    <string name="logout_modal_title">Abmeldung bestätigen</string>
+    <string name="logout_modal_message">Sind Sie sicher, dass Sie sich abmelden möchten?</string>
+
+    <!-- Common -->
+    <string name="common_app_name">SharkFlow</string>
+    <string name="common_dark_mode">Dunkles Thema</string>
+    <string name="common_light_mode">Helles Thema</string>
+    <string name="common_ok">Ok</string>
+    <string name="common_yes">Ja</string>
+    <string name="common_no">Nein</string>
+    <string name="common_cancel">Abbrechen</string>
+    <string name="common_close">Schließen</string>
+    <string name="common_error">Fehler</string>
+    <string name="common_show_password">Passwort anzeigen</string>
+    <string name="common_hide_password">Passwort verbergen</string>
+
+    <!-- errors -->
+    <string name="error_tokens_not_received">Token konnten nicht abgerufen werden</string>
+    <string name="error_user_not_loaded">Benutzer konnte nicht geladen werden</string>
+    <string name="error_user_data">Fehler beim Abrufen der Benutzerdaten</string>
+</resources>

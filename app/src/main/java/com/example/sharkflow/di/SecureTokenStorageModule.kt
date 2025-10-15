@@ -1,15 +1,15 @@
 package com.example.sharkflow.di
 
 
-import android.content.*
-import com.example.sharkflow.data.local.*
-import com.example.sharkflow.data.repository.*
-import com.example.sharkflow.data.storage.*
+import android.content.Context
+import com.example.sharkflow.data.local.token.*
+import com.example.sharkflow.data.repository.TokenRepository
+import com.example.sharkflow.data.storage.TokenStorage
 import dagger.*
-import dagger.hilt.*
-import dagger.hilt.android.qualifiers.*
-import dagger.hilt.components.*
-import jakarta.inject.*
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import jakarta.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)

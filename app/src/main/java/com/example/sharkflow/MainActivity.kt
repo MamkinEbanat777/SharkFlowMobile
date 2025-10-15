@@ -1,32 +1,34 @@
 package com.example.sharkflow
 
-import android.os.*
-import androidx.activity.*
-import androidx.activity.compose.*
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.*
-import com.example.sharkflow.data.local.*
-import com.example.sharkflow.ui.navigation.*
-import com.example.sharkflow.ui.theme.*
-import com.example.sharkflow.viewmodel.*
-import dagger.hilt.android.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.sharkflow.data.local.ThemePreference
+import com.example.sharkflow.data.local.language.LanguageState
+import com.example.sharkflow.ui.navigation.AppNavHost
+import com.example.sharkflow.ui.theme.SharkFlowTheme
+import com.example.sharkflow.viewmodel.AuthStateViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val authStateViewModel: AuthStateViewModel by viewModels()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val context = LocalContext.current.applicationContext
+            val context = LocalContext.current.applicationContext ?: return@setContent
 
             var isDarkTheme by remember {
-                mutableStateOf(getThemePreference(context))
+                mutableStateOf(ThemePreference.get(context))
             }
 
-            LaunchedEffect(isDarkTheme) {
-                setThemePreference(context, isDarkTheme)
+            val authStateViewModel: AuthStateViewModel = hiltViewModel()
+
+            LaunchedEffect(Unit) {
+                LanguageState.init(context)
             }
 
             LaunchedEffect(Unit) {
@@ -35,9 +37,11 @@ class MainActivity : ComponentActivity() {
 
             SharkFlowTheme(darkTheme = isDarkTheme) {
                 AppNavHost(
+                    authStateViewModel = authStateViewModel,
                     isDarkTheme = isDarkTheme,
                     onThemeChange = { newTheme ->
                         isDarkTheme = newTheme
+                        ThemePreference.set(context, newTheme)
                     }
                 )
             }

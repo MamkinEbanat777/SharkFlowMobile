@@ -5,12 +5,14 @@ import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.platform.*
-import androidx.compose.ui.unit.*
-import androidx.hilt.lifecycle.viewmodel.compose.*
-import com.example.sharkflow.ui.screens.auth.viewmodel.*
-import com.example.sharkflow.utils.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.sharkflow.R
+import com.example.sharkflow.data.local.language.Lang
+import com.example.sharkflow.ui.screens.auth.viewmodel.ConfirmationCodeViewModel
+import com.example.sharkflow.utils.ToastManager
 
 @Composable
 fun CodeConfirmation(
@@ -22,6 +24,7 @@ fun CodeConfirmation(
     var confirmationCode by remember { mutableStateOf("") }
     var showEmptyFieldWarning by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val warningMessage = Lang.string(R.string.code_confirmation_warning)
 
     Column(
         modifier = Modifier
@@ -29,7 +32,7 @@ fun CodeConfirmation(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            "Введите код подтверждения",
+            text = Lang.string(R.string.code_confirmation_title),
             style = typography.titleMedium,
             color = colorScheme.onBackground
         )
@@ -37,11 +40,11 @@ fun CodeConfirmation(
         AppField(
             value = confirmationCode,
             onValueChange = { confirmationCode = it },
-            label = "Код подтверждения",
+            label = Lang.string(R.string.code_confirmation_label)
         )
 
-        if (confirmationCodeViewModel.errorMessage != null) {
-            Text(confirmationCodeViewModel.errorMessage!!, color = colorScheme.error)
+        confirmationCodeViewModel.errorMessage?.let {
+            Text(it, color = colorScheme.error)
         }
 
         Row(
@@ -58,7 +61,7 @@ fun CodeConfirmation(
                 )
 
             ) {
-                Text("Назад")
+                Text(Lang.string(R.string.code_confirmation_back))
             }
 
             AppButton(
@@ -74,18 +77,19 @@ fun CodeConfirmation(
                     }
                 },
                 variant = AppButtonVariant.Primary,
-                text = (if (confirmationCodeViewModel.isLoading) "Проверка..." else "Отправить"),
+                text = if (confirmationCodeViewModel.isLoading)
+                    Lang.string(R.string.code_confirmation_checking)
+                else
+                    Lang.string(R.string.code_confirmation_send),
                 enabled = !confirmationCodeViewModel.isLoading
             )
 
             if (showEmptyFieldWarning) {
-                ToastManager.warning(context, "Пожалуйста, введите код подтверждения")
-                /*Text(
-                    text = "Пожалуйста, введите код подтверждения",
-                    color = colorScheme.error,
-                    modifier = Modifier.padding(8.dp)
-                ) */
+                LaunchedEffect(Unit) {
+                    ToastManager.warning(context, warningMessage)
+                }
             }
+
         }
     }
 }

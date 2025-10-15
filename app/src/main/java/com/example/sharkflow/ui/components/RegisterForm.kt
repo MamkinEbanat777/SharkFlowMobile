@@ -1,18 +1,20 @@
 package com.example.sharkflow.ui.components
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.platform.*
-import androidx.compose.ui.unit.*
-import androidx.hilt.lifecycle.viewmodel.compose.*
-import androidx.navigation.*
-import com.example.sharkflow.ui.screens.auth.viewmodel.*
-import com.example.sharkflow.utils.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.sharkflow.R
+import com.example.sharkflow.data.local.language.Lang
+import com.example.sharkflow.ui.screens.auth.viewmodel.RegisterViewModel
+import com.example.sharkflow.utils.ToastManager
 
 @Composable
 fun RegisterForm(
@@ -20,6 +22,9 @@ fun RegisterForm(
     navController: NavController
 ) {
     val registerViewModel: RegisterViewModel = hiltViewModel()
+    val context = LocalContext.current
+
+    val emptyWarning = Lang.string(R.string.register_warning_empty_fields)
 
     var login by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
@@ -29,8 +34,6 @@ fun RegisterForm(
     var showPassword by remember { mutableStateOf(false) }
     var showEmptyFieldsWarning by remember { mutableStateOf(false) }
 
-    val context = LocalContext.current
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -38,27 +41,27 @@ fun RegisterForm(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Регистрация",
+            text = Lang.string(R.string.register_title),
             style = MaterialTheme.typography.headlineLarge,
             modifier = Modifier.padding(top = 20.dp)
         )
+
         AppField(
             value = login,
             onValueChange = { login = it },
-            label = "Введите логин"
+            label = Lang.string(R.string.register_label_login)
         )
 
         AppField(
             value = email,
             onValueChange = { email = it },
-            label = "Введите почту"
+            label = Lang.string(R.string.register_label_email)
         )
 
         AppField(
             value = password,
             onValueChange = { password = it },
-            label = "Введите пароль",
-            isPassword = true,
+            label = Lang.string(R.string.register_label_password), isPassword = true,
             showPassword = showPassword,
             onToggleVisibility = { showPassword = !showPassword }
         )
@@ -66,7 +69,7 @@ fun RegisterForm(
         AppField(
             value = confirmPassword,
             onValueChange = { confirmPassword = it },
-            label = "Подтвердите пароль",
+            label = Lang.string(R.string.register_label_confirm_password),
             isPassword = true,
             showPassword = showPassword
         )
@@ -89,18 +92,16 @@ fun RegisterForm(
                 }
             },
             variant = AppButtonVariant.Primary,
-            text = (if (registerViewModel.isLoading) "Отправка..." else "Зарегистрироваться"),
+            text = if (registerViewModel.isLoading) Lang.string(R.string.register_button_sending)
+            else Lang.string(R.string.register_button_register),
             enabled = !registerViewModel.isLoading,
             modifier = Modifier.fillMaxWidth()
         )
 
         if (showEmptyFieldsWarning) {
-            ToastManager.warning(context, "Не все поля заполнены!")
-            /*Text(А
-                text = "Пожалуйста, заполните все поля",
-                color = colorScheme.error,
-                modifier = Modifier.padding(8.dp)
-            )*/
+            LaunchedEffect(Unit) {
+                ToastManager.warning(context, emptyWarning)
+            }
         }
 
         Row(
@@ -110,10 +111,10 @@ fun RegisterForm(
                 .fillMaxWidth()
                 .padding(bottom = 8.dp)
         ) {
-            Text("Уже есть аккаунт?")
+            Text(Lang.string(R.string.register_text_have_account))
             Spacer(modifier = Modifier.width(4.dp))
             TextButton(onClick = { navController.navigate("login") }) {
-                Text("Войти", color = colorScheme.primary)
+                Text(Lang.string(R.string.register_text_login), color = colorScheme.primary)
             }
         }
     }

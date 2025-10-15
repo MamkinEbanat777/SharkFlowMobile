@@ -4,15 +4,20 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
-import androidx.compose.ui.text.font.*
-import androidx.compose.ui.text.style.*
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.example.sharkflow.R
+import com.example.sharkflow.data.local.language.Lang
 
 @Composable
 fun SecurityScreen() {
     val scrollState = rememberScrollState()
+
+    val titles = Lang.stringArray(R.array.security_array_title)
+    val descriptions = Lang.stringArray(R.array.security_array_desc)
 
     Column(
         modifier = Modifier
@@ -22,41 +27,37 @@ fun SecurityScreen() {
         verticalArrangement = Arrangement.spacedBy(20.dp)
     ) {
         Text(
-            text = "Безопасность",
+            text = Lang.string(R.string.security_title),
             style = MaterialTheme.typography.displayMedium,
             color = colorScheme.primary,
             textAlign = TextAlign.Center
         )
 
         Text(
-            text = "SharkFlow — защищает ваши данные на всех уровнях",
+            text = Lang.string(R.string.security_subtitle),
             textAlign = TextAlign.Center
         )
-        Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-            Text("Шифрование паролей", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-            Text(
-                "Пароли пользователей никогда не хранятся в открытом виде — используется bcrypt с солью.",
-            )
-
-            Text("Защищённое соединение", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-            Text(
-                "Все данные передаются по HTTPS с TLS-шифрованием, исключая возможность перехвата.",
-            )
-
-            Text("Доступ к базе", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-            Text(
-                "Доступ к данным имеют только авторизованные пользователи и сервисы с ограниченными правами.",
-            )
-            
-            Text("Конфиденциальность", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-            Text(
-                "Мы не передаём, не продаём и не используем персональные данные в сторонних целях.",
-            )
-
-            Text("Резервное копирование", fontWeight = FontWeight.Bold, fontSize = 20.sp)
-            Text(
-                "База данных регулярно резервируется для защиты от сбоев и потери информации.",
-            )
+        Column(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+            titles.zip(descriptions).forEach { (title, desc) ->
+                SecurityItem(title = title, description = desc)
+            }
         }
+    }
+}
+
+@Composable
+private fun SecurityItem(title: String, description: String) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            text = title,
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleLarge,
+            color = colorScheme.primary
+        )
+        Text(
+            text = description,
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Start
+        )
     }
 }

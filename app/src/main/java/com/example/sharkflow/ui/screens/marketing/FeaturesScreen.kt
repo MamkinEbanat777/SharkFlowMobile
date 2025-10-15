@@ -4,15 +4,19 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
-import androidx.compose.ui.text.font.*
-import androidx.compose.ui.text.style.*
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.example.sharkflow.R
+import com.example.sharkflow.data.local.language.Lang
 
 @Composable
 fun FeaturesScreen() {
     val scrollState = rememberScrollState()
+    val featureTitles = Lang.stringArray(R.array.features_array_title)
+    val featureDescriptions = Lang.stringArray(R.array.features_array_desc)
 
     Column(
         modifier = Modifier
@@ -22,34 +26,29 @@ fun FeaturesScreen() {
         verticalArrangement = Arrangement.spacedBy(30.dp)
     ) {
         Text(
-            "Ключевые особенности",
+            text = Lang.string(R.string.features_title),
             style = MaterialTheme.typography.displayMedium,
             textAlign = TextAlign.Center,
             color = colorScheme.primary,
         )
 
         Text(
-            text = "SharkFlow — функциональный инструмент с полезными фишками",
+            text = Lang.string(R.string.features_desc),
             textAlign = TextAlign.Center
         )
 
-        val features = listOf(
-            "Планирование задач" to "Создавайте и распределяйте задачи, устанавливайте приоритеты и сроки — всё в одном месте.",
-            "Командная работа" to "Общайтесь, назначайте роли и следите за вкладом каждого участника в проект.",
-            "Напоминания/дедлайны" to "Не упускайте важные сроки — автоматические уведомления всегда напомнят о приближении дедлайна.",
-            "Прогресс и метрики" to "Отслеживайте выполнение задач, анализируйте эффективность и улучшайте рабочие процессы."
-        )
-
-        features.forEach { (title, desc) ->
+        featureTitles.forEachIndexed { index, title ->
             Column(
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
-                    title,
+                    text = title,
                     fontWeight = FontWeight.Bold,
                     style = MaterialTheme.typography.titleLarge,
                 )
-                Text(desc)
+                Text(
+                    text = featureDescriptions.getOrNull(index) ?: ""
+                )
             }
         }
     }

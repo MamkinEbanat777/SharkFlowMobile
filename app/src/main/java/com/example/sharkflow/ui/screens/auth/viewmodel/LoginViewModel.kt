@@ -1,13 +1,13 @@
 package com.example.sharkflow.ui.screens.auth.viewmodel
 
-import android.util.*
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
-import com.example.sharkflow.data.repository.*
-import com.example.sharkflow.model.*
-import dagger.hilt.android.lifecycle.*
-import jakarta.inject.*
-import kotlinx.coroutines.*
+import com.example.sharkflow.data.repository.AuthRepository
+import com.example.sharkflow.model.UserResponse
+import com.example.sharkflow.utils.AppLog
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -37,13 +37,14 @@ class LoginViewModel @Inject constructor(
                 val result = authRepository.login(email, password)
                 if (result.isSuccess) {
                     val user = result.getOrNull()!!
+                    currentUser = user
                     onSuccess(user)
-                    successMessage = "Добро пожаловать! ${currentUser?.login}"
+                    successMessage = "Добро пожаловать! ${user.login}"
                 } else {
                     errorMessage = result.exceptionOrNull()?.message ?: "Неизвестная ошибка"
                 }
             } catch (e: Exception) {
-                Log.e("LoginVM", "Ошибка авторизации", e)
+                AppLog.e("Ошибка авторизации", e)
                 errorMessage = "Произошла ошибка. Проверьте подключение."
             } finally {
                 isLoading = false

@@ -1,8 +1,8 @@
-package com.example.sharkflow.data.local
+package com.example.sharkflow.data.local.token
 
-import android.content.*
-import com.example.sharkflow.data.storage.*
-import javax.inject.*
+import android.content.Context
+import com.example.sharkflow.data.storage.TokenStorage
+import javax.inject.Inject
 
 class SecureTokenStorageImpl @Inject constructor(private val context: Context) : TokenStorage {
     override fun saveTokens(accessToken: String, csrfToken: String?) =

@@ -2,7 +2,7 @@ package com.example.sharkflow.data.repository
 
 import com.example.sharkflow.data.api.*
 import com.example.sharkflow.model.*
-import com.example.sharkflow.utils.*
+import com.example.sharkflow.utils.ErrorMapper
 import jakarta.inject.*
 
 @Singleton
@@ -47,6 +47,5 @@ class AuthRepository @Inject constructor(
             Result.failure(e)
         }
     }
-
 }
 

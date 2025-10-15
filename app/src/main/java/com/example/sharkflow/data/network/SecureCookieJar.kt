@@ -1,10 +1,9 @@
 package com.example.sharkflow.data.network
 
-import android.content.*
-import android.util.*
-import androidx.core.content.*
+import android.content.Context
+import androidx.core.content.edit
 import com.example.sharkflow.utils.*
-import com.google.gson.*
+import com.google.gson.Gson
 import okhttp3.*
 
 class SecureCookieJar(context: Context) : CookieJar {
@@ -24,7 +23,7 @@ class SecureCookieJar(context: Context) : CookieJar {
             val cipherB64 = SecureCrypto.encryptToBase64(json)
             prefs.edit { putString(url.host, cipherB64) }
         } catch (e: Exception) {
-            Log.e("SecureCookieJar", "saveFromResponse error: ${e.message}")
+            AppLog.e("saveFromResponse error: ${e.message}", e)
         }
     }
 
@@ -39,7 +38,7 @@ class SecureCookieJar(context: Context) : CookieJar {
             memoryStore[url.host] = cookies
             cookies
         } catch (e: Exception) {
-            Log.e("SecureCookieJar", "loadForRequest error for ${url.host}: ${e.message}")
+            AppLog.e("loadForRequest error for ${url.host}: ${e.message}", e)
             emptyList()
         }
     }

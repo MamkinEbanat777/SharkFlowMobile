@@ -1,16 +1,15 @@
 package com.example.sharkflow.data.network
 
-import com.example.sharkflow.data.repository.*
-import com.example.sharkflow.model.*
-import com.google.gson.*
+import com.example.sharkflow.data.repository.TokenRepository
+import com.example.sharkflow.model.Refresh
+import com.google.gson.Gson
 import jakarta.inject.*
 import okhttp3.*
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.*
-import java.util.concurrent.*
-import java.util.concurrent.locks.*
-import kotlin.concurrent.*
-import kotlin.jvm.Volatile
+import java.io.IOException
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.locks.ReentrantLock
+import kotlin.concurrent.withLock
 
 @Singleton
 class AuthInterceptor @Inject constructor(
@@ -24,7 +23,11 @@ class AuthInterceptor @Inject constructor(
     @Volatile
     private var isRefreshing = false
 
-    private val RETRY_HEADER = "X-Auth-Retry"
+    companion object {
+        private const val RETRY_HEADER = "X-Auth-Retry"
+        private const val AUTHORIZATION_HEADER = "Authorization"
+        private const val X_CSRF_HEADER = "X-CSRF-TOKEN"
+    }
 
     override fun intercept(chain: Interceptor.Chain): Response {
         var request = chain.request()
@@ -32,9 +35,9 @@ class AuthInterceptor @Inject constructor(
         val (accessToken, csrfToken) = tokenRepo.loadTokens()
         if (!accessToken.isNullOrBlank()) {
             request = request.newBuilder()
-                .header("Authorization", "Bearer $accessToken")
+                .header(AUTHORIZATION_HEADER, "Bearer $accessToken")
                 .apply {
-                    csrfToken?.let { header("X-CSRF-TOKEN", it) }
+                    csrfToken?.let { header(X_CSRF_HEADER, it) }
                 }
                 .build()
         }
@@ -56,8 +59,8 @@ class AuthInterceptor @Inject constructor(
                             val (newAccess, newCsrf) = tokenRepo.loadTokens()
                             if (!newAccess.isNullOrBlank()) {
                                 val retryReq = request.newBuilder()
-                                    .header("Authorization", "Bearer $newAccess")
-                                    .apply { newCsrf?.let { header("X-CSRF-TOKEN", it) } }
+                                    .header(AUTHORIZATION_HEADER, "Bearer $newAccess")
+                                    .apply { newCsrf?.let { header(X_CSRF_HEADER, it) } }
                                     .header(RETRY_HEADER, "1")
                                     .build()
                                 return chain.proceed(retryReq)
@@ -83,8 +86,8 @@ class AuthInterceptor @Inject constructor(
                     val (newAccess, newCsrf) = tokenRepo.loadTokens()
                     if (!newAccess.isNullOrBlank()) {
                         val retryReq = request.newBuilder()
-                            .header("Authorization", "Bearer $newAccess")
-                            .apply { newCsrf?.let { header("X-CSRF-TOKEN", it) } }
+                            .header(AUTHORIZATION_HEADER, "Bearer $newAccess")
+                            .apply { newCsrf?.let { header(X_CSRF_HEADER, it) } }
                             .header(RETRY_HEADER, "1")
                             .build()
                         return chain.proceed(retryReq)

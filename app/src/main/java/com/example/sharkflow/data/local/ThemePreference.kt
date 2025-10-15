@@ -1,20 +1,19 @@
 package com.example.sharkflow.data.local
 
+import android.content.Context
+import androidx.core.content.edit
 
-import android.content.*
-import androidx.core.content.*
+object ThemePreference {
+    private const val PREFS_NAME = "app_theme"
+    private const val KEY_THEME = "isDarkTheme"
 
-private const val PREFS_NAME = "app_theme"
-private const val KEY_THEME = "isDarkTheme"
+    fun get(context: Context): Boolean {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return prefs.getBoolean(KEY_THEME, false)
+    }
 
-fun getThemePreference(context: Context): Boolean {
-    val sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    return sharedPreferences.getBoolean(KEY_THEME, false)
-}
-
-fun setThemePreference(context: Context, isDarkTheme: Boolean) {
-    val sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-    sharedPreferences.edit {
-        putBoolean(KEY_THEME, isDarkTheme)
+    fun set(context: Context, isDarkTheme: Boolean) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit { putBoolean(KEY_THEME, isDarkTheme) }
     }
 }

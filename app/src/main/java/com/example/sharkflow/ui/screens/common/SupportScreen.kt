@@ -1,14 +1,16 @@
-package com.example.sharkflow.ui.screens
+package com.example.sharkflow.ui.screens.common
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
-import androidx.compose.ui.text.style.*
-import androidx.compose.ui.unit.*
-import com.example.sharkflow.ui.components.*
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.example.sharkflow.R
+import com.example.sharkflow.data.local.language.Lang
+import com.example.sharkflow.ui.components.ContactForm
 
 @Composable
 fun SupportScreen() {
@@ -22,30 +24,40 @@ fun SupportScreen() {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
-            text = "Поддержка и обратная связь",
+            text = Lang.string(R.string.support_title),
             style = MaterialTheme.typography.displayMedium,
             textAlign = TextAlign.Center,
             color = colorScheme.primary
         )
+
         Text(
-            text = "Мы открыты для связи и готовы помочь.",
+            text = Lang.string(R.string.support_subtitle),
             textAlign = TextAlign.Center
         )
+
         Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             Text(
-                text = "Если у вас возникли вопросы, предложения или технические сложности — свяжитесь с нами удобным способом:",
+                text = Lang.string(R.string.support_desc),
+                textAlign = TextAlign.Center
             )
+
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text("E-mail: support@sharkflow.app")
-                Text("Telegram: @sharkflow_support")
-                Text("Discord: discord.gg/sharkflow")
+                Text(Lang.string(R.string.support_email))
+                Text(Lang.string(R.string.support_telegram))
+                Text(Lang.string(R.string.support_discord))
             }
+
             Spacer(modifier = Modifier.height(16.dp))
+
             Text(
-                text = "Если же у вас специфичный вопрос — заполните форму:",
+                text = Lang.string(R.string.support_form_prompt),
+                textAlign = TextAlign.Center
             )
+
             ContactForm()
         }
     }

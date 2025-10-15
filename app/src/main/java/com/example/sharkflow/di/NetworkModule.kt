@@ -1,24 +1,24 @@
 package com.example.sharkflow.di
 
-import android.content.*
-import android.util.*
-import com.example.sharkflow.*
+import android.content.Context
+import com.example.sharkflow.BuildConfig
 import com.example.sharkflow.data.api.*
-import com.example.sharkflow.data.local.*
+import com.example.sharkflow.data.local.DeviceIdPreference
 import com.example.sharkflow.data.network.*
-import com.example.sharkflow.data.repository.*
-import com.google.gson.*
+import com.example.sharkflow.data.repository.TokenRepository
+import com.example.sharkflow.utils.AppLog
+import com.google.gson.Gson
 import dagger.*
-import dagger.hilt.*
-import dagger.hilt.android.qualifiers.*
-import dagger.hilt.components.*
-import jakarta.inject.*
-import okhttp3.*
-import okhttp3.logging.*
-import retrofit2.*
-import retrofit2.converter.gson.*
-import retrofit2.converter.scalars.*
-import java.util.concurrent.*
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import jakarta.inject.Singleton
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
+import java.util.concurrent.TimeUnit
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -48,11 +48,11 @@ object NetworkModule {
     fun provideBaseClient(
         authInterceptor: AuthInterceptor,
         @ApplicationContext context: Context,
-        deviceIdProvider: DeviceIdProvider
+        deviceIdPreference: DeviceIdPreference
     ): OkHttpClient {
         val cookieJar = SecureCookieJar(context)
         val loggingInterceptor = HttpLoggingInterceptor { message ->
-            Log.d("HTTP_LOG", message)
+            AppLog.d("HTTP_LOG", message)
         }.apply {
             level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY
             else HttpLoggingInterceptor.Level.NONE
@@ -61,7 +61,7 @@ object NetworkModule {
         return OkHttpClient.Builder()
             .cookieJar(cookieJar)
             .addInterceptor(authInterceptor)
-            .addInterceptor(DeviceIdInterceptor(deviceIdProvider))
+            .addInterceptor(DeviceIdInterceptor(deviceIdPreference))
             .addInterceptor(loggingInterceptor)
             .connectTimeout(30, TimeUnit.SECONDS)
             .readTimeout(30, TimeUnit.SECONDS)

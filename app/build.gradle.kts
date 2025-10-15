@@ -1,4 +1,4 @@
-import org.jetbrains.kotlin.gradle.dsl.*
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.application)
@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id("org.jetbrains.kotlin.kapt")
     id("com.google.dagger.hilt.android")
+    alias(libs.plugins.baselineprofile)
 }
 
 android {
@@ -24,6 +25,7 @@ android {
 
     buildFeatures {
         buildConfig = true
+        compose = true
     }
 
     buildTypes {
@@ -31,6 +33,7 @@ android {
             buildConfigField(
                 type = "String",
                 name = "BASE_URL",
+                //value = "\"http://localhost:8080/api/v1/\""
                 value = "\"http://10.0.2.2:8080/api/v1/\""
             )
         }
@@ -71,9 +74,6 @@ android {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    buildFeatures {
-        compose = true
-    }
 }
 
 dependencies {
@@ -110,10 +110,18 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.hilt.lifecycle.viewmodel)
     implementation("com.google.dagger:hilt-android:2.57.2")
+    kapt("com.google.dagger:hilt-compiler:2.57.2")
+    "baselineProfile"(project(":baselineprofile"))
     implementation(libs.androidx.media3.exoplayer.dash)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.appcompat)
-    kapt("com.google.dagger:hilt-compiler:2.57.2")
+    implementation(libs.spikeysanju.motiontoast)
+    implementation(libs.flagkit.android)
+    implementation(libs.androidx.startup.runtime)
+    debugImplementation(libs.leakcanary.android)
+    implementation(libs.androidx.profileinstaller)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.timber)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

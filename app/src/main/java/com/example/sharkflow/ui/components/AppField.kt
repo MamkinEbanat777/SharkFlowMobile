@@ -1,16 +1,18 @@
 package com.example.sharkflow.ui.components
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.*
-import androidx.compose.material.icons.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.*
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.dp
+import com.example.sharkflow.R
 
 @Composable
 fun AppField(
@@ -23,6 +25,8 @@ fun AppField(
     onToggleVisibility: (() -> Unit)? = null,
     singleLine: Boolean = true,
 ) {
+    val context = LocalContext.current
+
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
@@ -51,9 +55,13 @@ fun AppField(
                     if (showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff
                 Icon(
                     imageVector = icon,
-                    contentDescription = if (showPassword) "Скрыть пароль" else "Показать пароль",
+                    contentDescription = if (showPassword)
+                        context.getString(R.string.common_hide_password)
+                    else
+                        context.getString(R.string.common_show_password),
                     modifier = Modifier.clickable { onToggleVisibility() }
                 )
+
             }
         }
     )

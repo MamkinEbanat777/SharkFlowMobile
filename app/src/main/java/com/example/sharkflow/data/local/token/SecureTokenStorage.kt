@@ -1,22 +1,18 @@
-package com.example.sharkflow.data.local
+package com.example.sharkflow.data.local.token
 
-import android.content.*
-import android.util.*
-import androidx.core.content.*
+import android.content.Context
+import androidx.core.content.edit
 import com.example.sharkflow.utils.*
-import kotlin.Exception
-import kotlin.Pair
-import kotlin.String
-import kotlin.let
-import kotlin.to
 
 object SecureTokenStorage {
     private const val PREFS_NAME = "secure_tokens_enc"
     private const val ACCESS_TOKEN_KEY = "access_token"
     private const val CSRF_TOKEN_KEY = "csrf_token"
-
     private fun prefs(context: Context) =
-        context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        context.applicationContext.getSharedPreferences(
+            PREFS_NAME,
+            Context.MODE_PRIVATE
+        )
 
     fun saveTokens(context: Context, accessToken: String, csrfToken: String?) {
         try {
@@ -28,7 +24,7 @@ object SecureTokenStorage {
                     .putString(CSRF_TOKEN_KEY, encCsrf)
             }
         } catch (e: Exception) {
-            Log.e("SecureTokenStorage", "saveTokens failed: ${e.message}")
+            AppLog.e("saveTokens failed: ${e.message}", e)
         }
     }
 
@@ -41,7 +37,7 @@ object SecureTokenStorage {
             val csrf = encCsrf?.let { SecureCrypto.decryptFromBase64(it) }
             access to csrf
         } catch (e: Exception) {
-            Log.e("SecureTokenStorage", "loadTokens/decrypt failed: ${e.message}")
+            AppLog.e("loadTokens/decrypt failed: ${e.message}", e)
             null to null
         }
     }

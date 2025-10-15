@@ -1,12 +1,11 @@
 package com.example.sharkflow
 
-import android.app.*
-import android.util.*
+import android.app.Application
 import com.example.sharkflow.utils.*
-import com.google.crypto.tink.*
+import com.google.crypto.tink.Aead
 import com.google.crypto.tink.aead.*
-import com.google.crypto.tink.integration.android.*
-import dagger.hilt.android.*
+import com.google.crypto.tink.integration.android.AndroidKeysetManager
+import dagger.hilt.android.HiltAndroidApp
 
 @HiltAndroidApp
 class SharkFlowApp : Application() {
@@ -17,7 +16,7 @@ class SharkFlowApp : Application() {
         try {
             AeadConfig.register()
         } catch (e: Exception) {
-            Log.w("SharkFlowApp", "AeadConfig.register(): ${e.message}")
+            AppLog.w("AeadConfig.register(): ${e.message}")
         }
 
         try {
@@ -33,7 +32,7 @@ class SharkFlowApp : Application() {
             SecureCrypto.init(aead)
 
         } catch (e: Exception) {
-            Log.e("SharkFlowApp", "Ошибка инициализации крипты: ${e.message}")
+            AppLog.e("Ошибка инициализации крипты: ${e.message}", e)
         }
     }
 }

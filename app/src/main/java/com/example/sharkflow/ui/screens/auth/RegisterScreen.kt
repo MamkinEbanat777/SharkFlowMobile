@@ -49,6 +49,7 @@ fun RegisterScreen(
                 delay(4000)
                 navController.navigate("login") {
                     popUpTo("register") { inclusive = true }
+                    step = 1
                 }
 
             }
