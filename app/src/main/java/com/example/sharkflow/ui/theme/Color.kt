@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 
 val ColorPrimary = Color(0xFF1976D2)  // Главный цвет (ярко-синий) — для кнопок и акцентов
 val ColorSecondary = Color(0xFF0D47A1)  // Вторичный цвет (темно-синий) — для вторичных кнопок
-val ColorBackgroundLight = Color(0xFFBBDEFB)  // Светлый фон (светлый синий)
+val ColorBackgroundLight = Color(0xFFFFFFFF)  // Светлый фон (светлый синий)
 val ColorBackgroundDark = Color(0xFF031530)  // Тёмный фон (темно-синий)
 val ColorSurfaceLight = Color(0xFF90CAF9)  // Светлая поверхность (пастельный синий)
 val ColorSurfaceDark = Color(0xFF0D47A1)  // Тёмная поверхность (синий)

@@ -1,16 +1,51 @@
 package com.example.sharkflow.utils
 
-import android.util.*
-import com.google.crypto.tink.*
-import java.nio.charset.*
+import android.content.Context
+import android.util.Base64
+import androidx.core.content.edit
+import com.google.crypto.tink.Aead
+import com.google.crypto.tink.aead.*
+import com.google.crypto.tink.integration.android.AndroidKeysetManager
+import java.nio.charset.StandardCharsets
 
 object SecureCrypto {
     private lateinit var aead: Aead
+
+    @Volatile
     private var initialized = false
 
-    fun init(aeadInstance: Aead) {
-        aead = aeadInstance
-        initialized = true
+    fun init(context: Context) {
+        if (initialized) return
+        synchronized(this) {
+            if (initialized) return
+
+            var attempts = 0
+            while (!initialized && attempts < 2) {
+                try {
+                    AeadConfig.register()
+                    val keysetManager = AndroidKeysetManager.Builder()
+                        .withSharedPref(context, "tink_keyset", "tink_key_prefs")
+                        .withKeyTemplate(AeadKeyTemplates.AES256_GCM)
+                        .withMasterKeyUri("android-keystore://tink_master_key")
+                        .build()
+
+                    aead = keysetManager.keysetHandle.getPrimitive(Aead::class.java)
+                    initialized = true
+                } catch (e: java.security.InvalidKeyException) {
+                    AppLog.w("Keystore key missing or invalid, recreating...", e)
+                    context.getSharedPreferences("tink_key_prefs", Context.MODE_PRIVATE)
+                        .edit { clear() }
+                    attempts++
+                } catch (e: Exception) {
+                    AppLog.e("SecureCrypto init failed", e)
+                    break
+                }
+            }
+
+            if (!initialized) {
+                AppLog.e("SecureCrypto could not be initialized after $attempts attempts")
+            }
+        }
     }
 
     private fun ensureInit() {

@@ -28,13 +28,11 @@ class ConfirmationCodeViewModel @Inject constructor(
             errorMessage = null
             try {
                 val response = registerRepository.confirmCode(code)
-                AppLog.d("ConfirmCodeVM", "Response: ${response.body()}")
 
                 if (response.isSuccessful) {
                     onSuccess()
                 } else {
                     val errorBodyString = response.errorBody()?.string()
-                    AppLog.d("LoginVM", "Error body: $errorBodyString")
                     errorMessage = ErrorMapper.map(response.code(), errorBodyString)
                 }
 

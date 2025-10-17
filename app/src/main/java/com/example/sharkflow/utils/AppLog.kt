@@ -6,7 +6,6 @@ import timber.log.Timber
 object AppLog {
     private const val LOG_TAG = "SharkflowAppLog"
 
-    // Инициализация Timber в зависимости от типа сборки
     init {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())

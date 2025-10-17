@@ -1,7 +1,3 @@
-@file:Suppress("FunctionName")
-
-package com.example.sharkflow.ui.screens.common
-
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -84,7 +80,7 @@ fun SplashScreen(
         onFinish()
     }
 
-    val bg = MaterialTheme.colorScheme.background
+    val bg = MaterialTheme.colorScheme.primary
     val fg = MaterialTheme.colorScheme.onPrimary
 
     Box(

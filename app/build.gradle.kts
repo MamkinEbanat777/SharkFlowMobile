@@ -33,8 +33,8 @@ android {
             buildConfigField(
                 type = "String",
                 name = "BASE_URL",
-                //value = "\"http://localhost:8080/api/v1/\""
-                value = "\"http://10.0.2.2:8080/api/v1/\""
+                value = "\"http://localhost:8080/api/v1/\""
+                //value = "\"http://10.0.2.2:8080/api/v1/\""
             )
         }
         release {
@@ -113,6 +113,9 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:2.57.2")
     "baselineProfile"(project(":baselineprofile"))
     implementation(libs.androidx.media3.exoplayer.dash)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+    implementation(libs.android.image.cropper)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.appcompat)
     implementation(libs.spikeysanju.motiontoast)
@@ -130,4 +133,3 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 }
-

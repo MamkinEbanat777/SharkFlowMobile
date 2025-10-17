@@ -2,8 +2,7 @@ package com.example.sharkflow.ui.screens.auth.viewmodel
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
-import com.example.sharkflow.data.repository.AuthRepository
-import com.example.sharkflow.model.UserResponse
+import com.example.sharkflow.data.repository.*
 import com.example.sharkflow.utils.AppLog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -12,8 +11,8 @@ import kotlinx.coroutines.launch
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository,
-) :
-    ViewModel() {
+    private val userRepository: UserRepository
+) : ViewModel() {
     var isLoading by mutableStateOf(false)
         private set
 
@@ -23,13 +22,9 @@ class LoginViewModel @Inject constructor(
     var successMessage by mutableStateOf<String?>(null)
         private set
 
-    var currentUser by mutableStateOf<UserResponse?>(null)
-        private set
-
     fun login(
         email: String,
         password: String,
-        onSuccess: (UserResponse) -> Unit
     ) {
         viewModelScope.launch {
             isLoading = true
@@ -37,8 +32,7 @@ class LoginViewModel @Inject constructor(
                 val result = authRepository.login(email, password)
                 if (result.isSuccess) {
                     val user = result.getOrNull()!!
-                    currentUser = user
-                    onSuccess(user)
+                    userRepository.setUser(user)
                     successMessage = "Добро пожаловать! ${user.login}"
                 } else {
                     errorMessage = result.exceptionOrNull()?.message ?: "Неизвестная ошибка"

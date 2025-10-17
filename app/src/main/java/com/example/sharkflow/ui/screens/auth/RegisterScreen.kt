@@ -4,12 +4,12 @@ package com.example.sharkflow.ui.screens.auth
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.text.style.*
-import androidx.compose.ui.unit.*
-import androidx.navigation.*
-import com.example.sharkflow.ui.components.*
-import kotlinx.coroutines.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.example.sharkflow.ui.screens.auth.components.*
+import kotlinx.coroutines.delay
 
 @Composable
 fun RegisterScreen(

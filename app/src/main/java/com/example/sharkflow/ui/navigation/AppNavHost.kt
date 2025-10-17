@@ -12,25 +12,26 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.*
 import com.example.sharkflow.R
 import com.example.sharkflow.data.local.language.Lang
-import com.example.sharkflow.ui.components.*
+import com.example.sharkflow.ui.navigation.components.*
 import com.example.sharkflow.ui.screens.auth.*
+import com.example.sharkflow.ui.screens.auth.viewmodel.AuthStateViewModel
 import com.example.sharkflow.ui.screens.common.*
 import com.example.sharkflow.ui.screens.dashboard.DashboardScreen
 import com.example.sharkflow.ui.screens.marketing.*
 import com.example.sharkflow.ui.screens.profile.ProfileScreen
-import com.example.sharkflow.viewmodel.AuthStateViewModel
+import com.example.sharkflow.ui.screens.profile.viewmodel.UserProfileViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppNavHost(
     authStateViewModel: AuthStateViewModel,
+    userProfileViewModel: UserProfileViewModel,
     isDarkTheme: Boolean,
     onThemeChange: (Boolean) -> Unit
 ) {
     val navController = rememberNavController()
 
-    val isLoggedIn by remember { derivedStateOf { authStateViewModel.isLoggedIn } }
-    val currentUser by remember { derivedStateOf { authStateViewModel.currentUser } }
+    val isLoggedIn by remember { derivedStateOf { authStateViewModel.isLoggedIn.value } }
 
     val bottomNavItems = if (isLoggedIn) userBottomNavItems else publicBottomNavItems
     val startDestination = if (isLoggedIn) "dashboard" else "hero"
@@ -90,10 +91,15 @@ fun AppNavHost(
             composable("security") { SecurityScreen() }
             composable("faq") { FAQScreen() }
             composable("support") { SupportScreen() }
-            composable("login") { LoginScreen(navController, authStateViewModel) }
+            composable("login") { LoginScreen(navController) }
             composable("register") { RegisterScreen(navController = navController) }
             composable("dashboard") { DashboardScreen() }
-            composable("profile") { ProfileScreen(currentUser) }
+            composable("profile") {
+                ProfileScreen(
+                    userProfileViewModel = userProfileViewModel,
+                    navController = navController,
+                )
+            }
         }
     }
 }

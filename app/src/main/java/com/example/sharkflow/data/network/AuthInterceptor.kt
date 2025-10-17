@@ -33,6 +33,7 @@ class AuthInterceptor @Inject constructor(
         var request = chain.request()
 
         val (accessToken, csrfToken) = tokenRepo.loadTokens()
+
         if (!accessToken.isNullOrBlank()) {
             request = request.newBuilder()
                 .header(AUTHORIZATION_HEADER, "Bearer $accessToken")
@@ -57,6 +58,7 @@ class AuthInterceptor @Inject constructor(
 
                         if (refreshed) {
                             val (newAccess, newCsrf) = tokenRepo.loadTokens()
+
                             if (!newAccess.isNullOrBlank()) {
                                 val retryReq = request.newBuilder()
                                     .header(AUTHORIZATION_HEADER, "Bearer $newAccess")
@@ -84,6 +86,7 @@ class AuthInterceptor @Inject constructor(
                     }
 
                     val (newAccess, newCsrf) = tokenRepo.loadTokens()
+
                     if (!newAccess.isNullOrBlank()) {
                         val retryReq = request.newBuilder()
                             .header(AUTHORIZATION_HEADER, "Bearer $newAccess")
@@ -111,6 +114,7 @@ class AuthInterceptor @Inject constructor(
                 if (!resp.isSuccessful) return false
 
                 val bodyString = resp.body.string()
+
                 if (bodyString.isBlank()) return false
 
                 val refreshData = try {

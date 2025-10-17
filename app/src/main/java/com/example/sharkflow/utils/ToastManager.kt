@@ -9,7 +9,6 @@ object ToastManager {
     private const val POS_TOP_CENTER = Gravity.TOP or Gravity.CENTER_HORIZONTAL
     private const val OFFSET_X = 0
     private const val OFFSET_Y = 200
-
     private const val DURATION = 3000
 
     private fun show(toast: android.widget.Toast) {

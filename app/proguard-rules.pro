@@ -118,4 +118,30 @@
 -dontwarn sun.security.x509.X509CertInfo
 -keep class io.netty.** { *; }
 -keep class reactor.** { *; }
--keep class com.example.sharkflow.model.** { *; }
+
+# Models used by Gson
+#-keep class com.example.sharkflow.model.** { *; }
+
+# Token storage & crypto
+#-keep class com.example.sharkflow.data.local.token.SecureTokenStorage { *; }
+#-keep class com.example.sharkflow.utils.SecureCrypto { *; }
+
+# Repository & network
+#-keep class com.example.sharkflow.data.network.AuthInterceptor { *; }
+#-keep class com.example.sharkflow.data.network.AuthManager { *; }
+#-keep class com.example.sharkflow.data.repository.TokenRepository { *; }
+
+# Hilt / Dagger / Inject
+#-keepattributes *Annotation*
+#-keep class dagger.hilt.** { *; }
+#-keep class jakarta.inject.** { *; }
+
+# Gson reflection safety
+#-keepclassmembers class * {
+#    @com.google.gson.annotations.SerializedName <fields>;
+#}
+
+# Tink
+#-keep class com.google.crypto.tink.** { *; }
+#-keep class com.google.crypto.tink.integration.android.** { *; }
+#-dontwarn com.google.crypto.tink.**

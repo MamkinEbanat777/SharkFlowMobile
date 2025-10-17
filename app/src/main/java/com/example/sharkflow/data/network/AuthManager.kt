@@ -1,18 +1,25 @@
 package com.example.sharkflow.data.network
 
-import android.content.Context
-import com.example.sharkflow.data.local.token.SecureTokenStorage
+import com.example.sharkflow.data.repository.TokenRepository
 import com.example.sharkflow.model.Refresh
+import com.example.sharkflow.utils.AppLog
 import com.google.gson.Gson
+import jakarta.inject.*
 import kotlinx.coroutines.*
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
-object AuthManager {
+@Singleton
+class AuthManager @Inject constructor(
+    private val tokenRepo: TokenRepository
+) {
     private val gson = Gson()
 
-    suspend fun refreshToken(context: Context, baseClient: OkHttpClient, baseUrl: String): Boolean {
+    suspend fun refreshToken(
+        baseClient: OkHttpClient,
+        baseUrl: String
+    ): Boolean {
         return withContext(Dispatchers.IO) {
             try {
                 val refreshUrl = "${baseUrl}auth/refresh"
@@ -35,12 +42,13 @@ object AuthManager {
 
                     val newAccess = data?.accessToken
                     val newCsrf = data?.csrfToken
-                    if (!newAccess.isNullOrBlank()) {
-                        SecureTokenStorage.saveTokens(
-                            context.applicationContext,
-                            newAccess,
-                            newCsrf
-                        )
+                    if (!newAccess.isNullOrBlank() && newAccess != "undefined") {
+                        try {
+                            tokenRepo.saveTokens(newAccess, newCsrf)
+                        } catch (e: Exception) {
+                            AppLog.e("AuthManager", "Failed to save tokens", e)
+                            return@withContext false
+                        }
                         return@withContext true
                     }
 

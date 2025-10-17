@@ -2,12 +2,13 @@ package com.example.sharkflow.data.repository
 
 import com.example.sharkflow.data.api.*
 import com.example.sharkflow.model.*
-import com.example.sharkflow.utils.ErrorMapper
+import com.example.sharkflow.utils.AppLog
 import jakarta.inject.*
 
 @Singleton
 class AuthRepository @Inject constructor(
     private val tokenRepository: TokenRepository,
+    private val userRepository: UserRepository,
     private val authApi: AuthApi,
     private val userApi: UserApi
 ) {
@@ -15,17 +16,17 @@ class AuthRepository @Inject constructor(
         return try {
             val loginRequest = LoginRequest(email, password)
             val userWrapper = LoginUser(user = loginRequest)
-
             val loginResponse = authApi.login(userWrapper)
-            if (!loginResponse.isSuccessful) {
-                return Result.failure(
-                    Exception(
-                        ErrorMapper.map(
-                            loginResponse.code(),
-                            loginResponse.errorBody()?.string()
-                        )
-                    )
-                )
+
+            val rawBody: String? = try {
+                if (loginResponse.isSuccessful) {
+                    loginResponse.body()?.let { com.google.gson.Gson().toJson(it) }
+                } else {
+                    loginResponse.errorBody()?.string()
+                }
+            } catch (e: Exception) {
+                AppLog.e("AuthRepository: failed to read raw body", e)
+                null
             }
 
             val tokens = loginResponse.body()
@@ -33,7 +34,11 @@ class AuthRepository @Inject constructor(
                 return Result.failure(Exception("Не удалось получить токены"))
             }
 
-            tokenRepository.saveTokens(tokens.accessToken, tokens.csrfToken)
+            try {
+                tokenRepository.saveTokens(tokens.accessToken, tokens.csrfToken)
+            } catch (e: Exception) {
+                AppLog.e("TokenRepository.saveTokens failed", e)
+            }
 
             val userResponse = userApi.getUser()
             if (userResponse.isSuccessful) {
@@ -43,6 +48,21 @@ class AuthRepository @Inject constructor(
                 Result.failure(Exception("Ошибка получения данных о пользователе"))
             }
 
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    suspend fun logout(): Result<String> {
+        return try {
+            val response = userApi.logoutUser()
+            if (response.isSuccessful) {
+                tokenRepository.clearTokens()
+                userRepository.clearUser()
+                Result.success(response.body()?.message ?: "Вы успешно вышли")
+            } else {
+                Result.failure(Exception(response.message()))
+            }
         } catch (e: Exception) {
             Result.failure(e)
         }

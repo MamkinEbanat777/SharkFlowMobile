@@ -191,6 +191,7 @@
     <string name="logout_button_desc">Кнопка выхода из аккаунта</string>
     <string name="logout_modal_title">Подтверждение выхода</string>
     <string name="logout_modal_message">Вы уверены, что хотите выйти из аккаунта?</string>
+    <string name="logout_button_yes" translatable="false">Да, выйти</string>
 
     <!-- Common -->
     <string name="common_app_name">SharkFlow</string>
