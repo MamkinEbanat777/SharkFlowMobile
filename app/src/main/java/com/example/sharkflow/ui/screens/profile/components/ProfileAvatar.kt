@@ -43,26 +43,33 @@ fun ProfileAvatar(
         if (result.resultCode == Activity.RESULT_OK) {
             val resultUri = CropImage.getActivityResult(result.data)?.uri
             resultUri?.let { uri ->
-                isUploading = true
-                userProfileViewModel.uploadUserAvatar(context, uri) { success, url, publicId ->
-                    isUploading = false
-                    if (success && url != null && publicId != null) {
-                        userProfileViewModel.setAvatarPublicId(publicId)
-                        userProfileViewModel.updateUserAvatar(
-                            url,
-                            publicId
-                        ) { updateSuccess, message ->
-                            if (!updateSuccess) {
-                                Toast.makeText(
-                                    context,
-                                    message ?: "Ошибка обновления аватара",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                val contentResolver = context.contentResolver
+                val inputStream = contentResolver.openInputStream(uri)
+                val imageBytes = inputStream?.readBytes()
+                inputStream?.close()
+
+                imageBytes?.let { bytes ->
+                    isUploading = true
+                    userProfileViewModel.uploadUserAvatar(bytes) { success, url, publicId ->
+                        isUploading = false
+                        if (success && url != null && publicId != null) {
+                            userProfileViewModel.setAvatarPublicId(publicId)
+                            userProfileViewModel.updateUserAvatar(
+                                url,
+                                publicId
+                            ) { updateSuccess, message ->
+                                if (!updateSuccess) {
+                                    Toast.makeText(
+                                        context,
+                                        message ?: "Ошибка обновления аватара",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
+                        } else {
+                            Toast.makeText(context, "Ошибка загрузки аватара", Toast.LENGTH_SHORT)
+                                .show()
                         }
-                    } else {
-                        Toast.makeText(context, "Ошибка загрузки аватара", Toast.LENGTH_SHORT)
-                            .show()
                     }
                 }
             }

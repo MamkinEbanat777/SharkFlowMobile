@@ -1,10 +1,10 @@
-package com.example.sharkflow.data.service
+package com.example.sharkflow.data.manager
 
 import jakarta.inject.*
 import kotlinx.coroutines.flow.*
 
 @Singleton
-class RegisterService @Inject constructor() {
+class RegisterManager @Inject constructor() {
     private val _isRegistered = MutableStateFlow(false)
     val isRegistered: StateFlow<Boolean> = _isRegistered.asStateFlow()
 

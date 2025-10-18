@@ -1,7 +1,5 @@
 package com.example.sharkflow.ui.screens.profile.viewmodel
 
-import android.content.Context
-import android.net.Uri
 import androidx.lifecycle.*
 import com.example.sharkflow.domain.repository.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -118,19 +116,19 @@ class UserProfileViewModel @Inject constructor(
     }
 
     fun uploadUserAvatar(
-        context: Context,
-        uri: Uri,
+        imageBytes: ByteArray,
         onResult: (success: Boolean, url: String?, publicId: String?) -> Unit
     ) {
         viewModelScope.launch {
             val (accessToken, csrfToken) = tokenRepository.loadTokens()
-            val result = cloudinaryRepository.uploadImage(context, uri, accessToken, csrfToken)
+            val result = cloudinaryRepository.uploadImage(imageBytes, accessToken, csrfToken)
             result.fold(
                 onSuccess = { (url, publicId) -> onResult(true, url, publicId) },
                 onFailure = { onResult(false, null, null) }
             )
         }
     }
+
 
     fun setAvatarPublicId(publicId: String?) {
         _avatarPublicId.value = publicId

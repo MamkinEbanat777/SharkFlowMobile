@@ -1,4 +1,4 @@
-package com.example.sharkflow.data.local.language
+package com.example.sharkflow.data.local
 
 import android.content.Context
 import androidx.core.content.edit
@@ -16,6 +16,6 @@ object LanguagePreference {
     fun set(context: Context, language: String) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit { putString(KEY_LANGUAGE, language) }
-        LanguageState.currentLanguage = language
     }
 }
+

@@ -11,19 +11,16 @@ import androidx.compose.ui.platform.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.viewinterop.AndroidView
-import com.example.sharkflow.data.local.language.*
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.sharkflow.ui.navigation.viewmodel.LanguageViewModel
 import com.murgupluoglu.flagkit.FlagKit
 import java.util.Locale
 
 @Composable
-fun LanguageButton() {
-    val context = LocalContext.current
+fun LanguageButton(languageViewModel: LanguageViewModel = hiltViewModel()) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedLanguage by remember { mutableStateOf(LanguageState.currentLanguage) }
 
-    LaunchedEffect(LanguageState.currentLanguage) {
-        selectedLanguage = LanguageState.currentLanguage
-    }
+    val selectedLanguage by languageViewModel.currentLanguageFlow.collectAsState(initial = "ru")
 
     val allLanguages = listOf(
         Triple("ru", "Русский 🇷🇺", "ru"),
@@ -66,9 +63,7 @@ fun LanguageButton() {
             DropdownMenuItem(
                 text = { Text(textWithoutEmoji) },
                 onClick = {
-                    LanguagePreference.set(context, langCode)
-                    LanguageState.currentLanguage = langCode
-                    selectedLanguage = langCode
+                    languageViewModel.updateLanguage(langCode)
                     expanded = false
                 },
                 leadingIcon = {

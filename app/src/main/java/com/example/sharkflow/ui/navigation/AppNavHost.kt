@@ -11,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.*
 import com.example.sharkflow.R
-import com.example.sharkflow.data.local.language.Lang
 import com.example.sharkflow.ui.navigation.components.*
 import com.example.sharkflow.ui.screens.auth.*
 import com.example.sharkflow.ui.screens.auth.viewmodel.AuthStateViewModel
@@ -20,6 +19,7 @@ import com.example.sharkflow.ui.screens.dashboard.DashboardScreen
 import com.example.sharkflow.ui.screens.marketing.*
 import com.example.sharkflow.ui.screens.profile.ProfileScreen
 import com.example.sharkflow.ui.screens.profile.viewmodel.UserProfileViewModel
+import com.example.sharkflow.utils.Lang
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -30,9 +30,7 @@ fun AppNavHost(
     onThemeChange: (Boolean) -> Unit
 ) {
     val navController = rememberNavController()
-
     val isLoggedIn by authStateViewModel.isLoggedIn.collectAsState()
-
     val bottomNavItems = if (isLoggedIn) userBottomNavItems else publicBottomNavItems
     val startDestination = if (isLoggedIn) "dashboard" else "hero"
 

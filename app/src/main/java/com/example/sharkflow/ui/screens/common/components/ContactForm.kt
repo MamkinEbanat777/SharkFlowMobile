@@ -10,8 +10,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.unit.dp
 import com.example.sharkflow.R
-import com.example.sharkflow.data.local.language.Lang
 import com.example.sharkflow.ui.common.*
+import com.example.sharkflow.utils.Lang
 
 @Composable
 fun ContactForm() {

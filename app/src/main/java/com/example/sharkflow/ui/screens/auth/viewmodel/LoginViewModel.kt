@@ -21,6 +21,7 @@ class LoginViewModel @Inject constructor(
 
     private val _successMessage = MutableStateFlow<String?>(null)
     val successMessage: StateFlow<String?> = _successMessage
+
     fun login(email: String, password: String) {
         viewModelScope.launch {
             _isLoading.value = true

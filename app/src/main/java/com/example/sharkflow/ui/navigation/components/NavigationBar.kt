@@ -13,9 +13,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.example.sharkflow.data.local.language.Lang
 import com.example.sharkflow.ui.navigation.NavScreen
 import com.example.sharkflow.ui.screens.auth.viewmodel.AuthStateViewModel
+import com.example.sharkflow.utils.Lang
 
 @Composable
 fun BottomNavBar(
@@ -25,7 +25,6 @@ fun BottomNavBar(
 ) {
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
     val selectedIndex = items.indexOfFirst { it.route == currentRoute }.coerceAtLeast(0)
-
     val isLoggedIn by authStateViewModel.isLoggedIn.collectAsState()
 
     Surface(color = colorScheme.primary, tonalElevation = 8.dp) {

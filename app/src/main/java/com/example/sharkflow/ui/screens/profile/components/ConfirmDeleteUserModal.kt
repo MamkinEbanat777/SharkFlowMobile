@@ -6,8 +6,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.sharkflow.R
-import com.example.sharkflow.data.local.language.Lang
 import com.example.sharkflow.ui.screens.profile.viewmodel.UserProfileViewModel
+import com.example.sharkflow.utils.Lang
 
 @Composable
 fun ConfirmDeleteUserModal(

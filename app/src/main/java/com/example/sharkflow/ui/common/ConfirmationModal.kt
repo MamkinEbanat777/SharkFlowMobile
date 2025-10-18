@@ -2,8 +2,6 @@ package com.example.sharkflow.ui.common
 
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import com.example.sharkflow.R
-import com.example.sharkflow.data.local.language.Lang
 
 @Composable
 fun ConfirmationModal(
@@ -12,8 +10,8 @@ fun ConfirmationModal(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
     content: @Composable (() -> Unit)? = null,
-    confirmButtonText: String = Lang.string(R.string.common_yes),
-    dismissButtonText: String = Lang.string(R.string.common_no)
+    confirmButtonText: String,
+    dismissButtonText: String
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,

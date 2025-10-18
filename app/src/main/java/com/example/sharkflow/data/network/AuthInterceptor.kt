@@ -1,10 +1,11 @@
 package com.example.sharkflow.data.network
 
-import com.example.sharkflow.domain.model.Refresh
+import com.example.sharkflow.data.api.dto.auth.RefreshResponseDto
 import com.example.sharkflow.domain.repository.TokenRepository
 import com.google.gson.Gson
 import jakarta.inject.*
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 import java.util.concurrent.TimeUnit
@@ -107,7 +108,7 @@ class AuthInterceptor @Inject constructor(
             val refreshUrl = (if (baseUrl.endsWith("/")) baseUrl else "$baseUrl/") + "auth/refresh"
             val request = Request.Builder()
                 .url(refreshUrl)
-                .post(ByteArray(0).toRequestBody(null, 0, 0))
+                .post("".toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull()))
                 .build()
 
             getRefreshClient().newCall(request).execute().use { resp ->
@@ -117,13 +118,13 @@ class AuthInterceptor @Inject constructor(
 
                 if (bodyString.isBlank()) return false
 
-                val refreshData = try {
-                    Gson().fromJson(bodyString, Refresh::class.java)
+                val refreshResponseData = try {
+                    Gson().fromJson(bodyString, RefreshResponseDto::class.java)
                 } catch (_: Exception) {
                     null
                 }
-                val newAccess = refreshData?.accessToken
-                val newCsrf = refreshData?.csrfToken
+                val newAccess = refreshResponseData?.accessToken
+                val newCsrf = refreshResponseData?.csrfToken
 
                 if (!newAccess.isNullOrBlank()) {
                     tokenRepo.saveTokens(newAccess, newCsrf)

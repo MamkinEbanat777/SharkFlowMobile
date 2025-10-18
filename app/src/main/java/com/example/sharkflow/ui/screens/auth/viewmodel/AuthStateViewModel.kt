@@ -6,7 +6,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
 
 @HiltViewModel
 class AuthStateViewModel @Inject constructor(
@@ -24,9 +23,9 @@ class AuthStateViewModel @Inject constructor(
         }
     }
 
-    fun refreshToken(baseClient: OkHttpClient, baseUrl: String, onResult: (Boolean) -> Unit = {}) {
+    fun refreshToken(onResult: (Boolean) -> Unit = {}) {
         viewModelScope.launch {
-            val success = authRepository.refreshToken(baseClient, baseUrl)
+            val success = authRepository.refreshToken()
             onResult(success)
         }
     }

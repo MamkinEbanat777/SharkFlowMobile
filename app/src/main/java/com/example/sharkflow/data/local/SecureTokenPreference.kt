@@ -1,10 +1,10 @@
-package com.example.sharkflow.data.local.token
+package com.example.sharkflow.data.local
 
 import android.content.*
 import androidx.core.content.edit
 import com.example.sharkflow.utils.*
 
-object SecureTokenStorage {
+object SecureTokenPreference {
     private const val PREFS_NAME = "secure_tokens_enc"
     private const val ACCESS_TOKEN_KEY = "access_token"
     private const val CSRF_TOKEN_KEY = "csrf_token"

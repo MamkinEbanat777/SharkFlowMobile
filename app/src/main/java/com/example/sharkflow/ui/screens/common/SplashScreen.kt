@@ -10,7 +10,7 @@ import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.sharkflow.R
-import com.example.sharkflow.data.local.language.Lang
+import com.example.sharkflow.utils.Lang
 import kotlinx.coroutines.delay
 import kotlin.math.*
 

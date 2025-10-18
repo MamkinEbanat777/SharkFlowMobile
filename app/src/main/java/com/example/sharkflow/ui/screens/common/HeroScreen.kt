@@ -12,9 +12,9 @@ import androidx.compose.ui.unit.*
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.sharkflow.R
-import com.example.sharkflow.data.local.language.Lang
 import com.example.sharkflow.ui.common.*
 import com.example.sharkflow.ui.screens.auth.viewmodel.AuthStateViewModel
+import com.example.sharkflow.utils.Lang
 
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable

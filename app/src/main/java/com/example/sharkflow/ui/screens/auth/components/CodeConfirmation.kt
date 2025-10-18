@@ -10,10 +10,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.sharkflow.R
-import com.example.sharkflow.data.local.language.Lang
 import com.example.sharkflow.ui.common.*
 import com.example.sharkflow.ui.screens.auth.viewmodel.ConfirmationCodeViewModel
-import com.example.sharkflow.utils.ToastManager
+import com.example.sharkflow.utils.*
 
 @Composable
 fun CodeConfirmation(
@@ -24,7 +23,6 @@ fun CodeConfirmation(
 
     var confirmationCode by remember { mutableStateOf("") }
     var confirmationCodeError by remember { mutableStateOf(false) }
-
     var showEmptyFieldWarning by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val warningMessage = Lang.string(R.string.code_confirmation_warning)

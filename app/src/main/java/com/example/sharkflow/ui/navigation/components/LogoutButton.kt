@@ -12,7 +12,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.sharkflow.R
-import com.example.sharkflow.data.local.language.Lang
+import com.example.sharkflow.utils.Lang
 
 @Composable
 fun LogoutButton(
@@ -25,7 +25,8 @@ fun LogoutButton(
         modifier = Modifier
             .background(colorScheme.error)
             .padding(top = 6.dp)
-            .width(100.dp)
+            .fillMaxSize()
+            .clickable { showDialog = true }
     ) {
         Icon(
             imageVector = Icons.AutoMirrored.Filled.Logout,
@@ -38,7 +39,6 @@ fun LogoutButton(
             color = colorScheme.onPrimary,
             textAlign = TextAlign.Center,
             fontSize = MaterialTheme.typography.labelSmall.fontSize,
-            modifier = Modifier.clickable { showDialog = true }
         )
     }
 

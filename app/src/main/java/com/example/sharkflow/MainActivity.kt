@@ -29,6 +29,7 @@ class MainActivity : ComponentActivity() {
             val appViewModel: AppViewModel = hiltViewModel()
             val authStateViewModel: AuthStateViewModel = hiltViewModel()
             val userProfileViewModel: UserProfileViewModel = hiltViewModel()
+
             val userIsLoading by userProfileViewModel.isLoading.collectAsState()
 
             val isLoading by remember {
@@ -39,7 +40,7 @@ class MainActivity : ComponentActivity() {
             }
 
             LaunchedEffect(Unit) {
-                appViewModel.initializeApp(context)
+                appViewModel.initializeApp()
             }
 
             SharkFlowTheme(darkTheme = isDarkTheme) {

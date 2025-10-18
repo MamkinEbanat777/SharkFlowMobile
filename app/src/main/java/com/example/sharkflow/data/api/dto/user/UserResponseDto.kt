@@ -1,0 +1,10 @@
+package com.example.sharkflow.data.api.dto.user
+
+import com.google.gson.annotations.SerializedName
+
+data class UserResponseDto(
+    @SerializedName("login") val login: String?,
+    @SerializedName("email") val email: String?,
+    @SerializedName("role") val role: String?,
+    @SerializedName("avatarUrl") val avatarUrl: String?
+)
