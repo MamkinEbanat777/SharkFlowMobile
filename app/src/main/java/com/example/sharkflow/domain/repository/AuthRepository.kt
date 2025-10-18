@@ -1,8 +1,8 @@
-package com.example.sharkflow.data.repository
+package com.example.sharkflow.domain.repository
 
 import com.example.sharkflow.data.api.AuthApi
-import com.example.sharkflow.data.manager.AuthManager
-import com.example.sharkflow.model.*
+import com.example.sharkflow.data.service.AuthService
+import com.example.sharkflow.domain.model.*
 import com.example.sharkflow.utils.AppLog
 import jakarta.inject.*
 import okhttp3.OkHttpClient
@@ -10,7 +10,7 @@ import okhttp3.OkHttpClient
 @Singleton
 class AuthRepository @Inject constructor(
     private val authApi: AuthApi,
-    private val authManager: AuthManager
+    private val authService: AuthService
 ) {
     suspend fun login(email: String, password: String): Result<Unit> {
         return try {
@@ -28,7 +28,7 @@ class AuthRepository @Inject constructor(
                 return Result.failure(Exception("Не удалось получить токены"))
             }
 
-            authManager.handleLogin(tokens)
+            authService.handleLogin(tokens)
             Result.success(Unit)
 
         } catch (e: Exception) {
@@ -40,10 +40,10 @@ class AuthRepository @Inject constructor(
         return try {
             val response = authApi.logout()
             if (response.isSuccessful) {
-                authManager.handleLogout()
+                authService.handleLogout()
                 Result.success(response.body()?.message ?: "Вы успешно вышли")
             } else {
-                Result.failure(Exception(response.message()))
+                Result.failure(Exception("Ошибка: ${response.message()}"))
             }
         } catch (e: Exception) {
             Result.failure(e)
@@ -52,7 +52,7 @@ class AuthRepository @Inject constructor(
 
     suspend fun refreshToken(baseClient: OkHttpClient, baseUrl: String): Boolean {
         return try {
-            authManager.refreshToken(baseClient, baseUrl)
+            authService.refreshToken(baseClient, baseUrl)
         } catch (e: Exception) {
             AppLog.e("AuthRepository: refreshToken failed", e)
             false

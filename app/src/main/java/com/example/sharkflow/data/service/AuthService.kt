@@ -1,7 +1,7 @@
-package com.example.sharkflow.data.manager
+package com.example.sharkflow.data.service
 
-import com.example.sharkflow.data.repository.TokenRepository
-import com.example.sharkflow.model.*
+import com.example.sharkflow.domain.model.*
+import com.example.sharkflow.domain.repository.TokenRepository
 import com.example.sharkflow.utils.AppLog
 import com.google.gson.Gson
 import jakarta.inject.*
@@ -11,7 +11,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody.Companion.toRequestBody
 
 @Singleton
-class AuthManager @Inject constructor(
+class AuthService @Inject constructor(
     private val tokenRepo: TokenRepository
 ) {
     private val gson = Gson()
@@ -46,7 +46,7 @@ class AuthManager @Inject constructor(
                         try {
                             tokenRepo.saveTokens(newAccess, newCsrf)
                         } catch (e: Exception) {
-                            AppLog.e("AuthManager", "Failed to save tokens", e)
+                            AppLog.e("AuthService", "Failed to save tokens", e)
                             return@withContext false
                         }
                         return@withContext true
@@ -74,5 +74,5 @@ class AuthManager @Inject constructor(
     fun handleLogout() {
         tokenRepo.clearTokens()
     }
-    
+
 }

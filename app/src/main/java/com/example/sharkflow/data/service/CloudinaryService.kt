@@ -1,10 +1,10 @@
-package com.example.sharkflow.data.manager
+package com.example.sharkflow.data.service
 
 import jakarta.inject.*
 import kotlinx.coroutines.flow.*
 
 @Singleton
-class CloudinaryManager @Inject constructor() {
+class CloudinaryService @Inject constructor() {
     private val _lastUpload = MutableStateFlow<Pair<String, String>?>(null)
     val lastUpload: StateFlow<Pair<String, String>?> = _lastUpload.asStateFlow()
 

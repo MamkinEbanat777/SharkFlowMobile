@@ -1,4 +1,4 @@
-package com.example.sharkflow.model
+package com.example.sharkflow.domain.model
 
 import com.google.gson.annotations.SerializedName
 

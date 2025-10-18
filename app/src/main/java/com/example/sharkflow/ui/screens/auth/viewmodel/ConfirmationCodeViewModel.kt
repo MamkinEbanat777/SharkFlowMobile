@@ -1,7 +1,7 @@
 package com.example.sharkflow.ui.screens.auth.viewmodel
 
 import androidx.lifecycle.*
-import com.example.sharkflow.data.repository.RegisterRepository
+import com.example.sharkflow.domain.repository.RegisterRepository
 import com.example.sharkflow.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*

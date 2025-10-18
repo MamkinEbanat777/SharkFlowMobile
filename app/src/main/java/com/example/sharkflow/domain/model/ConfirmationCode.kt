@@ -1,7 +1,6 @@
-package com.example.sharkflow.model
+package com.example.sharkflow.domain.model
 
 import com.google.gson.annotations.SerializedName
-
 
 data class ConfirmationCodeRequest(
     @SerializedName("confirmationCode")
@@ -9,8 +8,8 @@ data class ConfirmationCodeRequest(
 )
 
 data class ConfirmationCodeResponse(
-    override val message: String?,
-    override val error: String?
-) : BaseResponse(message, error)
-
-
+    @SerializedName("message")
+    val message: String?,
+    @SerializedName("error")
+    val error: String?
+)

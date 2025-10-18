@@ -1,15 +1,15 @@
-package com.example.sharkflow.data.repository
+package com.example.sharkflow.domain.repository
 
-import com.example.sharkflow.data.api.AuthApi
-import com.example.sharkflow.data.manager.RegisterManager
-import com.example.sharkflow.model.*
+import com.example.sharkflow.data.api.UserApi
+import com.example.sharkflow.data.service.RegisterService
+import com.example.sharkflow.domain.model.*
 import com.example.sharkflow.utils.ErrorMapper
 import jakarta.inject.Inject
 import retrofit2.Response
 
 class RegisterRepository @Inject constructor(
-    private val authApi: AuthApi,
-    private val registerManager: RegisterManager
+    private val userApi: UserApi,
+    private val registerService: RegisterService
 ) {
     suspend fun register(
         login: String,
@@ -21,7 +21,7 @@ class RegisterRepository @Inject constructor(
             val request = RegisterRequest(login, email, password, confirmPassword)
             val user = RegisterUser(user = request)
 
-            val response = authApi.register(user)
+            val response = userApi.register(user)
 
             if (response.isSuccessful) {
                 Result.success(Unit)
@@ -34,12 +34,12 @@ class RegisterRepository @Inject constructor(
         } catch (_: Exception) {
             Result.failure(Exception("Сервер недоступен, попробуйте позже"))
         }
-        result.onSuccess { registerManager.setRegistered(true) }
+        result.onSuccess { registerService.setRegistered(true) }
         return result
     }
 
-    suspend fun confirmCode(code: String): Response<ConfirmationCodeResponse> {
+    suspend fun confirmCode(code: String): Response<Unit> {
         val request = ConfirmationCodeRequest(code)
-        return authApi.confirmationCode(request)
+        return userApi.confirmationCode(request)
     }
 }

@@ -1,6 +1,6 @@
 package com.example.sharkflow.data.api
 
-import com.example.sharkflow.model.*
+import com.example.sharkflow.domain.model.*
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -25,4 +25,10 @@ interface UserApi {
 
     @DELETE("users/avatar")
     suspend fun deleteUserAvatar(): Response<DeleteAvatarResponse>
+
+    @POST("users/confirm-registration")
+    suspend fun register(@Body request: RegisterUser): Response<RegisterResponse>
+
+    @POST("users")
+    suspend fun confirmationCode(@Body request: ConfirmationCodeRequest): Response<Unit>
 }

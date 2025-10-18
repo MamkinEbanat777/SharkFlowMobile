@@ -1,4 +1,4 @@
-package com.example.sharkflow.data.manager
+package com.example.sharkflow.data.service
 
 import com.example.sharkflow.data.storage.TokenStorage
 import jakarta.inject.*

@@ -1,7 +1,7 @@
 package com.example.sharkflow.data.network
 
-import com.example.sharkflow.data.repository.TokenRepository
-import com.example.sharkflow.model.Refresh
+import com.example.sharkflow.domain.model.Refresh
+import com.example.sharkflow.domain.repository.TokenRepository
 import com.google.gson.Gson
 import jakarta.inject.*
 import okhttp3.*

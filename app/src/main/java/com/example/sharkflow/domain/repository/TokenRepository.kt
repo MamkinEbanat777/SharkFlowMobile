@@ -1,6 +1,6 @@
-package com.example.sharkflow.data.repository
+package com.example.sharkflow.domain.repository
 
-import com.example.sharkflow.data.manager.TokenManager
+import com.example.sharkflow.data.service.TokenManager
 import com.example.sharkflow.data.storage.TokenStorage
 import kotlinx.coroutines.flow.StateFlow
 

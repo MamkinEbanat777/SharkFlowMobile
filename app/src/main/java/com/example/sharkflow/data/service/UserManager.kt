@@ -1,6 +1,6 @@
-package com.example.sharkflow.data.manager
+package com.example.sharkflow.data.service
 
-import com.example.sharkflow.model.UserResponse
+import com.example.sharkflow.domain.model.UserResponse
 import jakarta.inject.*
 import kotlinx.coroutines.flow.*
 

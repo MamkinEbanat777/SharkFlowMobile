@@ -1,4 +1,4 @@
-package com.example.sharkflow.model
+package com.example.sharkflow.domain.model
 
 import com.google.gson.annotations.SerializedName
 
@@ -23,6 +23,8 @@ data class RegisterUser(
 )
 
 data class RegisterResponse(
-    override val message: String?,
-    override val error: String?
-) : BaseResponse(message, error)
+    @SerializedName("message")
+    val message: String?,
+    @SerializedName("error")
+    val error: String?
+)

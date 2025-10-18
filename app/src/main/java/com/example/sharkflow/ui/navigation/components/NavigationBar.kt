@@ -26,7 +26,7 @@ fun BottomNavBar(
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
     val selectedIndex = items.indexOfFirst { it.route == currentRoute }.coerceAtLeast(0)
 
-    val isLoggedIn by remember { derivedStateOf { authStateViewModel.isLoggedIn.value } }
+    val isLoggedIn by authStateViewModel.isLoggedIn.collectAsState()
 
     Surface(color = colorScheme.primary, tonalElevation = 8.dp) {
         Box(

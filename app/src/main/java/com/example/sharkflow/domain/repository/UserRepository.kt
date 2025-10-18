@@ -1,8 +1,8 @@
-package com.example.sharkflow.data.repository
+package com.example.sharkflow.domain.repository
 
 import com.example.sharkflow.data.api.UserApi
-import com.example.sharkflow.data.manager.UserManager
-import com.example.sharkflow.model.*
+import com.example.sharkflow.data.service.UserManager
+import com.example.sharkflow.domain.model.*
 import kotlinx.coroutines.flow.StateFlow
 import javax.inject.*
 

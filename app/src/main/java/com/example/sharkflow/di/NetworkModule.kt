@@ -5,7 +5,7 @@ import com.example.sharkflow.BuildConfig
 import com.example.sharkflow.data.api.*
 import com.example.sharkflow.data.local.DeviceIdPreference
 import com.example.sharkflow.data.network.*
-import com.example.sharkflow.data.repository.TokenRepository
+import com.example.sharkflow.domain.repository.TokenRepository
 import com.example.sharkflow.utils.AppLog
 import com.google.gson.Gson
 import dagger.*

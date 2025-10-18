@@ -1,7 +1,7 @@
 package com.example.sharkflow.ui.screens.auth.viewmodel
 
 import androidx.lifecycle.*
-import com.example.sharkflow.data.repository.*
+import com.example.sharkflow.domain.repository.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.*
@@ -36,12 +36,14 @@ class AuthStateViewModel @Inject constructor(
             val result = authRepository.logout()
             result.fold(
                 onSuccess = { message ->
+                    _isLoggedIn.value = false
                     onResult(true, message)
                 },
                 onFailure = { error ->
-                    onResult(false, error.message)
+                    onResult(false, error.message ?: "Неизвестная ошибка")
                 }
             )
         }
     }
+
 }

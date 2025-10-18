@@ -1,9 +1,9 @@
-package com.example.sharkflow.data.repository
+package com.example.sharkflow.domain.repository
 
 import android.content.Context
 import android.net.Uri
 import com.example.sharkflow.BuildConfig
-import com.example.sharkflow.data.manager.CloudinaryManager
+import com.example.sharkflow.data.service.CloudinaryService
 import jakarta.inject.*
 import kotlinx.coroutines.*
 import okhttp3.*
@@ -13,7 +13,7 @@ import org.json.JSONObject
 
 @Singleton
 class CloudinaryRepository @Inject constructor(
-    private val manager: CloudinaryManager
+    private val manager: CloudinaryService
 ) {
     suspend fun uploadImage(
         context: Context,

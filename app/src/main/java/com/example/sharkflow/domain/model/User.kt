@@ -1,37 +1,49 @@
-package com.example.sharkflow.model
+package com.example.sharkflow.domain.model
 
 import com.google.gson.annotations.SerializedName
 
 data class LogoutResponse(
-    override val message: String? = null,
-    override val error: String? = null
-) : BaseResponse(message, error)
+    @SerializedName("message")
+    val message: String? = null,
+    @SerializedName("error")
+    val error: String? = null
+)
 
 data class DeleteUserResponse(
-    override val message: String? = null,
-    override val error: String? = null
-) : BaseResponse(message, error)
+    @SerializedName("message")
+    val message: String? = null,
+    @SerializedName("error")
+    val error: String? = null
+)
 
 data class UpdateUserResponse(
-    override val message: String? = null,
-    override val error: String? = null
-) : BaseResponse(message, error)
+    @SerializedName("message")
+    val message: String? = null,
+    @SerializedName("error")
+    val error: String? = null
+)
 
 data class ConfirmationUpdateUserResponse(
-    override val message: String? = null,
-    override val error: String? = null
-) : BaseResponse(message, error)
+    @SerializedName("message")
+    val message: String? = null,
+    @SerializedName("error")
+    val error: String? = null
+)
 
 data class UpdateAvatarResponse(
-    override val message: String? = null,
-    override val error: String? = null
-) : BaseResponse(message, error)
+    @SerializedName("message")
+    val message: String? = null,
+    @SerializedName("error")
+    val error: String? = null
+)
 
 
 data class DeleteAvatarResponse(
-    override val message: String? = null,
-    override val error: String? = null
-) : BaseResponse(message, error)
+    @SerializedName("message")
+    val message: String? = null,
+    @SerializedName("error")
+    val error: String? = null
+)
 
 
 data class UpdateAvatarRequest(
@@ -47,10 +59,11 @@ data class DeleteUserRequest(
 )
 
 data class ConfirmationDeleteUserResponse(
-    override val message: String? = null,
-    override val error: String? = null
-) : BaseResponse(message, error)
-
+    @SerializedName("message")
+    val message: String? = null,
+    @SerializedName("error")
+    val error: String? = null
+)
 
 data class UpdatedFields(
     @SerializedName("email")

@@ -1,4 +1,4 @@
-package com.example.sharkflow.model
+package com.example.sharkflow.domain.model
 
 import com.google.gson.annotations.SerializedName
 
@@ -8,6 +8,8 @@ data class Refresh(
     val accessToken: String?,
     @SerializedName("csrfToken")
     val csrfToken: String?,
-    override val message: String?,
-    override val error: String?,
-) : BaseResponse(message, error)
+    @SerializedName("message")
+    val message: String?,
+    @SerializedName("error")
+    val error: String?,
+)

@@ -31,7 +31,7 @@ fun AppNavHost(
 ) {
     val navController = rememberNavController()
 
-    val isLoggedIn by remember { derivedStateOf { authStateViewModel.isLoggedIn.value } }
+    val isLoggedIn by authStateViewModel.isLoggedIn.collectAsState()
 
     val bottomNavItems = if (isLoggedIn) userBottomNavItems else publicBottomNavItems
     val startDestination = if (isLoggedIn) "dashboard" else "hero"
