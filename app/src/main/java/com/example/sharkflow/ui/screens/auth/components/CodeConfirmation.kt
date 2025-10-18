@@ -29,6 +29,9 @@ fun CodeConfirmation(
     val context = LocalContext.current
     val warningMessage = Lang.string(R.string.code_confirmation_warning)
 
+    val isLoading by confirmationCodeViewModel.isLoading.collectAsState()
+    val errorMessage by confirmationCodeViewModel.errorMessage.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxWidth(),
@@ -50,7 +53,7 @@ fun CodeConfirmation(
             isError = confirmationCodeError
         )
 
-        confirmationCodeViewModel.errorMessage?.let {
+        errorMessage?.let {
             Text(it, color = colorScheme.error)
         }
 
@@ -69,34 +72,34 @@ fun CodeConfirmation(
 
             ) {
                 Text(Lang.string(R.string.code_confirmation_back))
-            }
 
-            AppButton(
-                onClick = {
-                    if (confirmationCode.isEmpty()) {
-                        confirmationCodeError = true
-                        ToastManager.warning(context, warningMessage)
-                    } else {
-                        confirmationCodeError = false
-                        confirmationCodeViewModel.confirmationCode(confirmationCode) {
-                            onNext()
+                AppButton(
+                    onClick = {
+                        if (confirmationCode.isEmpty()) {
+                            confirmationCodeError = true
+                            ToastManager.warning(context, warningMessage)
+                        } else {
+                            confirmationCodeError = false
+                            confirmationCodeViewModel.confirmationCode(confirmationCode) {
+                                onNext()
+                            }
                         }
+                    },
+                    variant = AppButtonVariant.Primary,
+                    text = if (isLoading)
+                        Lang.string(R.string.code_confirmation_checking)
+                    else
+                        Lang.string(R.string.code_confirmation_send),
+                    enabled = !isLoading
+                )
+
+                if (showEmptyFieldWarning) {
+                    LaunchedEffect(Unit) {
+                        ToastManager.warning(context, warningMessage)
                     }
-                },
-                variant = AppButtonVariant.Primary,
-                text = if (confirmationCodeViewModel.isLoading)
-                    Lang.string(R.string.code_confirmation_checking)
-                else
-                    Lang.string(R.string.code_confirmation_send),
-                enabled = !confirmationCodeViewModel.isLoading
-            )
-
-            if (showEmptyFieldWarning) {
-                LaunchedEffect(Unit) {
-                    ToastManager.warning(context, warningMessage)
                 }
-            }
 
+            }
         }
     }
 }

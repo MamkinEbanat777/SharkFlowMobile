@@ -8,9 +8,6 @@ interface UserApi {
     @GET("users")
     suspend fun getUser(): Response<UserResponse>
 
-    @POST("auth/logout")
-    suspend fun logoutUser(): Response<LogoutResponse>
-
     @POST("users/delete/confirm-deletion")
     suspend fun confirmationDeleteUser(): Response<ConfirmationDeleteUserResponse>
 

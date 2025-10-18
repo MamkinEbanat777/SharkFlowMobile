@@ -1,7 +1,7 @@
-package com.example.sharkflow.data.network
+package com.example.sharkflow.data.manager
 
 import com.example.sharkflow.data.repository.TokenRepository
-import com.example.sharkflow.model.Refresh
+import com.example.sharkflow.model.*
 import com.example.sharkflow.utils.AppLog
 import com.google.gson.Gson
 import jakarta.inject.*
@@ -59,5 +59,20 @@ class AuthManager @Inject constructor(
             }
         }
     }
-}
 
+    fun handleLogin(tokens: LoginResponse) {
+        val access = tokens.accessToken
+        val csrf = tokens.csrfToken
+
+        if (!access.isNullOrBlank() && !csrf.isNullOrBlank()) {
+            tokenRepo.saveTokens(access, csrf)
+        } else {
+            throw IllegalArgumentException("Некорректные токены при логине")
+        }
+    }
+
+    fun handleLogout() {
+        tokenRepo.clearTokens()
+    }
+    
+}

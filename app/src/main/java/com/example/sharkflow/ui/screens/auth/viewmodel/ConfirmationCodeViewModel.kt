@@ -1,10 +1,10 @@
 package com.example.sharkflow.ui.screens.auth.viewmodel
 
-import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.example.sharkflow.data.repository.RegisterRepository
 import com.example.sharkflow.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -13,19 +13,20 @@ class ConfirmationCodeViewModel @Inject constructor(
     private val registerRepository: RegisterRepository
 ) : ViewModel() {
 
-    var isLoading by mutableStateOf(false)
-        private set
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
-    var errorMessage by mutableStateOf<String?>(null)
-        private set
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
+
 
     fun confirmationCode(
         code: String,
         onSuccess: () -> Unit
     ) {
         viewModelScope.launch {
-            isLoading = true
-            errorMessage = null
+            _isLoading.value = true
+            _errorMessage.value = null
             try {
                 val response = registerRepository.confirmCode(code)
 
@@ -33,14 +34,14 @@ class ConfirmationCodeViewModel @Inject constructor(
                     onSuccess()
                 } else {
                     val errorBodyString = response.errorBody()?.string()
-                    errorMessage = ErrorMapper.map(response.code(), errorBodyString)
+                    _errorMessage.value = ErrorMapper.map(response.code(), errorBodyString)
                 }
 
             } catch (e: Exception) {
                 AppLog.e("Network exception", e)
-                errorMessage = "Сервер недоступен, пожалуйста повторите попытку позже"
+                _errorMessage.value = "Сервер недоступен, пожалуйста повторите попытку позже"
             } finally {
-                isLoading = false
+                _isLoading.value = false
             }
         }
     }

@@ -31,9 +31,13 @@ fun LoginForm(navController: NavController) {
 
     val context = LocalContext.current
 
+    val isLoading by loginViewModel.isLoading.collectAsState()
+    val errorMessage by loginViewModel.errorMessage.collectAsState()
+    val successMessage by loginViewModel.successMessage.collectAsState()
+
     ObserveToastMessages(
-        errorMessage = loginViewModel.errorMessage,
-        successMessage = loginViewModel.successMessage
+        errorMessage = errorMessage,
+        successMessage = successMessage
     )
 
     Column(
@@ -71,7 +75,7 @@ fun LoginForm(navController: NavController) {
             isError = passwordError
         )
 
-        loginViewModel.errorMessage?.let {
+        errorMessage?.let {
             Text(it, color = colorScheme.error)
         }
 
@@ -95,11 +99,11 @@ fun LoginForm(navController: NavController) {
             },
             modifier = Modifier.fillMaxWidth(),
             variant = AppButtonVariant.Primary,
-            text = if (loginViewModel.isLoading)
+            text = if (isLoading)
                 Lang.string(R.string.login_button_sending)
             else
                 Lang.string(R.string.login_button_send),
-            enabled = !loginViewModel.isLoading
+            enabled = !isLoading
         )
 
         Row(

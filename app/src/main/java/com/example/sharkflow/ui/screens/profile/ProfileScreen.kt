@@ -26,8 +26,8 @@ fun ProfileScreen(
     var showCodeDeleteDialog by remember { mutableStateOf(false) }
     var showUpdateDialog by remember { mutableStateOf(false) }
 
-    val currentUser by userProfileViewModel.currentUser.collectAsState(initial = null)
-    val isLoading = userProfileViewModel.isLoading
+    val currentUser by userProfileViewModel.currentUser.collectAsState()
+    val isLoading by userProfileViewModel.isLoading.collectAsState()
 
     if (isLoading) {
         Box(
@@ -63,14 +63,14 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        currentUser!!.login?.let {
+        currentUser?.login?.let {
             Text(
                 text = it,
                 style = typography.titleLarge,
                 color = colorScheme.onBackground
             )
         }
-        currentUser!!.email?.let {
+        currentUser?.email?.let {
             Text(
                 text = it,
                 style = typography.bodyMedium,

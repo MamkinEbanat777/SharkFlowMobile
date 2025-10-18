@@ -22,7 +22,7 @@ object Lang {
     }
 
     private fun Context.createLocaleContext(language: String): Context {
-        val locale = Locale(language)
+        val locale = Locale.Builder().setLanguage(language).build()
         val config = resources.configuration
         config.setLocale(locale)
         return createConfigurationContext(config)

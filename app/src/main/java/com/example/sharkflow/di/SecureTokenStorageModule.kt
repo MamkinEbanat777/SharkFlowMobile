@@ -3,6 +3,7 @@ package com.example.sharkflow.di
 
 import android.content.Context
 import com.example.sharkflow.data.local.token.*
+import com.example.sharkflow.data.manager.TokenManager
 import com.example.sharkflow.data.repository.TokenRepository
 import com.example.sharkflow.data.storage.TokenStorage
 import dagger.*
@@ -29,8 +30,11 @@ object SecureTokenStorageModule {
 
     @Provides
     @Singleton
-    fun provideTokenRepository(storage: TokenStorage): TokenRepository {
-        return TokenRepository(storage)
+    fun provideTokenRepository(
+        storage: TokenStorage,
+        tokenManager: TokenManager
+    ): TokenRepository {
+        return TokenRepository(storage, tokenManager)
     }
 }
 

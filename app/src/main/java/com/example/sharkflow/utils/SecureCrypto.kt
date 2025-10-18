@@ -29,7 +29,7 @@ object SecureCrypto {
                         .withMasterKeyUri("android-keystore://tink_master_key")
                         .build()
 
-                    aead = keysetManager.keysetHandle.getPrimitive(Aead::class.java)
+                    aead = keysetManager.keysetHandle.getPrimitive(Aead::class.java) as Aead
                     initialized = true
                 } catch (e: java.security.InvalidKeyException) {
                     AppLog.w("Keystore key missing or invalid, recreating...", e)

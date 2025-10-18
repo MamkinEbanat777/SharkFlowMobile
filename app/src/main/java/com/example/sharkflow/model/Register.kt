@@ -22,10 +22,7 @@ data class RegisterUser(
     val user: RegisterRequest
 )
 
-
 data class RegisterResponse(
-    @SerializedName("message")
-    val message: String?,
-    @SerializedName("error")
-    val error: String?
-)
+    override val message: String?,
+    override val error: String?
+) : BaseResponse(message, error)

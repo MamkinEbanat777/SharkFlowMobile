@@ -1,21 +1,24 @@
 package com.example.sharkflow.data.repository
 
 import com.example.sharkflow.data.api.UserApi
+import com.example.sharkflow.data.manager.UserManager
 import com.example.sharkflow.model.*
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.StateFlow
 import javax.inject.*
 
 @Singleton
-class UserRepository @Inject constructor(private val userApi: UserApi) {
-    private val _currentUser = MutableStateFlow<UserResponse?>(null)
-    val currentUser: StateFlow<UserResponse?> = _currentUser
+class UserRepository @Inject constructor(
+    private val userApi: UserApi,
+    private val userManager: UserManager
+) {
+    val currentUser: StateFlow<UserResponse?> = userManager.currentUser
 
     fun setUser(user: UserResponse?) {
-        _currentUser.value = user
+        userManager.setUser(user)
     }
 
     fun clearUser() {
-        _currentUser.value = null
+        userManager.clearUser()
     }
 
     suspend fun requestUpdateUserCode(): Result<String> {
@@ -57,28 +60,31 @@ class UserRepository @Inject constructor(private val userApi: UserApi) {
         return try {
             val request = DeleteUserRequest(confirmationCode = code)
             val response = userApi.deleteUser(request)
-            if (response.isSuccessful) clearUser()
+            if (response.isSuccessful) userManager.clearUser()
             Result.success(response.body()?.message ?: "Пользователь удалён")
         } catch (e: Exception) {
             Result.failure(e)
         }
     }
 
-    suspend fun loadUser(): Boolean {
+    suspend fun loadUser(): Result<UserResponse> {
         return try {
             val response = userApi.getUser()
             if (response.isSuccessful) {
-                _currentUser.value = response.body()
-                true
+                response.body()?.let {
+                    userManager.setUser(it)
+                    Result.success(it)
+                } ?: Result.failure(Exception("Не удалось получить пользователя"))
             } else {
-                clearUser()
-                false
+                userManager.clearUser()
+                Result.failure(Exception("Ошибка получения данных: ${response.code()}"))
             }
         } catch (e: Exception) {
-            clearUser()
-            false
+            userManager.clearUser()
+            Result.failure(e)
         }
     }
+
 
     suspend fun requestDeleteUserCode(): Result<String> {
         return try {
@@ -99,9 +105,8 @@ class UserRepository @Inject constructor(private val userApi: UserApi) {
             val response = userApi.updateUserAvatar(request)
 
             if (response.isSuccessful) {
-                val currentUser = _currentUser.value
-                if (currentUser != null) {
-                    _currentUser.value = currentUser.copy(avatarUrl = avatarUrl)
+                userManager.currentUser.value?.let {
+                    userManager.setUser(it.copy(avatarUrl = avatarUrl))
                 }
                 Result.success(response.body()?.message ?: "Аватар обновлён")
             } else {
@@ -118,9 +123,8 @@ class UserRepository @Inject constructor(private val userApi: UserApi) {
             val response = userApi.deleteUserAvatar()
 
             if (response.isSuccessful) {
-                val currentUser = _currentUser.value
-                if (currentUser != null) {
-                    _currentUser.value = currentUser.copy(avatarUrl = "")
+                userManager.currentUser.value?.let {
+                    userManager.setUser(it.copy(avatarUrl = ""))
                 }
                 Result.success(response.body()?.message ?: "Аватар удалён")
             } else {
@@ -131,5 +135,4 @@ class UserRepository @Inject constructor(private val userApi: UserApi) {
             Result.failure(e)
         }
     }
-
 }

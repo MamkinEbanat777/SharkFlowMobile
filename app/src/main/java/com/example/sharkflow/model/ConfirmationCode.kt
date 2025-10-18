@@ -8,12 +8,9 @@ data class ConfirmationCodeRequest(
     val confirmationCode: String
 )
 
-
 data class ConfirmationCodeResponse(
-    @SerializedName("message")
-    val message: String?,
-    @SerializedName("error")
-    val error: String?
-)
+    override val message: String?,
+    override val error: String?
+) : BaseResponse(message, error)
 
 

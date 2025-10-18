@@ -1,22 +1,22 @@
 package com.example.sharkflow.ui.screens.auth.viewmodel
 
-import androidx.compose.runtime.*
 import androidx.lifecycle.*
-import com.example.sharkflow.data.repository.*
-import dagger.hilt.android.lifecycle.*
-import jakarta.inject.*
-import kotlinx.coroutines.*
+import com.example.sharkflow.data.repository.RegisterRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
     private val registerRepository: RegisterRepository
 ) : ViewModel() {
 
-    var isLoading by mutableStateOf(false)
-        private set
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
-    var errorMessage by mutableStateOf<String?>(null)
-        private set
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
 
     fun register(
         login: String,
@@ -26,12 +26,17 @@ class RegisterViewModel @Inject constructor(
         onSuccess: () -> Unit
     ) {
         viewModelScope.launch {
-            isLoading = true
-            errorMessage = null
-            val result = registerRepository.register(login, email, password, confirmPassword)
-            result.onSuccess { onSuccess() }
-            result.onFailure { errorMessage = it.message }
-            isLoading = false
+            _isLoading.value = true
+            _errorMessage.value = null
+            try {
+                val result = registerRepository.register(login, email, password, confirmPassword)
+                result.onSuccess { onSuccess() }
+                result.onFailure { _errorMessage.value = it.message }
+            } catch (e: Exception) {
+                _errorMessage.value = "Произошла ошибка. Проверьте подключение."
+            } finally {
+                _isLoading.value = false
+            }
         }
     }
 }

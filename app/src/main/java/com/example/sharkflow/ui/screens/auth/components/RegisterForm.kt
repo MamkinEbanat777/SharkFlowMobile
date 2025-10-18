@@ -40,6 +40,9 @@ fun RegisterForm(
     var passwordError by remember { mutableStateOf(false) }
     var confirmPasswordError by remember { mutableStateOf(false) }
 
+    val isLoading by registerViewModel.isLoading.collectAsState()
+    val errorMessage by registerViewModel.errorMessage.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -97,8 +100,8 @@ fun RegisterForm(
             isError = confirmPasswordError
         )
 
-        if (registerViewModel.errorMessage != null) {
-            Text(registerViewModel.errorMessage!!, color = colorScheme.error)
+        if (errorMessage != null) {
+            errorMessage?.let { Text(it, color = colorScheme.error) }
         }
 
         AppButton(
@@ -126,9 +129,9 @@ fun RegisterForm(
                 }
             },
             variant = AppButtonVariant.Primary,
-            text = if (registerViewModel.isLoading) Lang.string(R.string.register_button_sending)
+            text = if (isLoading) Lang.string(R.string.register_button_sending)
             else Lang.string(R.string.register_button_register),
-            enabled = !registerViewModel.isLoading,
+            enabled = !isLoading,
             modifier = Modifier.fillMaxWidth()
         )
 

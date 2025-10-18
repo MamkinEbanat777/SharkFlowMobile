@@ -2,29 +2,24 @@ package com.example.sharkflow.ui.screens.profile.viewmodel
 
 import android.content.Context
 import android.net.Uri
-import androidx.compose.runtime.*
 import androidx.lifecycle.*
-import com.example.sharkflow.BuildConfig
 import com.example.sharkflow.data.repository.*
-import com.example.sharkflow.utils.AppLog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
-import kotlinx.coroutines.*
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
-import org.json.JSONObject
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 @HiltViewModel
 class UserProfileViewModel @Inject constructor(
     private val tokenRepository: TokenRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val cloudinaryRepository: CloudinaryRepository
 ) : ViewModel() {
     val currentUser = userRepository.currentUser
-    var isLoading by mutableStateOf(true)
-        private set
+    private val _isLoading = MutableStateFlow(true)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
-    var avatarPublicId: String? = null
+    private val _avatarPublicId = MutableStateFlow<String?>(null)
 
     init {
         viewModelScope.launch {
@@ -33,7 +28,7 @@ class UserProfileViewModel @Inject constructor(
                     loadUser()
                 } else {
                     userRepository.clearUser()
-                    isLoading = false
+                    _isLoading.value = false
                 }
             }
         }
@@ -41,9 +36,9 @@ class UserProfileViewModel @Inject constructor(
 
     fun loadUser() {
         viewModelScope.launch {
-            isLoading = true
+            _isLoading.value = true
             userRepository.loadUser()
-            isLoading = false
+            _isLoading.value = false
         }
     }
 
@@ -66,7 +61,6 @@ class UserProfileViewModel @Inject constructor(
             result.fold(
                 onSuccess = { message ->
                     tokenRepository.clearTokens()
-                    userRepository.clearUser()
                     onResult(true, message)
                 },
                 onFailure = { error -> onResult(false, error.message) }
@@ -123,88 +117,23 @@ class UserProfileViewModel @Inject constructor(
         }
     }
 
-    suspend fun uploadToCloudinary(context: Context, uri: Uri): Pair<String, String>? =
-        withContext(Dispatchers.IO) {
-            try {
-                val (accessToken, csrfToken) = tokenRepository.loadTokens()
-
-                val sigRequest = Request.Builder()
-                    .url("${BuildConfig.BASE_URL}cloudinary-signature")
-                    .header("Authorization", "Bearer $accessToken")
-                    .apply {
-                        csrfToken?.let { header("X-CSRF-TOKEN", it) }
-                    }
-                    .get()
-                    .build()
-
-                val sigResponse = OkHttpClient().newCall(sigRequest).execute()
-
-                if (!sigResponse.isSuccessful) {
-                    AppLog.e(
-                        "CloudinaryUpload",
-                        "Ошибка при получении подписи: ${sigResponse.message}"
-                    )
-                    return@withContext null
-                }
-
-                val sigJson = JSONObject(sigResponse.body.string())
-
-                val apiKey = sigJson.optString("api_key", "")
-                val signature = sigJson.optString("signature", "")
-                val timestamp = sigJson.optLong("timestamp", -1)
-
-                if (apiKey == null || signature == null || timestamp == -1L) {
-                    AppLog.e(
-                        "CloudinaryUpload",
-                        "Ошибка: Не удалось получить все параметры для подписи"
-                    )
-                    return@withContext null
-                }
-
-                val inputStream = context.contentResolver.openInputStream(uri)
-                if (inputStream == null) {
-                    AppLog.e("CloudinaryUpload", "Ошибка: не удалось открыть поток для файла")
-                    return@withContext null
-                }
-
-                val content = inputStream.readBytes()
-                val requestBody = MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart(
-                        "file",
-                        "file",
-                        content.toRequestBody("image/*".toMediaType(), 0, content.size)
-                    )
-                    .addFormDataPart("api_key", apiKey)
-                    .addFormDataPart("timestamp", timestamp.toString())
-                    .addFormDataPart("upload_preset", "Precet-SharkFlow")
-                    .addFormDataPart("signature", signature)
-                    .build()
-
-                val request = Request.Builder()
-                    .url("https://api.cloudinary.com/v1_1/dyilzwof1/image/upload")
-                    .post(requestBody)
-                    .build()
-
-                val response = OkHttpClient().newCall(request).execute()
-
-                if (response.isSuccessful) {
-                    val json = JSONObject(response.body.string())
-                    val uploadedUrl = json.getString("secure_url")
-                    val uploadedPublicId = json.getString("public_id")
-                    return@withContext Pair(uploadedUrl, uploadedPublicId)
-                } else {
-                    AppLog.e(
-                        "CloudinaryUpload",
-                        "Ошибка при загрузке изображения на Cloudinary: ${response.message}"
-                    )
-                    return@withContext null
-                }
-
-            } catch (e: Exception) {
-                AppLog.e("CloudinaryUpload", "Исключение при загрузке изображения: ${e.message}")
-                return@withContext null
-            }
+    fun uploadUserAvatar(
+        context: Context,
+        uri: Uri,
+        onResult: (success: Boolean, url: String?, publicId: String?) -> Unit
+    ) {
+        viewModelScope.launch {
+            val (accessToken, csrfToken) = tokenRepository.loadTokens()
+            val result = cloudinaryRepository.uploadImage(context, uri, accessToken, csrfToken)
+            result.fold(
+                onSuccess = { (url, publicId) -> onResult(true, url, publicId) },
+                onFailure = { onResult(false, null, null) }
+            )
         }
+    }
+
+    fun setAvatarPublicId(publicId: String?) {
+        _avatarPublicId.value = publicId
+    }
 
 }

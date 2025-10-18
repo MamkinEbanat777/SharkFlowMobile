@@ -7,7 +7,6 @@ import com.google.gson.Gson
 import okhttp3.*
 
 class SecureCookieJar(context: Context) : CookieJar {
-
     private val appContext = context.applicationContext
     private val prefsName = "secure_cookies_enc"
     private val prefs = appContext.getSharedPreferences(prefsName, Context.MODE_PRIVATE)

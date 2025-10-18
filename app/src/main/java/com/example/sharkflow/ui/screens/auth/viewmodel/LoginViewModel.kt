@@ -1,11 +1,10 @@
 package com.example.sharkflow.ui.screens.auth.viewmodel
 
-import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.example.sharkflow.data.repository.*
-import com.example.sharkflow.utils.AppLog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 @HiltViewModel
@@ -13,36 +12,41 @@ class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository
 ) : ViewModel() {
-    var isLoading by mutableStateOf(false)
-        private set
 
-    var errorMessage by mutableStateOf<String?>(null)
-        private set
+    private val _isLoading = MutableStateFlow(false)
+    val isLoading: StateFlow<Boolean> = _isLoading
 
-    var successMessage by mutableStateOf<String?>(null)
-        private set
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage: StateFlow<String?> = _errorMessage
 
-    fun login(
-        email: String,
-        password: String,
-    ) {
+    private val _successMessage = MutableStateFlow<String?>(null)
+    val successMessage: StateFlow<String?> = _successMessage
+    fun login(email: String, password: String) {
         viewModelScope.launch {
-            isLoading = true
+            _isLoading.value = true
+            _errorMessage.value = null
+            _successMessage.value = null
             try {
-                val result = authRepository.login(email, password)
-                if (result.isSuccess) {
-                    val user = result.getOrNull()!!
-                    userRepository.setUser(user)
-                    successMessage = "Добро пожаловать! ${user.login}"
+                val loginResult = authRepository.login(email, password)
+                if (loginResult.isSuccess) {
+                    val userResult = userRepository.loadUser()
+                    if (userResult.isSuccess) {
+                        val user = userResult.getOrNull()!!
+                        _successMessage.value = "Добро пожаловать! ${user.login}"
+                    } else {
+                        _errorMessage.value = userResult.exceptionOrNull()?.message
+                    }
+
                 } else {
-                    errorMessage = result.exceptionOrNull()?.message ?: "Неизвестная ошибка"
+                    _errorMessage.value =
+                        loginResult.exceptionOrNull()?.message ?: "Ошибка авторизации"
                 }
-            } catch (e: Exception) {
-                AppLog.e("Ошибка авторизации", e)
-                errorMessage = "Произошла ошибка. Проверьте подключение."
             } finally {
-                isLoading = false
+                _isLoading.value = false
             }
         }
+
     }
+
+
 }

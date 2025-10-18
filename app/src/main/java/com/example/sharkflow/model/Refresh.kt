@@ -8,8 +8,6 @@ data class Refresh(
     val accessToken: String?,
     @SerializedName("csrfToken")
     val csrfToken: String?,
-    @SerializedName("message")
-    val message: String?,
-    @SerializedName("error")
-    val error: String?,
-)
+    override val message: String?,
+    override val error: String?,
+) : BaseResponse(message, error)

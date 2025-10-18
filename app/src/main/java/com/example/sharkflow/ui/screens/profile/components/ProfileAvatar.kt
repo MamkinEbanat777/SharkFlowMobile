@@ -20,8 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import coil3.compose.AsyncImage
 import com.example.sharkflow.ui.screens.profile.viewmodel.UserProfileViewModel
+import com.example.sharkflow.utils.ToastManager
 import com.theartofdev.edmodo.cropper.*
-import kotlinx.coroutines.launch
 
 @Composable
 fun ProfileAvatar(
@@ -32,33 +32,45 @@ fun ProfileAvatar(
     userProfileViewModel: UserProfileViewModel
 ) {
     val currentUser by userProfileViewModel.currentUser.collectAsState()
+
     var isUploading by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
     val avatarUrl = currentUser?.avatarUrl?.trim()
 
     val cropImageLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.StartActivityForResult(),
-        onResult = { result ->
-            if (result.resultCode == Activity.RESULT_OK) {
-                val resultUri = CropImage.getActivityResult(result.data)?.uri
-                resultUri?.let { uri ->
-                    isUploading = true
-                    scope.launch {
-                        val uploadResult = userProfileViewModel.uploadToCloudinary(context, uri)
-                        if (uploadResult != null) {
-                            val (url, publicId) = uploadResult
-                            userProfileViewModel.avatarPublicId = publicId
-                            userProfileViewModel.updateUserAvatar(url, publicId)
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val resultUri = CropImage.getActivityResult(result.data)?.uri
+            resultUri?.let { uri ->
+                isUploading = true
+                userProfileViewModel.uploadUserAvatar(context, uri) { success, url, publicId ->
+                    isUploading = false
+                    if (success && url != null && publicId != null) {
+                        userProfileViewModel.setAvatarPublicId(publicId)
+                        userProfileViewModel.updateUserAvatar(
+                            url,
+                            publicId
+                        ) { updateSuccess, message ->
+                            if (!updateSuccess) {
+                                Toast.makeText(
+                                    context,
+                                    message ?: "Ошибка обновления аватара",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
-                        isUploading = false
+                    } else {
+                        Toast.makeText(context, "Ошибка загрузки аватара", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 }
-            } else {
-                Toast.makeText(context, "Image crop failed", Toast.LENGTH_SHORT).show()
             }
+        } else {
+            Toast.makeText(context, "Image crop failed", Toast.LENGTH_SHORT).show()
         }
-    )
+    }
+
 
     val imagePickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent(),
@@ -202,18 +214,14 @@ fun ProfileAvatar(
                     TextButton(onClick = {
                         showDeleteConfirm = false
                         isUploading = true
-                        scope.launch {
-                            try {
-                                userProfileViewModel.deleteUserAvatar()
-                                userProfileViewModel.updateUserAvatar("", "")
-                            } catch (e: Exception) {
-                                Toast.makeText(
-                                    context,
-                                    "Удаление не удалось: ${e.message}",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
+                        userProfileViewModel.deleteUserAvatar { deleteSuccess, deleteMessage ->
                             isUploading = false
+                            if (!deleteSuccess) {
+                                ToastManager.error(
+                                    context,
+                                    deleteMessage ?: "Ошибка при удалении аватара"
+                                )
+                            }
                         }
                     }) { Text("Да") }
                 },
