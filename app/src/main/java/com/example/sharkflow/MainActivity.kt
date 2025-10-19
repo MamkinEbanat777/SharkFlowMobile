@@ -10,10 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.sharkflow.data.local.ThemePreference
-import com.example.sharkflow.ui.navigation.AppNavHost
-import com.example.sharkflow.ui.screens.auth.viewmodel.AuthStateViewModel
-import com.example.sharkflow.ui.screens.profile.viewmodel.UserProfileViewModel
-import com.example.sharkflow.ui.theme.SharkFlowTheme
+import com.example.sharkflow.presentation.navigation.AppNavHost
+import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewModel
+import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
+import com.example.sharkflow.presentation.theme.SharkFlowTheme
 import com.example.sharkflow.viewmodel.AppViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
