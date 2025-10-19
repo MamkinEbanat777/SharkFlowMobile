@@ -20,7 +20,7 @@ object AuthMapper {
         return if (!access.isNullOrBlank() && !csrf.isNullOrBlank()) {
             AuthToken(accessToken = access, csrfToken = csrf, deviceId = dto.deviceId)
         } else {
-            null
+            throw IllegalArgumentException("Invalid login response: missing tokens")
         }
     }
 

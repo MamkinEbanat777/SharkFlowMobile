@@ -1,7 +1,7 @@
 package com.example.sharkflow.presentation.screens.auth.viewmodel
 
 import androidx.lifecycle.*
-import com.example.sharkflow.domain.repository.*
+import com.example.sharkflow.domain.usecase.LoginUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.*
@@ -9,10 +9,9 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
-    private val userRepository: UserRepository
-) : ViewModel() {
+    private val loginUseCase: LoginUseCase
 
+) : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading
 
@@ -28,19 +27,11 @@ class LoginViewModel @Inject constructor(
             _errorMessage.value = null
             _successMessage.value = null
             try {
-                val loginResult = authRepository.login(email, password)
-                if (loginResult.isSuccess) {
-                    val userResult = userRepository.loadUser()
-                    if (userResult.isSuccess) {
-                        val user = userResult.getOrNull()!!
-                        _successMessage.value = "Добро пожаловать! ${user.login}"
-                    } else {
-                        _errorMessage.value = userResult.exceptionOrNull()?.message
-                    }
-
+                val result = loginUseCase(email, password)
+                if (result.isSuccess) {
+                    _successMessage.value = result.getOrNull()
                 } else {
-                    _errorMessage.value =
-                        loginResult.exceptionOrNull()?.message ?: "Ошибка авторизации"
+                    _errorMessage.value = result.exceptionOrNull()?.message ?: "Ошибка авторизации"
                 }
             } finally {
                 _isLoading.value = false
@@ -48,6 +39,4 @@ class LoginViewModel @Inject constructor(
         }
 
     }
-
-
 }

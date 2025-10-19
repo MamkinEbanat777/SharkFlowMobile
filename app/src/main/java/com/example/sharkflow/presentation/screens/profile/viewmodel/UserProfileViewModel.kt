@@ -2,6 +2,7 @@ package com.example.sharkflow.presentation.screens.profile.viewmodel
 
 import androidx.lifecycle.*
 import com.example.sharkflow.domain.repository.*
+import com.example.sharkflow.domain.usecase.UploadUserAvatarUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.*
@@ -11,7 +12,7 @@ import kotlinx.coroutines.launch
 class UserProfileViewModel @Inject constructor(
     private val tokenRepository: TokenRepository,
     private val userRepository: UserRepository,
-    private val cloudinaryRepository: CloudinaryRepository
+    private val uploadUserAvatarUseCase: UploadUserAvatarUseCase
 ) : ViewModel() {
     val currentUser = userRepository.currentUser
     private val _isLoading = MutableStateFlow(true)
@@ -120,8 +121,7 @@ class UserProfileViewModel @Inject constructor(
         onResult: (success: Boolean, url: String?, publicId: String?) -> Unit
     ) {
         viewModelScope.launch {
-            val (accessToken, csrfToken) = tokenRepository.loadTokens()
-            val result = cloudinaryRepository.uploadImage(imageBytes, accessToken, csrfToken)
+            val result = uploadUserAvatarUseCase(imageBytes)
             result.fold(
                 onSuccess = { (url, publicId) -> onResult(true, url, publicId) },
                 onFailure = { onResult(false, null, null) }
