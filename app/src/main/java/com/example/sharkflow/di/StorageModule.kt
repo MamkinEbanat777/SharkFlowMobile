@@ -13,7 +13,7 @@ import jakarta.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object SecureTokenStorageModule {
+object StorageModule {
     @Provides
     @Singleton
     fun provideTokenStorage(@ApplicationContext context: Context): TokenStorage {
@@ -22,7 +22,7 @@ object SecureTokenStorageModule {
 
     @Provides
     @Singleton
-    fun provideSecureTokenStorage(@ApplicationContext context: Context): SecureTokenPreference {
+    fun provideSecureTokenStorage(): SecureTokenPreference {
         return SecureTokenPreference
     }
 }

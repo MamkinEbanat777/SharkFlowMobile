@@ -9,28 +9,28 @@ import retrofit2.http.*
 interface UserApi {
 
     @GET("users")
-    suspend fun getUser(): Response<UserResponseDto>
+    suspend fun getUser(): Response<UserDto>
 
     @POST("users/confirm-registration")
     suspend fun register(@Body request: RegisterUserDto): Response<GenericMessageResponseDto>
 
     @POST("users")
-    suspend fun confirmationCode(@Body request: ConfirmationCodeRequestDto): Response<ConfirmationCodeResponseDto>
+    suspend fun confirmationCode(@Body request: ConfirmationCodeRequestDto): Response<GenericMessageResponseDto>
 
     @POST("users/delete/confirm-deletion")
     suspend fun confirmationDeleteUser(): Response<GenericMessageResponseDto>
 
     @POST("users/delete")
-    suspend fun deleteUser(@Body request: DeleteUserRequestDto): Response<GenericMessageResponseDto>
+    suspend fun deleteUser(@Body request: DeleteUserDto): Response<GenericMessageResponseDto>
 
     @POST("users/confirm-update")
     suspend fun confirmationUpdateUser(): Response<GenericMessageResponseDto>
 
     @PATCH("users")
-    suspend fun updateUser(@Body request: UpdateUserRequestDto): Response<GenericMessageResponseDto>
+    suspend fun updateUser(@Body request: UpdateUserRequestDto): Response<UpdateUserResponseDto>
 
     @PATCH("users/avatar")
-    suspend fun updateUserAvatar(@Body request: UpdateAvatarRequestDto): Response<GenericMessageResponseDto>
+    suspend fun updateUserAvatar(@Body request: UpdateUserAvatarRequestDto): Response<UpdateUserAvatarResponseDto>
 
     @DELETE("users/avatar")
     suspend fun deleteUserAvatar(): Response<GenericMessageResponseDto>

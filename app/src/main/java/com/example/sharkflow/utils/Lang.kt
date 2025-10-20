@@ -20,7 +20,7 @@ object Lang {
         check(::languageRepository.isInitialized) { "Lang not initialized" }
 
         val context = LocalContext.current
-        val currentLanguage by languageRepository.currentLanguageFlow.collectAsState(initial = "ru")
+        val currentLanguage by languageRepository.currentLanguageFlow.collectAsState(initial = "")
         val localeContext = context.createLocaleContext(currentLanguage)
         return localeContext.getString(resId)
     }
@@ -30,7 +30,7 @@ object Lang {
         check(::languageRepository.isInitialized) { "Lang not initialized" }
 
         val context = LocalContext.current
-        val currentLanguage by languageRepository.currentLanguageFlow.collectAsState(initial = "ru")
+        val currentLanguage by languageRepository.currentLanguageFlow.collectAsState(initial = "")
         val localeContext = context.createLocaleContext(currentLanguage)
         return localeContext.resources.getStringArray(resId)
     }

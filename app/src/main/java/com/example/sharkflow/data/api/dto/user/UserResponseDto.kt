@@ -6,5 +6,6 @@ data class UserResponseDto(
     @SerializedName("login") val login: String?,
     @SerializedName("email") val email: String?,
     @SerializedName("role") val role: String?,
-    @SerializedName("avatarUrl") val avatarUrl: String?
+    @SerializedName("avatarUrl") val avatarUrl: String?,
+    @SerializedName("publicId") val publicId: String?
 )

@@ -27,19 +27,6 @@ fun ProfileScreen(
     var showUpdateDialog by remember { mutableStateOf(false) }
 
     val currentUser by userProfileViewModel.currentUser.collectAsState()
-    val isLoading by userProfileViewModel.isLoading.collectAsState()
-
-    if (isLoading) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(colorScheme.background),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(color = colorScheme.primary)
-        }
-        return
-    }
 
     if (currentUser == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {

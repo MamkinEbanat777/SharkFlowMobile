@@ -10,7 +10,7 @@ object LanguagePreference {
 
     fun get(context: Context): String {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return prefs.getString(KEY_LANGUAGE, Locale.getDefault().language) ?: "ru"
+        return prefs.getString(KEY_LANGUAGE, Locale.getDefault().language) ?: ""
     }
 
     fun set(context: Context, language: String) {

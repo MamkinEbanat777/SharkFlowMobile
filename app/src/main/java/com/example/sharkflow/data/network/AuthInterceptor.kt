@@ -17,7 +17,6 @@ class AuthInterceptor @Inject constructor(
     private val tokenRepo: TokenRepository,
     private val baseUrl: String
 ) : Interceptor {
-
     private val lock = ReentrantLock()
     private val refreshComplete = lock.newCondition()
 
@@ -143,4 +142,3 @@ class AuthInterceptor @Inject constructor(
             .build()
     }
 }
-

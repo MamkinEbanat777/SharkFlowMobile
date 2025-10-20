@@ -20,7 +20,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import coil3.compose.AsyncImage
 import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
-import com.example.sharkflow.utils.ToastManager
 import com.theartofdev.edmodo.cropper.*
 
 @Composable
@@ -31,77 +30,44 @@ fun ProfileAvatar(
     borderColor: Color = MaterialTheme.colorScheme.primary,
     userProfileViewModel: UserProfileViewModel
 ) {
-    val currentUser by userProfileViewModel.currentUser.collectAsState()
+    val avatarUrl by userProfileViewModel.avatarUrl.collectAsState(initial = "")
+    val isUploading by userProfileViewModel.isUploading.collectAsState()
 
-    var isUploading by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val avatarUrl = currentUser?.avatarUrl?.trim()
+
+    var isImageExpanded by remember { mutableStateOf(false) }
+    var showDeleteConfirm by remember { mutableStateOf(false) }
 
     val cropImageLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            val resultUri = CropImage.getActivityResult(result.data)?.uri
-            resultUri?.let { uri ->
-                val contentResolver = context.contentResolver
-                val inputStream = contentResolver.openInputStream(uri)
-                val imageBytes = inputStream?.readBytes()
-                inputStream?.close()
-
-                imageBytes?.let { bytes ->
-                    isUploading = true
-                    userProfileViewModel.uploadUserAvatar(bytes) { success, url, publicId ->
-                        isUploading = false
-                        if (success && url != null && publicId != null) {
-                            userProfileViewModel.setAvatarPublicId(publicId)
-                            userProfileViewModel.updateUserAvatar(
-                                url,
-                                publicId
-                            ) { updateSuccess, message ->
-                                if (!updateSuccess) {
-                                    Toast.makeText(
-                                        context,
-                                        message ?: "Ошибка обновления аватара",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
-                        } else {
-                            Toast.makeText(context, "Ошибка загрузки аватара", Toast.LENGTH_SHORT)
-                                .show()
-                        }
-                    }
-                }
-            }
-        } else {
-            Toast.makeText(context, "Image crop failed", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-
-    val imagePickerLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent(),
-        onResult = { uri ->
-            if (uri != null) {
-                try {
-                    val cropIntent = CropImage.activity(uri)
-                        .setGuidelines(CropImageView.Guidelines.ON)
-                        .setAspectRatio(1, 1)
-                        .getIntent(context)
-                    cropImageLauncher.launch(cropIntent)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    Toast.makeText(
+            val uri = CropImage.getActivityResult(result.data)?.uri
+                ?: return@rememberLauncherForActivityResult
+            context.contentResolver.openInputStream(uri)?.use { stream ->
+                val bytes = stream.readBytes()
+                userProfileViewModel.uploadUserAvatar(bytes) { success, _, _ ->
+                    if (!success) Toast.makeText(
                         context,
-                        "Error starting crop: ${e.message}",
+                        "Ошибка загрузки аватара",
                         Toast.LENGTH_SHORT
                     ).show()
                 }
             }
         }
-    )
-    var isImageExpanded by remember { mutableStateOf(false) }
-    var showDeleteConfirm by remember { mutableStateOf(false) }
+    }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        uri?.let {
+            val cropIntent = CropImage.activity(it)
+                .setGuidelines(CropImageView.Guidelines.ON)
+                .setAspectRatio(1, 1)
+                .getIntent(context)
+            cropImageLauncher.launch(cropIntent)
+        }
+    }
 
     Column(
         modifier = modifier,
@@ -128,7 +94,7 @@ fun ProfileAvatar(
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
                         .fillMaxSize()
-                        .clip(CircleShape)
+                        .clip(CircleShape),
                 )
             } else {
                 Icon(
@@ -220,20 +186,19 @@ fun ProfileAvatar(
                 confirmButton = {
                     TextButton(onClick = {
                         showDeleteConfirm = false
-                        isUploading = true
-                        userProfileViewModel.deleteUserAvatar { deleteSuccess, deleteMessage ->
-                            isUploading = false
-                            if (!deleteSuccess) {
-                                ToastManager.error(
-                                    context,
-                                    deleteMessage ?: "Ошибка при удалении аватара"
-                                )
-                            }
+                        userProfileViewModel.deleteUserAvatar { success, msg ->
+                            if (!success) Toast.makeText(
+                                context,
+                                msg ?: "Ошибка при удалении",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }) { Text("Да") }
                 },
                 dismissButton = {
-                    TextButton(onClick = { showDeleteConfirm = false }) { Text("Отмена") }
+                    TextButton(onClick = {
+                        showDeleteConfirm = false
+                    }) { Text("Отмена") }
                 }
             )
         }

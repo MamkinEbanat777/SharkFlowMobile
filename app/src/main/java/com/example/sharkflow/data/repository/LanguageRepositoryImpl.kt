@@ -11,7 +11,6 @@ import java.util.Locale
 class LanguageRepositoryImpl @Inject constructor(
     @param:ApplicationContext private val context: Context
 ) : LanguageRepository {
-
     private val _languageFlow = MutableStateFlow("")
     override val currentLanguageFlow: StateFlow<String> = _languageFlow.asStateFlow()
 

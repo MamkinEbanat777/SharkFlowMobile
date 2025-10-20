@@ -1,48 +1,31 @@
 package com.example.sharkflow.presentation.screens.auth.viewmodel
 
-import androidx.lifecycle.*
-import com.example.sharkflow.domain.repository.RegisterRepository
-import com.example.sharkflow.utils.*
+import com.example.sharkflow.domain.usecase.user.auth.ConfirmRegistrationCodeUseCase
+import com.example.sharkflow.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ConfirmationCodeViewModel @Inject constructor(
-    private val registerRepository: RegisterRepository
-) : ViewModel() {
+    private val confirmRegistrationCodeUseCase: ConfirmRegistrationCodeUseCase
+) : BaseViewModel() {
 
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
-    private val _errorMessage = MutableStateFlow<String?>(null)
-    val errorMessage: StateFlow<String?> = _errorMessage
-
+    private val _isConfirmed = MutableStateFlow(false)
+    val isConfirmed: StateFlow<Boolean> = _isConfirmed
 
     fun confirmationCode(
         code: String,
         onSuccess: () -> Unit
     ) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            _errorMessage.value = null
-            try {
-                val response = registerRepository.confirmCode(code)
-
-                if (response.isSuccessful) {
-                    onSuccess()
-                } else {
-                    val errorBodyString = response.errorBody()?.string()
-                    _errorMessage.value = ErrorMapper.map(response.code(), errorBodyString)
-                }
-
-            } catch (e: Exception) {
-                AppLog.e("Network exception", e)
-                _errorMessage.value = "Сервер недоступен, пожалуйста повторите попытку позже"
-            } finally {
-                _isLoading.value = false
-            }
-        }
+        launchResult(
+            block = { confirmRegistrationCodeUseCase(code) }, onSuccess = {
+                _isConfirmed.value = true
+                onSuccess()
+            },
+            onFailure = { throwable ->
+                _errorMessage.value =
+                    throwable?.message ?: "Сервер недоступен, пожалуйста повторите попытку позже"
+            })
     }
 }

@@ -1,7 +1,6 @@
 package com.example.sharkflow.data.repository
 
 import com.example.sharkflow.BuildConfig
-import com.example.sharkflow.data.manager.CloudinaryManager
 import com.example.sharkflow.domain.repository.CloudinaryRepository
 import kotlinx.coroutines.*
 import okhttp3.*
@@ -12,14 +11,12 @@ import javax.inject.*
 
 @Singleton
 class CloudinaryRepositoryImpl @Inject constructor(
-    private val manager: CloudinaryManager
 ) : CloudinaryRepository {
     override suspend fun uploadImage(
         imageBytes: ByteArray,
         accessToken: String?,
         csrfToken: String?
     ): Result<Pair<String, String>> = withContext(Dispatchers.IO) {
-        manager.setUploading(true)
         try {
             val sigResponse = OkHttpClient().newCall(
                 Request.Builder()
@@ -71,13 +68,10 @@ class CloudinaryRepositoryImpl @Inject constructor(
             val uploadedPublicId = json.getString("public_id")
 
             val resultPair = Pair(uploadedUrl, uploadedPublicId)
-            manager.setLastUpload(resultPair)
 
             Result.success(resultPair)
         } catch (e: Exception) {
             Result.failure(e)
-        } finally {
-            manager.setUploading(false)
         }
     }
 }

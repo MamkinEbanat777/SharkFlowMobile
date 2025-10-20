@@ -20,7 +20,7 @@ import java.util.Locale
 fun LanguageButton(languageViewModel: LanguageViewModel = hiltViewModel()) {
     var expanded by remember { mutableStateOf(false) }
 
-    val selectedLanguage by languageViewModel.currentLanguageFlow.collectAsState(initial = "ru")
+    val selectedLanguage by languageViewModel.currentLanguageFlow.collectAsState(initial = "")
 
     val allLanguages = listOf(
         Triple("ru", "Русский 🇷🇺", "ru"),

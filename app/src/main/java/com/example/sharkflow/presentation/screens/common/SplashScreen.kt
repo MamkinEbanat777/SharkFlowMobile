@@ -1,3 +1,5 @@
+package com.example.sharkflow.presentation.screens.common
+
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*

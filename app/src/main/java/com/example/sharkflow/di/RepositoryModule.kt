@@ -46,4 +46,10 @@ abstract class RepositoryModule {
         impl: LanguageRepositoryImpl
     ): LanguageRepository
 
+    @Binds
+    @Singleton
+    abstract fun bindThemeRepository(
+        impl: ThemeRepositoryImpl
+    ): ThemeRepository
+
 }

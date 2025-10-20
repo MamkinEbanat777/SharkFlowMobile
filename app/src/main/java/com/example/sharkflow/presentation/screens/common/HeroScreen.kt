@@ -22,7 +22,7 @@ fun HeroScreen(
     navController: NavController
 ) {
     val authStateViewModel: AuthStateViewModel = hiltViewModel()
-    val isLoggedIn by remember { derivedStateOf { authStateViewModel.isLoggedIn.value } }
+    val isLoggedIn by authStateViewModel.isLoggedIn.collectAsState()
     val steps = Lang.stringArray(R.array.hero_array_step)
 
     Box(
