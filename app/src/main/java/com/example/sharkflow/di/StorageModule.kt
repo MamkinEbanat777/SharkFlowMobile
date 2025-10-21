@@ -3,7 +3,7 @@ package com.example.sharkflow.di
 
 import android.content.Context
 import com.example.sharkflow.data.local.SecureTokenPreference
-import com.example.sharkflow.data.repository.SecureTokenPreferenceImpl
+import com.example.sharkflow.data.repository.remote.SecureTokenPreferenceImpl
 import com.example.sharkflow.data.storage.TokenStorage
 import dagger.*
 import dagger.hilt.InstallIn

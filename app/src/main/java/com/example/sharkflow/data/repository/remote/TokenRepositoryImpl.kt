@@ -1,4 +1,4 @@
-package com.example.sharkflow.data.repository
+package com.example.sharkflow.data.repository.remote
 
 import com.example.sharkflow.data.storage.TokenStorage
 import com.example.sharkflow.domain.repository.TokenRepository

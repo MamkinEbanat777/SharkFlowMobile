@@ -6,8 +6,8 @@ import com.example.sharkflow.data.local.db.entities.*
 
 @Database(
     entities = [UserEntity::class, BoardEntity::class, TaskEntity::class],
-    version = 1,
-    exportSchema = false
+    version = 2,
+    exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao

@@ -1,4 +1,4 @@
-package com.example.sharkflow.data.repository
+package com.example.sharkflow.data.repository.remote
 
 import android.content.Context
 import androidx.core.content.edit

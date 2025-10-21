@@ -1,12 +1,12 @@
 package com.example.sharkflow.domain.usecase.user.delete
 
-import com.example.sharkflow.domain.repository.UserRepository
+import com.example.sharkflow.data.repository.combined.UserRepositoryCombined
 import jakarta.inject.Inject
 
 class RequestDeleteUserCodeUseCase @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepositoryCombined: UserRepositoryCombined
 ) {
     suspend operator fun invoke(): Result<String> {
-        return userRepository.requestDeleteUserCode()
+        return userRepositoryCombined.requestDeleteUserCode()
     }
 }

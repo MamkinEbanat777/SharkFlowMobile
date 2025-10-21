@@ -1,4 +1,4 @@
-package com.example.sharkflow.data.repository
+package com.example.sharkflow.data.repository.remote
 
 import com.example.sharkflow.data.api.UserApi
 import com.example.sharkflow.data.api.dto.user.*
@@ -46,8 +46,7 @@ class UserRepositoryImpl @Inject constructor(
             it.message ?: "Пользователь удалён"
         }
     }
-
-
+    
     override suspend fun updateUserAvatar(
         avatarUrl: String,
         publicId: String

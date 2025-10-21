@@ -1,13 +1,13 @@
 package com.example.sharkflow.domain.usecase.user.get
 
+import com.example.sharkflow.data.repository.combined.UserRepositoryCombined
 import com.example.sharkflow.domain.model.User
-import com.example.sharkflow.domain.repository.UserRepository
 import javax.inject.Inject
 
 class LoadUserUseCase @Inject constructor(
-    private val userRepository: UserRepository
+    private val userRepositoryCombined: UserRepositoryCombined
 ) {
     suspend operator fun invoke(): Result<User> {
-        return userRepository.loadUser()
+        return userRepositoryCombined.loadUser()
     }
 }

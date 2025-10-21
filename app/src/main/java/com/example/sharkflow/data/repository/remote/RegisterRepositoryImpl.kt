@@ -1,4 +1,4 @@
-package com.example.sharkflow.data.repository
+package com.example.sharkflow.data.repository.remote
 
 import com.example.sharkflow.data.api.UserApi
 import com.example.sharkflow.data.api.dto.auth.*

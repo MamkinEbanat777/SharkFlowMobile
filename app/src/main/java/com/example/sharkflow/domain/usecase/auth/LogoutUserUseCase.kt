@@ -1,4 +1,4 @@
-package com.example.sharkflow.domain.usecase.user.auth
+package com.example.sharkflow.domain.usecase.auth
 
 import com.example.sharkflow.domain.manager.*
 import com.example.sharkflow.domain.repository.AuthRepository

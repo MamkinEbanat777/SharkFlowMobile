@@ -1,4 +1,4 @@
-package com.example.sharkflow.data.repository
+package com.example.sharkflow.data.repository.remote
 
 import android.content.Context
 import com.example.sharkflow.data.local.LanguagePreference

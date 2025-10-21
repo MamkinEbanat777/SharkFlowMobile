@@ -1,4 +1,4 @@
-package com.example.sharkflow.data.repository
+package com.example.sharkflow.data.repository.remote
 
 import com.example.sharkflow.BuildConfig
 import com.example.sharkflow.domain.repository.CloudinaryRepository

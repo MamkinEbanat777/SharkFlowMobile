@@ -1,6 +1,6 @@
 package com.example.sharkflow.di
 
-import com.example.sharkflow.data.repository.*
+import com.example.sharkflow.data.repository.remote.*
 import com.example.sharkflow.domain.repository.*
 import dagger.*
 import dagger.hilt.InstallIn

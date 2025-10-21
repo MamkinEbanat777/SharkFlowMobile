@@ -1,8 +1,7 @@
 package com.example.sharkflow.presentation.screens.auth.viewmodel
 
 import androidx.lifecycle.viewModelScope
-import com.example.sharkflow.domain.usecase.auth.CheckTokenUseCase
-import com.example.sharkflow.domain.usecase.user.auth.LogoutUserUseCase
+import com.example.sharkflow.domain.usecase.auth.*
 import com.example.sharkflow.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject

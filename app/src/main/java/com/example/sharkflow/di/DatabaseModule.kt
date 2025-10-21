@@ -20,7 +20,7 @@ object DatabaseModule {
             context,
             AppDatabase::class.java,
             "sharkflow.db"
-        ).build()
+        ).fallbackToDestructiveMigration(false).build()
 
     @Provides
     fun provideBoardDao(db: AppDatabase): BoardDao = db.boardDao()
@@ -30,5 +30,5 @@ object DatabaseModule {
 
     @Provides
     fun provideUserDao(db: AppDatabase): UserDao = db.userDao()
-    
+
 }

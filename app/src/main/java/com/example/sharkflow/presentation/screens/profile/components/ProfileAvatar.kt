@@ -106,7 +106,7 @@ fun ProfileAvatar(
             }
         }
 
-        if (isImageExpanded) {
+        if (isImageExpanded && avatarUrl != null) {
             AlertDialog(
                 onDismissRequest = { isImageExpanded = false },
                 title = { Text("Ваш аватар", style = MaterialTheme.typography.titleMedium) },
