@@ -22,9 +22,10 @@ data class CreateTaskRequestDto(
     @SerializedName("description") val description: String?,
     @SerializedName("dueDate") val dueDate: String? = null,
     @SerializedName("status") val status: Status = Status.PENDING,
-    @SerializedName("priority") val priority: Priority = Priority.MEDIUM
+    @SerializedName("priority") val priority: Priority = Priority.MEDIUM,
+    @SerializedName("createdAt") val createdAt: String? = null,
+    @SerializedName("updatedAt") val updatedAt: String? = null
 )
-
 
 data class CreateTaskResponseDto(
     @SerializedName("message") val message: String,
@@ -32,13 +33,13 @@ data class CreateTaskResponseDto(
     @SerializedName("taskCount") val taskCount: Int
 )
 
-
 data class UpdateTaskRequestDto(
     @SerializedName("title") val title: String? = null,
     @SerializedName("description") val description: String? = null,
     @SerializedName("dueDate") val dueDate: String? = null,
     @SerializedName("status") val status: Status? = null,
-    @SerializedName("priority") val priority: Priority? = null
+    @SerializedName("priority") val priority: Priority? = null,
+    @SerializedName("updatedAt") val updatedAt: String? = null
 )
 
 data class UpdateTaskResponseDto(

@@ -12,6 +12,7 @@ import jakarta.inject.Inject
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.*
+import java.time.Instant
 
 @HiltViewModel
 class TasksViewModel @Inject constructor(
@@ -72,10 +73,10 @@ class TasksViewModel @Inject constructor(
             val res = repo.createTask(board, createDto)
             res.onSuccess {
                 _events.send(TasksUiEvent.ShowMessage("Task created"))
-                try {
-                    repo.refreshTasks(board)
-                } catch (_: Exception) {
-                }
+//                try {
+//                    repo.refreshTasks(board)
+//                } catch (_: Exception) {
+//                }
             }.onFailure { _events.send(TasksUiEvent.ShowMessage("Create failed: ${it.message}")) }
 
             _uiState.update { it.copy(isLoading = false) }
@@ -93,7 +94,8 @@ class TasksViewModel @Inject constructor(
                         description = update.description ?: t.description,
                         dueDate = update.dueDate ?: t.dueDate,
                         status = update.status ?: t.status,
-                        priority = update.priority ?: t.priority
+                        priority = update.priority ?: t.priority,
+                        updatedAt = Instant.now().toString()
                     ) else t
                 }
             )
@@ -102,12 +104,14 @@ class TasksViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             val normalizedForSend = DateUtils.toServerInstantString(update.dueDate)
+
             val updateToSend = UpdateTaskRequestDto(
                 title = update.title,
                 description = update.description,
                 dueDate = normalizedForSend,
                 status = update.status,
-                priority = update.priority
+                priority = update.priority,
+                updatedAt = Instant.now().toString()
             )
 
             val res = repo.updateTask(board, taskUuid, updateToSend)
@@ -162,7 +166,6 @@ class TasksViewModel @Inject constructor(
     fun dismissDeleteDialog() {
         _showConfirmDelete.value = null
     }
-
 }
 
 data class TasksUiState(

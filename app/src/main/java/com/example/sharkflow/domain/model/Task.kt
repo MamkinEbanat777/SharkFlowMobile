@@ -4,6 +4,7 @@ import com.example.sharkflow.data.api.dto.task.*
 
 data class Task(
     val uuid: String,
+    val serverUuid: String? = null,
     val title: String,
     val description: String?,
     val boardUuid: String,
@@ -11,5 +12,7 @@ data class Task(
     val status: Status,
     val priority: Priority,
     val isDeleted: Boolean = false,
-    val isSynced: Boolean = false
+    val isSynced: Boolean = false,
+    val createdAt: String?,
+    val updatedAt: String?
 )

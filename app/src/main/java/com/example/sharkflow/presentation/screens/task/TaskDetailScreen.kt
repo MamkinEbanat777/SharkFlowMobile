@@ -146,6 +146,7 @@ fun TaskDetailScreen(
                             }
                         }
 
+                        // Срок
                         Card(
                             shape = RoundedCornerShape(12.dp),
                             modifier = Modifier.fillMaxWidth()
@@ -165,6 +166,43 @@ fun TaskDetailScreen(
                                 )
                             }
                         }
+
+                        // Создано
+                        Card(
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Filled.AddTask, contentDescription = "Создано")
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    "Создано: ${formatDateTimeReadable(task.createdAt)}",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                        }
+
+                        // Обновлено
+                        Card(
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Filled.Update, contentDescription = "Обновлено")
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    "Обновлено: ${formatDateTimeReadable(task.updatedAt)}",
+                                    style = MaterialTheme.typography.bodyMedium
+                                )
+                            }
+                        }
+
 
                         Column(
                             modifier = Modifier.fillMaxWidth(),

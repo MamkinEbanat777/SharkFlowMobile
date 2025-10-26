@@ -187,7 +187,7 @@ fun CreateEditTaskDialog(
                         label = { Text("Приоритет") },
                         trailingIcon = {
                             IconButton(onClick = { priorityExpanded = !priorityExpanded }) {
-                                Icon(Icons.Default.PriorityHigh, contentDescription = null)
+                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
                             }
                         },
                         modifier = Modifier.fillMaxWidth()

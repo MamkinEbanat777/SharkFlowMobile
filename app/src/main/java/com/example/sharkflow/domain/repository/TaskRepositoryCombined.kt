@@ -10,7 +10,11 @@ interface TaskRepositoryCombined {
 
     suspend fun refreshTasks(boardUuid: String)
 
-    suspend fun createTask(boardUuid: String, createDto: CreateTaskRequestDto): Result<Task>
+    suspend fun createTask(
+        boardUuid: String,
+        createDto: CreateTaskRequestDto,
+        localUuid: String? = null
+    ): Result<Task>
 
     suspend fun updateTask(
         boardUuid: String,
@@ -23,4 +27,7 @@ interface TaskRepositoryCombined {
         taskUuid: String,
         hardDelete: Boolean = false
     ): Result<DeletedTaskInfoDto>
+
+    suspend fun getUnsyncedTasks(): List<Task>
+    suspend fun getDeletedTasks(): List<Task>
 }

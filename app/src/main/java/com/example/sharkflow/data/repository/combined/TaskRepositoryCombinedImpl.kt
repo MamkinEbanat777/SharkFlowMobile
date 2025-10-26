@@ -1,6 +1,7 @@
 package com.example.sharkflow.data.repository.combined
 
 import com.example.sharkflow.data.api.dto.task.*
+import com.example.sharkflow.data.local.db.entities.TaskEntity
 import com.example.sharkflow.data.mapper.TaskMapper
 import com.example.sharkflow.data.repository.local.TaskLocalRepositoryImpl
 import com.example.sharkflow.data.repository.remote.TaskRepositoryImpl
@@ -8,6 +9,7 @@ import com.example.sharkflow.domain.model.Task
 import com.example.sharkflow.domain.repository.TaskRepositoryCombined
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.*
+import java.time.Instant
 
 class TaskRepositoryCombinedImpl @Inject constructor(
     private val local: TaskLocalRepositoryImpl,
@@ -15,37 +17,128 @@ class TaskRepositoryCombinedImpl @Inject constructor(
 ) : TaskRepositoryCombined {
 
     override fun getTasksFlow(boardUuid: String): Flow<List<Task>> =
-        local.getTasksFlow(boardUuid)
-            .map { it.map(TaskMapper::fromEntity) }
+        local.getTasksFlow(boardUuid).map { it.map(TaskMapper::fromEntity) }
 
     override suspend fun refreshTasks(boardUuid: String) {
-        val remoteTasks = remote.getTasks(boardUuid).getOrNull() ?: return
-        local.insertOrUpdateTasks(remoteTasks.map(TaskMapper::toEntity))
+        val remoteRes = remote.getTasks(boardUuid).getOrNull() ?: return
+
+        val localList = local.getTasksFlow(boardUuid).first()
+        val localByServer =
+            localList.filter { it.serverUuid != null }.associateBy { it.serverUuid!! }
+
+        val toInsertOrUpdate = mutableListOf<TaskEntity>()
+        remoteRes.forEach { remoteTask ->
+            val serverUuid = remoteTask.serverUuid
+            val existing = serverUuid?.let { localByServer[it] }
+            if (existing != null) {
+                toInsertOrUpdate.add(
+                    existing.copy(
+                        title = remoteTask.title,
+                        description = remoteTask.description,
+                        status = remoteTask.status.name,
+                        priority = remoteTask.priority.name,
+                        dueDate = remoteTask.dueDate,
+                        createdAt = remoteTask.createdAt,
+                        updatedAt = remoteTask.updatedAt,
+                        isSynced = true
+                    )
+                )
+            } else {
+                val unsyncedLocal = localList.find {
+                    it.serverUuid == null &&
+                            !it.isDeleted &&
+                            it.title == remoteTask.title &&
+                            (it.description == remoteTask.description || (it.description.isNullOrBlank() && remoteTask.description.isNullOrBlank())) &&
+                            (it.dueDate == remoteTask.dueDate)
+                }
+
+                val uuidToUse = unsyncedLocal?.uuid ?: java.util.UUID.randomUUID().toString()
+                toInsertOrUpdate.add(
+                    TaskEntity(
+                        uuid = uuidToUse,
+                        serverUuid = serverUuid,
+                        title = remoteTask.title,
+                        description = remoteTask.description,
+                        boardUuid = boardUuid,
+                        status = remoteTask.status.name,
+                        priority = remoteTask.priority.name,
+                        dueDate = remoteTask.dueDate,
+                        createdAt = remoteTask.createdAt,
+                        updatedAt = remoteTask.updatedAt,
+                        isSynced = true
+                    )
+                )
+            }
+        }
+
+        local.insertOrUpdateTasks(toInsertOrUpdate)
     }
 
     override suspend fun createTask(
         boardUuid: String,
-        createDto: CreateTaskRequestDto
+        createDto: CreateTaskRequestDto,
+        localUuid: String?
     ): Result<Task> = runCatching {
-        println("📌 [createTask] Начинаем создание таски: boardUuid=$boardUuid, title='${createDto.title}', description='${createDto.description}'")
+        val existingLocal = localUuid?.let { local.getByLocalUuid(it) }
 
-        val task = remote.createTask(boardUuid, createDto).getOrNull()
-        if (task == null) {
-            println("⚠️ [createTask] Сервер не вернул таску, выбрасываем исключение")
-            throw Exception("Failed to create task on server")
+        if (existingLocal != null) {
+            val tempUpdated = existingLocal.copy(
+                title = createDto.title,
+                description = createDto.description,
+                status = createDto.status.name,
+                priority = createDto.priority.name,
+                dueDate = createDto.dueDate,
+                isSynced = false,
+                isDeleted = false
+            )
+            local.updateTask(tempUpdated)
+
+            val remoteRes = try {
+                remote.createTask(boardUuid, createDto).getOrNull()
+            } catch (e: Exception) {
+                null
+            }
+
+            if (remoteRes != null) {
+                val final = tempUpdated.copy(serverUuid = remoteRes.serverUuid, isSynced = true)
+                local.updateTask(final)
+                return@runCatching TaskMapper.fromEntity(final)
+
+            } else {
+                return@runCatching TaskMapper.fromEntity(tempUpdated)
+            }
         }
 
-        println("✅ [createTask] Таска получена с сервера: uuid=${task.uuid}, title=${task.title}")
+        val localGeneratedUuid = java.util.UUID.randomUUID().toString()
+        val tempEntity = TaskEntity(
+            uuid = localGeneratedUuid,
+            serverUuid = null,
+            title = createDto.title,
+            description = createDto.description,
+            boardUuid = boardUuid,
+            status = createDto.status.name,
+            priority = createDto.priority.name,
+            isSynced = false,
+            dueDate = createDto.dueDate,
+            createdAt = createDto.createdAt,
+            updatedAt = createDto.updatedAt,
+        )
+        local.insertOrUpdateTasks(listOf(tempEntity))
 
-        val entity = TaskMapper.toEntity(task)
-        println("🔹 [createTask] Замаппили Task в TaskEntity: $entity")
+        val remoteRes = try {
+            remote.createTask(boardUuid, createDto).getOrNull()
+        } catch (e: Exception) {
+            null
+        }
 
-        local.insertOrUpdateTasks(listOf(entity))
-        println("💾 [createTask] Таска вставлена в локальную базу Room: uuid=${entity.uuid}")
+        if (remoteRes != null) {
+            val updated = tempEntity.copy(serverUuid = remoteRes.serverUuid, isSynced = true)
+            local.updateTask(updated)
+            return@runCatching TaskMapper.fromEntity(updated)
+        } else {
+            return@runCatching TaskMapper.fromEntity(tempEntity)
+        }
 
-        task
-    }.onFailure { e ->
-        println("❌ [createTask] Ошибка при создании таски: ${e.message}")
     }
 
     override suspend fun updateTask(
@@ -53,26 +146,39 @@ class TaskRepositoryCombinedImpl @Inject constructor(
         taskUuid: String,
         update: UpdateTaskRequestDto
     ): Result<Task> = runCatching {
-        val updatedFields = remote.updateTask(boardUuid, taskUuid, update).getOrNull()
-        val currentEntity = local.getTasksFlow(boardUuid).first().find { it.uuid == taskUuid }
-            ?: throw Exception("Task not found locally")
-        val current = TaskMapper.fromEntity(currentEntity)
+        val localEntity =
+            local.getByLocalUuid(taskUuid) ?: throw Exception("Task not found locally")
+        val serverUuid = localEntity.serverUuid
 
-        val merged = if (updatedFields != null) {
-            TaskMapper.mergeUpdate(current, updatedFields)
-        } else {
-            current.copy(
-                title = update.title ?: current.title,
-                description = update.description ?: current.description,
-                status = update.status ?: current.status,
-                priority = update.priority ?: current.priority,
+        if (serverUuid == null) {
+            val updated = localEntity.copy(
+                title = update.title ?: localEntity.title,
+                description = update.description ?: localEntity.description,
+                status = update.status?.name ?: localEntity.status,
+                priority = update.priority?.name ?: localEntity.priority,
+                dueDate = update.dueDate ?: localEntity.dueDate,
+                updatedAt = Instant.now().toString(),
                 isSynced = false
             )
+            local.updateTask(updated)
+            return@runCatching TaskMapper.fromEntity(updated)
         }
 
-
-        local.updateTask(TaskMapper.toEntity(merged))
-        merged
+        val remoteUpdatedDto = remote.updateTask(boardUuid, serverUuid, update).getOrNull()
+        val mergedEntity = localEntity.copy(
+            title = remoteUpdatedDto?.title ?: update.title ?: localEntity.title,
+            description = remoteUpdatedDto?.description ?: update.description
+            ?: localEntity.description,
+            status = remoteUpdatedDto?.status?.name ?: update.status?.name ?: localEntity.status,
+            priority = remoteUpdatedDto?.priority?.name ?: update.priority?.name
+            ?: localEntity.priority,
+            updatedAt = Instant.now().toString(),
+            dueDate = remoteUpdatedDto?.dueDate ?: update.dueDate ?: localEntity.dueDate,
+            isSynced = remoteUpdatedDto != null,
+            isDeleted = false
+        )
+        local.updateTask(mergedEntity)
+        return@runCatching TaskMapper.fromEntity(mergedEntity)
     }
 
     override suspend fun deleteTask(
@@ -80,15 +186,16 @@ class TaskRepositoryCombinedImpl @Inject constructor(
         taskUuid: String,
         hardDelete: Boolean
     ): Result<DeletedTaskInfoDto> = runCatching {
-        val remoteResult = remote.deleteTask(boardUuid, taskUuid).getOrNull()
         val localEntity = local.getTasksFlow(boardUuid).first().find { it.uuid == taskUuid }
 
+        val remoteResult = when (val serverUuid = localEntity?.serverUuid) {
+            null -> null
+            else -> remote.deleteTask(boardUuid, serverUuid).getOrNull()
+        }
+
         if (localEntity != null) {
-            if (hardDelete) {
-                local.deleteTask(localEntity)
-            } else {
-                local.updateTask(localEntity.copy(isDeleted = true))
-            }
+            if (hardDelete) local.deleteTask(localEntity)
+            else local.updateTask(localEntity.copy(isDeleted = true))
         }
 
         remoteResult ?: DeletedTaskInfoDto(
@@ -97,5 +204,10 @@ class TaskRepositoryCombinedImpl @Inject constructor(
         )
     }
 
-}
 
+    override suspend fun getUnsyncedTasks(): List<Task> =
+        local.getUnsyncedTasks().map(TaskMapper::fromEntity)
+
+    override suspend fun getDeletedTasks(): List<Task> =
+        local.getDeletedTasks().map(TaskMapper::fromEntity)
+}

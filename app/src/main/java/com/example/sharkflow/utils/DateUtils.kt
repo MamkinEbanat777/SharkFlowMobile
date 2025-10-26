@@ -34,7 +34,7 @@ object DateUtils {
      */
 
     fun formatDateTimeReadable(raw: String?): String? {
-        val inst = DateUtils.parseToInstant(raw) ?: return null
+        val inst = DateUtils.parseToInstant(raw) ?: return "-"
         val zoned = inst.atZone(ZoneId.systemDefault())
         val localDate = zoned.toLocalDate()
         val localTime = zoned.toLocalTime()
@@ -42,11 +42,9 @@ object DateUtils {
         val currentLocale = Locale.getDefault()
 
         return if (localTime != LocalTime.MIDNIGHT) {
-            // Есть время — показываем дату + время
             val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy, HH:mm", currentLocale)
             zoned.format(formatter)
         } else {
-            // Только дата
             val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy", currentLocale)
             localDate.format(formatter)
         }

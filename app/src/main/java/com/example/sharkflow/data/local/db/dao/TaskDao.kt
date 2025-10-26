@@ -21,5 +21,17 @@ interface TaskDao {
     @Delete
     suspend fun deleteTask(task: TaskEntity)
 
-}
+    @Query("SELECT * FROM tasks WHERE serverUuid = :serverUuid LIMIT 1")
+    suspend fun getByServerUuid(serverUuid: String): TaskEntity?
 
+    @Query("SELECT * FROM tasks WHERE uuid = :localUuid LIMIT 1")
+    suspend fun getByLocalUuid(localUuid: String): TaskEntity?
+
+    @Query("SELECT * FROM tasks WHERE (isSynced = 0) OR (serverUuid IS NULL)")
+    suspend fun getUnsyncedTasks(): List<TaskEntity>
+
+    @Query("SELECT * FROM tasks WHERE isDeleted = 1")
+    suspend fun getDeletedTasks(): List<TaskEntity>
+
+
+}

@@ -10,4 +10,9 @@ class TaskLocalRepositoryImpl @Inject constructor(private val dao: TaskDao) {
     suspend fun updateTask(task: TaskEntity) = dao.updateTask(task)
     suspend fun deleteTask(task: TaskEntity) = dao.deleteTask(task)
     suspend fun clearTasksForBoard(boardUuid: String) = dao.clearTasksForBoard(boardUuid)
+    suspend fun getByServerUuid(serverUuid: String) = dao.getByServerUuid(serverUuid)
+    suspend fun getByLocalUuid(localUuid: String) = dao.getByLocalUuid(localUuid)
+    suspend fun getUnsyncedTasks() = dao.getUnsyncedTasks()
+    suspend fun getDeletedTasks() = dao.getDeletedTasks()
+
 }

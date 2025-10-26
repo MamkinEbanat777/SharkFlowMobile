@@ -46,7 +46,7 @@ class BoardsViewModel @Inject constructor(
                     repo.getBoardsFlow(userId = 0)
                         .catch { e ->
                             _uiState.update { it.copy(isLoading = false) }
-                            _events.send(BoardsUiEvent.ShowMessage("Failed to load boards: ${e.message}"))
+                            _events.send(BoardsUiEvent.ShowMessage("Ошибка загрузки досок: ${e.message}"))
                         }
                         .collect { boards ->
                             _uiState.update { it.copy(isLoading = false, boards = boards) }
@@ -64,7 +64,7 @@ class BoardsViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             val userUuid = userManager.currentUser.value?.uuid ?: run {
-                _events.send(BoardsUiEvent.ShowMessage("User not logged in"))
+                _events.send(BoardsUiEvent.ShowMessage("Пользователь не залогинен"))
                 _uiState.update { it.copy(isLoading = false) }
                 return@launch
             }
@@ -78,9 +78,9 @@ class BoardsViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
             val res = repo.createBoard(title, colorHex)
             res.onSuccess {
-                _events.send(BoardsUiEvent.ShowMessage("Board created"))
+                _events.send(BoardsUiEvent.ShowMessage("Доска успешно создана"))
             }.onFailure {
-                _events.send(BoardsUiEvent.ShowMessage("Create failed: ${it.message}"))
+                _events.send(BoardsUiEvent.ShowMessage("Ошибка создания доски: ${it.message}"))
             }
             _uiState.update { it.copy(isLoading = false) }
         }
@@ -91,9 +91,9 @@ class BoardsViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
             val res = repo.updateBoard(boardUuid, update)
             res.onSuccess {
-                _events.send(BoardsUiEvent.ShowMessage("Board updated"))
+                _events.send(BoardsUiEvent.ShowMessage("Доска успешно обновлена"))
             }.onFailure {
-                _events.send(BoardsUiEvent.ShowMessage("Update failed: ${it.message}"))
+                _events.send(BoardsUiEvent.ShowMessage("Ошибка обновления доски: ${it.message}"))
             }
             _uiState.update { it.copy(isLoading = false) }
         }
@@ -104,9 +104,9 @@ class BoardsViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
             val res = repo.deleteBoard(boardUuid)
             res.onSuccess {
-                _events.send(BoardsUiEvent.ShowMessage("Board deleted"))
+                _events.send(BoardsUiEvent.ShowMessage("Доска успешно удалена"))
             }.onFailure {
-                _events.send(BoardsUiEvent.ShowMessage("Delete failed: ${it.message}"))
+                _events.send(BoardsUiEvent.ShowMessage("Ошибка удаления доски: ${it.message}"))
             }
             _uiState.update { it.copy(isLoading = false) }
         }

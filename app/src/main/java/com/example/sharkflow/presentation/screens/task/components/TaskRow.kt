@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
 import androidx.compose.ui.text.style.TextOverflow
@@ -15,6 +16,7 @@ import com.example.sharkflow.data.api.dto.task.*
 import com.example.sharkflow.domain.model.Task
 import com.example.sharkflow.presentation.theme.SuccessColor
 import com.example.sharkflow.utils.DateUtils
+import com.example.sharkflow.utils.DateUtils.formatDateTimeReadable
 import java.time.*
 import java.util.concurrent.TimeUnit
 
@@ -143,11 +145,50 @@ fun TaskRow(
                         color = syncColor,
                         modifier = Modifier
                             .background(
-                                color = MaterialTheme.colorScheme.background,
+                                color = colorScheme.background,
                                 shape = RoundedCornerShape(6.dp)
                             )
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     )
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Schedule,
+                            contentDescription = "Создано",
+                            tint = colorScheme.onPrimary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = task.createdAt?.let { formatDateTimeReadable(it) }
+                                ?: "—",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = colorScheme.onPrimary
+                        )
+
+                    }
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Update,
+                            contentDescription = "Обновлено",
+                            tint = colorScheme.onPrimary,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = task.updatedAt?.let { formatDateTimeReadable(it.toString()) }
+                                ?: "—",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = colorScheme.onPrimary
+                        )
+                    }
                 }
             }
 
@@ -159,7 +200,7 @@ fun TaskRow(
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = "Удалить",
-                        tint = MaterialTheme.colorScheme.error
+                        tint = colorScheme.error
                     )
                 }
             }
