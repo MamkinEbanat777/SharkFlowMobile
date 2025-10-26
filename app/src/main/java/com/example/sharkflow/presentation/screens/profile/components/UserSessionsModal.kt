@@ -17,7 +17,7 @@ import com.example.sharkflow.presentation.common.*
 import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewModel
 import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
 import com.example.sharkflow.presentation.theme.SuccessColor
-import com.example.sharkflow.utils.DateUtils.formatDateReadable
+import com.example.sharkflow.utils.DateUtils.formatDateTimeReadable
 import com.example.sharkflow.utils.UaParser
 
 @Composable
@@ -215,11 +215,11 @@ fun UserSessionsModal(
                                     style = typography.bodySmall,
                                 )
                                 Text(
-                                    "Первый вход: ${formatDateReadable(session.createdAt)}",
+                                    "Первый вход: ${formatDateTimeReadable(session.createdAt)}",
                                     style = typography.bodySmall,
                                 )
                                 Text(
-                                    "Последний вход: ${formatDateReadable(session.lastLoginAt)}",
+                                    "Последний вход: ${formatDateTimeReadable(session.lastLoginAt)}",
                                     style = typography.bodySmall,
                                 )
 

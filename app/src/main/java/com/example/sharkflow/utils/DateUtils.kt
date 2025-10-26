@@ -33,16 +33,25 @@ object DateUtils {
      * Если строка не парсится — возвращает null.
      */
 
-    fun formatDateReadable(raw: String?): String? {
-        val inst = parseToInstant(raw) ?: return null
-        val localDate = inst.atZone(ZoneId.systemDefault()).toLocalDate()
+    fun formatDateTimeReadable(raw: String?): String? {
+        val inst = DateUtils.parseToInstant(raw) ?: return null
+        val zoned = inst.atZone(ZoneId.systemDefault())
+        val localDate = zoned.toLocalDate()
+        val localTime = zoned.toLocalTime()
 
         val currentLocale = Locale.getDefault()
 
-        val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy", currentLocale)
-
-        return localDate.format(formatter)
+        return if (localTime != LocalTime.MIDNIGHT) {
+            // Есть время — показываем дату + время
+            val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy, HH:mm", currentLocale)
+            zoned.format(formatter)
+        } else {
+            // Только дата
+            val formatter = DateTimeFormatter.ofPattern("d MMMM yyyy", currentLocale)
+            localDate.format(formatter)
+        }
     }
+
 
     /**
      * Нормализация для отправки на сервер: принимает либо:

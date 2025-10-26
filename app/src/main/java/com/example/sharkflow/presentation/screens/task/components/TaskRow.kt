@@ -62,7 +62,7 @@ fun TaskRow(
 
                 task.dueDate?.let { rawDate ->
                     val dueInstant = DateUtils.parseToInstant(rawDate)
-                    val dueDateFormatted = DateUtils.formatDateReadable(rawDate) ?: rawDate
+                    val dueDateFormatted = DateUtils.formatDateTimeReadable(rawDate) ?: rawDate
 
                     Log.d("TaskRow", "rawDate='$rawDate' instant=$dueInstant")
 

@@ -17,7 +17,7 @@ import com.example.sharkflow.data.api.dto.task.*
 import com.example.sharkflow.presentation.common.*
 import com.example.sharkflow.presentation.screens.task.components.*
 import com.example.sharkflow.presentation.screens.task.viewmodel.TaskDetailViewModel
-import com.example.sharkflow.utils.DateUtils.formatDateReadable
+import com.example.sharkflow.utils.DateUtils.formatDateTimeReadable
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -160,7 +160,7 @@ fun TaskDetailScreen(
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    "Срок: ${formatDateReadable(task.dueDate ?: "—")}",
+                                    "Срок: ${formatDateTimeReadable(task.dueDate ?: "—")}",
                                     style = MaterialTheme.typography.bodyMedium
                                 )
                             }

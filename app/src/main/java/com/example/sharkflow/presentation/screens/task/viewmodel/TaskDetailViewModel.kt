@@ -5,7 +5,7 @@ import androidx.lifecycle.*
 import com.example.sharkflow.data.api.dto.task.UpdateTaskRequestDto
 import com.example.sharkflow.domain.model.Task
 import com.example.sharkflow.domain.repository.TaskRepositoryCombined
-import com.example.sharkflow.utils.DateUtils.formatDateReadable
+import com.example.sharkflow.utils.DateUtils.formatDateTimeReadable
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.*
@@ -32,7 +32,7 @@ class TaskDetailViewModel @Inject constructor(
             repo.getTasksFlow(boardUuid)
                 .map { it.find { t -> t.uuid == taskUuid } }
                 .collect { task ->
-                    val formatted: String? = formatDateReadable(task?.dueDate)
+                    val formatted: String? = formatDateTimeReadable(task?.dueDate)
                     _uiState.update {
                         formatted?.let { dueDateFormatted ->
                             it.copy(
@@ -69,21 +69,21 @@ class TaskDetailViewModel @Inject constructor(
 
             try {
                 val res = repo.updateTask(boardUuid, taskUuid, update)
-                try {
-                    repo.refreshTasks(boardUuid)
-                } catch (refreshEx: Exception) {
-                    android.util.Log.e(
-                        "TaskDetailVM",
-                        "refresh after update failed: ${refreshEx.message}"
-                    )
-                }
+//                try {
+//                    repo.refreshTasks(boardUuid)
+//                } catch (refreshEx: Exception) {
+//                    android.util.Log.e(
+//                        "TaskDetailVM",
+//                        "refresh after update failed: ${refreshEx.message}"
+//                    )
+//                }
+
             } catch (e: Exception) {
                 android.util.Log.e("TaskDetailVM", "updateTask failed: ${e.message}")
                 _uiState.update { it.copy(isLoading = false) }
                 return@launch
             }
 
-            // 3) снять индикатор загрузки (финализируем)
             _uiState.update { it.copy(isLoading = false) }
         }
     }

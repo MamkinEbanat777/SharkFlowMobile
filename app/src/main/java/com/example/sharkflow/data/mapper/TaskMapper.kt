@@ -61,6 +61,7 @@ object TaskMapper {
             title = partial.title ?: current.title,
             description = partial.description ?: current.description,
             status = partial.status ?: current.status,
-            priority = partial.priority ?: current.priority
+            priority = partial.priority ?: current.priority,
+            dueDate = partial.dueDate ?: current.dueDate
         )
 }

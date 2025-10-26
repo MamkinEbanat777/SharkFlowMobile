@@ -1,6 +1,5 @@
 package com.example.sharkflow.presentation.screens.task.components
 
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,7 +21,7 @@ import java.util.Locale
 fun CreateEditTaskDialog(
     initialTitle: String = "",
     initialDescription: String? = "",
-    initialDueDate: String? = null, // either ISO instant or yyyy-MM-dd or null
+    initialDueDate: String? = null,
     initialStatus: Status? = Status.PENDING,
     initialPriority: Priority? = Priority.MEDIUM,
     onDismiss: () -> Unit,
@@ -39,22 +38,31 @@ fun CreateEditTaskDialog(
     var status by remember { mutableStateOf(initialStatus ?: Status.PENDING) }
     var priority by remember { mutableStateOf(initialPriority ?: Priority.MEDIUM) }
 
-    // selectedDateMillis хранит millis выбранной даты (start of day local)
     var selectedDateMillis by remember {
-        mutableStateOf(DateUtils.parseToInstant(initialDueDate)?.toEpochMilli() ?: 0L)
+        mutableLongStateOf(DateUtils.parseToInstant(initialDueDate)?.toEpochMilli() ?: 0L)
     }
     var dueDateIso by remember {
         mutableStateOf(DateUtils.toServerInstantString(initialDueDate) ?: "")
     }
 
-    val displayFormatter =
-        remember { DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()) }
+    val initialLocalTime = remember(initialDueDate) {
+        DateUtils.parseToInstant(initialDueDate)
+            ?.atZone(ZoneId.systemDefault())
+            ?.toLocalTime()
+            ?: LocalTime.MIDNIGHT
+    }
+
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()) }
+    val dateTimeFormatter =
+        remember { DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm", Locale.getDefault()) }
 
     val dueDateText by remember(selectedDateMillis) {
         derivedStateOf {
             if (selectedDateMillis > 0L) {
-                val inst = Instant.ofEpochMilli(selectedDateMillis)
-                inst.atZone(ZoneId.systemDefault()).toLocalDate().format(displayFormatter)
+                val z = Instant.ofEpochMilli(selectedDateMillis).atZone(ZoneId.systemDefault())
+                val time = z.toLocalTime()
+                if (time != LocalTime.MIDNIGHT) z.format(dateTimeFormatter)
+                else z.toLocalDate().format(dateFormatter)
             } else "Не выбрано"
         }
     }
@@ -63,6 +71,25 @@ fun CreateEditTaskDialog(
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = selectedDateMillis.takeIf { it > 0L }
     )
+
+    // Time picker state
+    val timePickerState = rememberTimePickerState(
+        initialHour = initialLocalTime.hour,
+        initialMinute = initialLocalTime.minute,
+        is24Hour = true
+    )
+    var showTimeDialog by remember { mutableStateOf(false) }
+
+    LaunchedEffect(showTimeDialog) {
+        if (showTimeDialog) {
+            val inst = if (selectedDateMillis > 0L) {
+                Instant.ofEpochMilli(selectedDateMillis)
+                    .atZone(ZoneId.systemDefault()).toLocalTime()
+            } else initialLocalTime
+            timePickerState.hour = inst.hour
+            timePickerState.minute = inst.minute
+        }
+    }
 
     fun openCalendar() {
         datePickerState.selectedDateMillis =
@@ -119,7 +146,7 @@ fun CreateEditTaskDialog(
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                // Статус (упрощённый)
+                // Статус
                 var statusExpanded by remember { mutableStateOf(false) }
                 Box {
                     OutlinedTextField(
@@ -140,19 +167,17 @@ fun CreateEditTaskDialog(
                         properties = PopupProperties(focusable = false)
                     ) {
                         Status.entries.forEach { s ->
-                            DropdownMenuItem(
-                                text = { Text(s.displayName()) },
-                                onClick = {
-                                    status = s
-                                    statusExpanded = false
-                                }
-                            )
+                            DropdownMenuItem(text = { Text(s.displayName()) }, onClick = {
+                                status = s
+                                statusExpanded = false
+                            })
                         }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
 
+                // Приоритет
                 var priorityExpanded by remember { mutableStateOf(false) }
                 Box {
                     OutlinedTextField(
@@ -173,23 +198,16 @@ fun CreateEditTaskDialog(
                         properties = PopupProperties(focusable = false)
                     ) {
                         Priority.entries.forEach { p ->
-                            DropdownMenuItem(
-                                text = { Text(p.displayName()) },
-                                onClick = {
-                                    priority = p
-                                    priorityExpanded = false
-                                }
-                            )
+                            DropdownMenuItem(text = { Text(p.displayName()) }, onClick = {
+                                priority = p
+                                priorityExpanded = false
+                            })
                         }
                     }
                 }
             }
         },
         confirmButton = {
-            Log.d(
-                "CreateEditDialog",
-                "onConfirm dueDateIso='$dueDateIso' selectedMillis=$selectedDateMillis"
-            )
             TextButton(onClick = {
                 val sendDue = dueDateIso.ifBlank { null }
                 onConfirm(title.trim(), description.trim(), sendDue, status, priority)
@@ -200,6 +218,7 @@ fun CreateEditTaskDialog(
         }
     )
 
+    // DatePickerDialog — показываем только если нужно
     if (showCalendarDialog) {
         DatePickerDialog(
             onDismissRequest = { showCalendarDialog = false },
@@ -207,21 +226,46 @@ fun CreateEditTaskDialog(
                 TextButton(onClick = {
                     val millis = datePickerState.selectedDateMillis
                     if (millis != null) {
-                        // Берём выбранную дату в локальной зоне, нормализуем на startOfDay локальной зоны и сохраняем Instant.toString()
-                        val localDate = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault())
-                            .toLocalDate()
-                        val instant = localDate.atStartOfDay(ZoneId.systemDefault()).toInstant()
-                        selectedDateMillis = instant.toEpochMilli()
-                        dueDateIso = instant.toString() // готово для сервера
+                        // datePickerState обычно даёт millis на startOfDay(system)
+                        selectedDateMillis = millis
+                        // сразу открываем выбор времени
+                        showTimeDialog = true
                     }
                     showCalendarDialog = false
                 }) { Text("OK") }
             },
             dismissButton = {
-                TextButton(onClick = { showCalendarDialog = false }) { Text("Отмена") }
+                TextButton(onClick = {
+                    showCalendarDialog = false
+                }) { Text("Отмена") }
             }
         ) {
             DatePicker(state = datePickerState, showModeToggle = false)
+        }
+    }
+
+    // TimePickerDialog — показываем после выбора даты
+    if (showTimeDialog) {
+        TimePickerDialog(
+            onDismissRequest = { showTimeDialog = false },
+            title = { Text("Выберите время") },
+            confirmButton = {
+                TextButton(onClick = {
+                    val localDate = Instant.ofEpochMilli(selectedDateMillis)
+                        .atZone(ZoneId.systemDefault()).toLocalDate()
+                    val chosenLocalDateTime = LocalDateTime.of(
+                        localDate,
+                        LocalTime.of(timePickerState.hour, timePickerState.minute)
+                    )
+                    val instant = chosenLocalDateTime.atZone(ZoneId.systemDefault()).toInstant()
+                    selectedDateMillis = instant.toEpochMilli()
+                    dueDateIso = instant.toString()
+                    showTimeDialog = false
+                }) { Text("OK") }
+            },
+            dismissButton = { TextButton(onClick = { showTimeDialog = false }) { Text("Отмена") } }
+        ) {
+            TimePicker(state = timePickerState)
         }
     }
 }

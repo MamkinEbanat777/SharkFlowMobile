@@ -1,6 +1,5 @@
 package com.example.sharkflow.presentation.screens.task.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
 import com.example.sharkflow.data.api.dto.task.*
@@ -114,11 +113,6 @@ class TasksViewModel @Inject constructor(
             val res = repo.updateTask(board, taskUuid, updateToSend)
             res.onSuccess {
                 _events.send(TasksUiEvent.ShowMessage("Task updated"))
-                try {
-                    repo.refreshTasks(board)
-                } catch (e: Exception) {
-                    Log.e("TasksViewModel", "refresh after update failed: ${e.message}")
-                }
             }.onFailure {
                 _events.send(TasksUiEvent.ShowMessage("Update failed: ${it.message}"))
             }
@@ -126,7 +120,6 @@ class TasksViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = false) }
         }
     }
-
 
     fun deleteTask(taskUuid: String, hardDelete: Boolean = false) {
         val board = currentBoardUuid ?: return

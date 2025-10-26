@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.example.sharkflow.domain.model.Board
-import com.example.sharkflow.utils.DateUtils.formatDateReadable
+import com.example.sharkflow.utils.DateUtils.formatDateTimeReadable
 
 @Composable
 fun BoardRow(
@@ -69,7 +69,8 @@ fun BoardRow(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = board.createdAt?.let { formatDateReadable(it.toString()) } ?: "—",
+                        text = board.createdAt?.let { formatDateTimeReadable(it.toString()) }
+                            ?: "—",
                         style = MaterialTheme.typography.bodySmall,
                         color = colorScheme.onPrimary
                     )
@@ -87,7 +88,8 @@ fun BoardRow(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = board.updatedAt?.let { formatDateReadable(it.toString()) } ?: "—",
+                        text = board.updatedAt?.let { formatDateTimeReadable(it.toString()) }
+                            ?: "—",
                         style = MaterialTheme.typography.bodySmall,
                         color = colorScheme.onPrimary
                     )
