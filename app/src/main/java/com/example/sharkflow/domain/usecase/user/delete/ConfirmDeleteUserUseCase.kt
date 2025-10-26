@@ -1,7 +1,7 @@
 package com.example.sharkflow.domain.usecase.user.delete
 
-import com.example.sharkflow.data.repository.combined.UserRepositoryCombined
 import com.example.sharkflow.domain.manager.*
+import com.example.sharkflow.domain.repository.UserRepositoryCombined
 import jakarta.inject.Inject
 
 class ConfirmDeleteUserUseCase @Inject constructor(

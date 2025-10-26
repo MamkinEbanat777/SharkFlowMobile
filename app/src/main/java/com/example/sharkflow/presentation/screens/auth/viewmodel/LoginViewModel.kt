@@ -20,5 +20,4 @@ class LoginViewModel @Inject constructor(
             }
         )
     }
-
 }

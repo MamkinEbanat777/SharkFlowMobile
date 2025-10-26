@@ -20,6 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import coil3.compose.AsyncImage
 import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
+import com.example.sharkflow.utils.ToastManager
 import com.theartofdev.edmodo.cropper.*
 
 @Composable
@@ -47,11 +48,9 @@ fun ProfileAvatar(
             context.contentResolver.openInputStream(uri)?.use { stream ->
                 val bytes = stream.readBytes()
                 userProfileViewModel.uploadUserAvatar(bytes) { success, _, _ ->
-                    if (!success) Toast.makeText(
-                        context,
-                        "Ошибка загрузки аватара",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    if (!success) {
+                        ToastManager.error(context, "Ошибка загрузки аватара")
+                    }
                 }
             }
         }

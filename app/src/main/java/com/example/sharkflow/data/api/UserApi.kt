@@ -34,4 +34,8 @@ interface UserApi {
 
     @DELETE("users/avatar")
     suspend fun deleteUserAvatar(): Response<GenericMessageResponseDto>
+
+    @GET("users/devices")
+    suspend fun loadUserDevices(): Response<LoadUserSessionsWrapperDto>
+
 }

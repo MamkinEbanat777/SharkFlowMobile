@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class RefreshResponseDto(
     @SerializedName("accessToken") val accessToken: String?,
     @SerializedName("csrfToken") val csrfToken: String?,
+    @SerializedName("role") val role: String?,
     @SerializedName("message") val message: String?,
     @SerializedName("error") val error: String?
 )

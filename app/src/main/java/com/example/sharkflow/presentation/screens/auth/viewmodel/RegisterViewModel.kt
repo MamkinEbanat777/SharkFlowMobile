@@ -1,6 +1,6 @@
 package com.example.sharkflow.presentation.screens.auth.viewmodel
 
-import com.example.sharkflow.domain.usecase.user.auth.RegisterUserUseCase
+import com.example.sharkflow.domain.usecase.auth.RegisterUserUseCase
 import com.example.sharkflow.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject

@@ -86,7 +86,6 @@ fun ContactForm() {
                         // типо запрос
                     }
                 },
-                variant = AppButtonVariant.Primary,
                 text = Lang.string(R.string.contact_form_send),
                 modifier = Modifier.fillMaxWidth()
             )

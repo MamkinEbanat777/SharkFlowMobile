@@ -7,6 +7,8 @@ plugins {
     id("org.jetbrains.kotlin.kapt")
     id("com.google.dagger.hilt.android")
     alias(libs.plugins.baselineprofile)
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -40,6 +42,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
+//            isDebuggable = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -74,6 +77,11 @@ android {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
+    kapt {
+        arguments {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
+    }
 }
 
 dependencies {
@@ -97,7 +105,6 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
     implementation(libs.kotlinx.coroutines.android)
-    implementation(libs.firebase.appdistribution.gradle)
     implementation(libs.converter.scalars)
     implementation(libs.androidx.security.crypto)
     implementation(libs.toasty)
@@ -118,7 +125,6 @@ dependencies {
     implementation(libs.android.image.cropper)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.appcompat)
-    implementation(libs.spikeysanju.motiontoast)
     implementation(libs.flagkit.android)
     implementation(libs.androidx.startup.runtime)
     debugImplementation(libs.leakcanary.android)
@@ -128,6 +134,15 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     kapt("androidx.room:room-compiler:2.8.2")
     implementation(libs.androidx.room.ktx)
+    implementation("com.github.ua-parser:uap-java:1.6.1")
+
+    implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
+    implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-inappmessaging")
+    implementation("com.google.firebase:firebase-inappmessaging-display")
+    implementation("com.google.firebase:firebase-perf")
+    implementation("com.google.firebase:firebase-crashlytics")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

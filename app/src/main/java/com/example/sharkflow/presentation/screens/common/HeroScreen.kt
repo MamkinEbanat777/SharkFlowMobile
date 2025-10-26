@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.*
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.sharkflow.R
-import com.example.sharkflow.presentation.common.*
+import com.example.sharkflow.presentation.common.AppButton
 import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewModel
 import com.example.sharkflow.utils.Lang
 
@@ -64,12 +64,11 @@ fun HeroScreen(
 
             AppButton(
                 onClick = {
-                    val target = if (isLoggedIn) "dashboard" else "login"
+                    val target = if (isLoggedIn) "boards" else "login"
                     navController.navigate(target) {
                         popUpTo("hero") { inclusive = true }
                     }
                 },
-                variant = AppButtonVariant.Primary,
                 text = Lang.string(R.string.hero_button)
             )
         }

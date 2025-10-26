@@ -6,4 +6,17 @@ plugins {
     id("com.google.dagger.hilt.android") version "2.57.2" apply false
     alias(libs.plugins.android.test) apply false
     alias(libs.plugins.baselineprofile) apply false
+    id("com.google.gms.google-services") version "4.4.4" apply false
+}
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath(libs.google.services)
+        classpath(libs.firebase.crashlytics.gradle)
+        classpath(libs.perf.plugin)
+    }
 }

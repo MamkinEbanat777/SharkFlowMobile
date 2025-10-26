@@ -18,6 +18,8 @@ val LightColorScheme = lightColorScheme(
     error = ColorError,
 )
 
+val SuccessColor = ColorSuccess
+
 val DarkColorScheme = darkColorScheme(
     primary = ColorPrimary,       // Акценты, кнопки
     secondary = ColorSecondary,     // Вторичные кнопки и чекбоксы

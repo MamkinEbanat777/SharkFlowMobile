@@ -83,7 +83,6 @@ fun CodeConfirmation(
                             }
                         }
                     },
-                    variant = AppButtonVariant.Primary,
                     text = if (isLoading)
                         Lang.string(R.string.code_confirmation_checking)
                     else

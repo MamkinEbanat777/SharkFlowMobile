@@ -10,7 +10,7 @@ object AppLog {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         } else {
-            // В релизе можно подключить другие логирующие механизмы (например, Crashlytics)
+            Timber.plant(CrashlyticsTree())
         }
     }
 

@@ -10,6 +10,8 @@ data class UpdateUserAvatarRequestDto(
 )
 
 data class UpdateUserAvatarResponseDto(
+    @SerializedName("message")
     val message: String,
+    @SerializedName("avatarUrl")
     val avatarUrl: String
 )

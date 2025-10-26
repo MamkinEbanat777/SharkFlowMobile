@@ -8,7 +8,6 @@ import com.example.sharkflow.domain.repository.LanguageRepository
 import java.util.Locale
 
 object Lang {
-
     private lateinit var languageRepository: LanguageRepository
 
     fun init(repository: LanguageRepository) {
@@ -20,8 +19,9 @@ object Lang {
         check(::languageRepository.isInitialized) { "Lang not initialized" }
 
         val context = LocalContext.current
-        val currentLanguage by languageRepository.currentLanguageFlow.collectAsState(initial = "")
-        val localeContext = context.createLocaleContext(currentLanguage)
+        val currentLanguage by languageRepository.currentLanguageFlow.collectAsState()
+        val localeContext =
+            remember(currentLanguage) { context.createLocaleContext(currentLanguage) }
         return localeContext.getString(resId)
     }
 
@@ -30,8 +30,9 @@ object Lang {
         check(::languageRepository.isInitialized) { "Lang not initialized" }
 
         val context = LocalContext.current
-        val currentLanguage by languageRepository.currentLanguageFlow.collectAsState(initial = "")
-        val localeContext = context.createLocaleContext(currentLanguage)
+        val currentLanguage by languageRepository.currentLanguageFlow.collectAsState()
+        val localeContext =
+            remember(currentLanguage) { context.createLocaleContext(currentLanguage) }
         return localeContext.resources.getStringArray(resId)
     }
 

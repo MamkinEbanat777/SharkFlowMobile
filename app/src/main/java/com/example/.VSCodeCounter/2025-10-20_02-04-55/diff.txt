@@ -1,0 +1,68 @@
+Date : 2025-10-20 02:04:55
+Directory : c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow
+Total : 29 files,  139 codes, 0 comments, 35 blanks, all 174 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| Kotlin   |         29 |        139 |          0 |         35 |        174 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++-------------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                                                  | files      | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                                                     |         29 |        139 |          0 |         35 |        174 |
+| data                                                                                                                                                  |          4 |         24 |          0 |          9 |         33 |
+| data\api                                                                                                                                              |          2 |          9 |          0 |          4 |         13 |
+| data\api\dto                                                                                                                                          |          2 |          9 |          0 |          4 |         13 |
+| data\api\dto\user                                                                                                                                     |          2 |          9 |          0 |          4 |         13 |
+| data\repository                                                                                                                                       |          2 |         15 |          0 |          5 |         20 |
+| domain                                                                                                                                                |         24 |         91 |          0 |         24 |        115 |
+| domain\repository                                                                                                                                     |          1 |          8 |          0 |          2 |         10 |
+| domain\usecase                                                                                                                                        |         23 |         83 |          0 |         22 |        105 |
+| domain\usecase (Files)                                                                                                                                |          8 |       -145 |          0 |        -27 |       -172 |
+| domain\usecase\auth                                                                                                                                   |          4 |         65 |          0 |         15 |         80 |
+| domain\usecase\user                                                                                                                                   |         11 |        163 |          0 |         34 |        197 |
+| presentation                                                                                                                                          |          1 |         24 |          0 |          2 |         26 |
+| presentation\screens                                                                                                                                  |          1 |         24 |          0 |          2 |         26 |
+| presentation\screens\profile                                                                                                                          |          1 |         24 |          0 |          2 |         26 |
+| presentation\screens\profile\viewmodel                                                                                                                |          1 |         24 |          0 |          2 |         26 |
++-------------------------------------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-------------------------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                                                                                                              | language | code       | comment    | blank      | total      |
++-------------------------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\data\api\dto\user\UpdateUserAvatarRequestDto.kt                    | Kotlin   |          4 |          0 |          2 |          6 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\data\api\dto\user\UpdateUserDto.kt                             | Kotlin   |          5 |          0 |          2 |          7 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\data\repository\TokenRepositoryImpl.kt                         | Kotlin   |          0 |          0 |          1 |          1 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\data\repository\UserRepositoryImpl.kt                          | Kotlin   |         15 |          0 |          4 |         19 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\repository\UserRepository.kt                            | Kotlin   |          8 |          0 |          2 |         10 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\ClearTokensUseCase.kt                           | Kotlin   |        -10 |          0 |         -2 |        -12 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\ConfirmRegistrationCodeUseCase.kt               | Kotlin   |        -24 |          0 |         -3 |        -27 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\LoginUseCase.kt                                 | Kotlin   |        -28 |          0 |         -8 |        -36 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\RefreshTokenUseCase.kt                          | Kotlin   |        -18 |          0 |         -3 |        -21 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\RegisterUserUseCase.kt                          | Kotlin   |        -15 |          0 |         -3 |        -18 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\SaveTokensUseCase.kt                            | Kotlin   |        -10 |          0 |         -2 |        -12 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\UpdateUserUseCase.kt                            | Kotlin   |        -24 |          0 |         -3 |        -27 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\UploadUserAvatarUseCase.kt                      | Kotlin   |        -16 |          0 |         -3 |        -19 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\auth\ClearTokensUseCase.kt                      | Kotlin   |         10 |          0 |          2 |         12 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\auth\LoginUseCase.kt                            | Kotlin   |         27 |          0 |          8 |         35 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\auth\RefreshTokenUseCase.kt                     | Kotlin   |         18 |          0 |          3 |         21 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\auth\SaveTokensUseCase.kt                       | Kotlin   |         10 |          0 |          2 |         12 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\user\ConfirmDeleteUserUseCase.kt                | Kotlin   |         20 |          0 |          3 |         23 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\user\ConfirmRegistrationCodeUseCase.kt          | Kotlin   |         24 |          0 |          3 |         27 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\user\DeleteUserAvatarUseCase.kt                 | Kotlin   |         10 |          0 |          3 |         13 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\user\LoadUserUseCase.kt                         | Kotlin   |         11 |          0 |          3 |         14 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\user\LogoutUserUseCase.kt                       | Kotlin   |         13 |          0 |          3 |         16 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\user\RegisterUserUseCase.kt                     | Kotlin   |         15 |          0 |          3 |         18 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\user\RequestDeleteUserCodeUseCase.kt            | Kotlin   |         10 |          0 |          3 |         13 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\user\RequestUpdateUserCodeUseCase.kt            | Kotlin   |         10 |          0 |          3 |         13 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\user\UpdateUserAvatarUseCase.kt                 | Kotlin   |         14 |          0 |          3 |         17 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\user\UpdateUserUseCase.kt                       | Kotlin   |         20 |          0 |          5 |         25 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\domain\usecase\user\UploadUserAvatarUseCase.kt                 | Kotlin   |         16 |          0 |          2 |         18 |
+| c:\Users\karen\AndroidStudioProjects\SharkFlow\app\src\main\java\com\example\sharkflow\presentation\screens\profile\viewmodel\UserProfileViewModel.kt | Kotlin   |         24 |          0 |          2 |         26 |
+| Total                                                                                                                                                 |          |        139 |          0 |         35 |        174 |
++-------------------------------------------------------------------------------------------------------------------------------------------------------+----------+------------+------------+------------+------------+

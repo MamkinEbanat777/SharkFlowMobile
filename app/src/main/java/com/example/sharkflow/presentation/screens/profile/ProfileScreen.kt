@@ -2,7 +2,6 @@ package com.example.sharkflow.presentation.screens.profile
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -10,21 +9,24 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.example.sharkflow.presentation.common.*
+import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewModel
 import com.example.sharkflow.presentation.screens.profile.components.*
 import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
 
 @Composable
 fun ProfileScreen(
     navController: NavHostController,
-    userProfileViewModel: UserProfileViewModel
+    userProfileViewModel: UserProfileViewModel,
+    authStateViewModel: AuthStateViewModel
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     var showCodeDeleteDialog by remember { mutableStateOf(false) }
     var showUpdateDialog by remember { mutableStateOf(false) }
+    var showUserSessionsDialog by remember { mutableStateOf(false) }
 
     val currentUser by userProfileViewModel.currentUser.collectAsState()
 
@@ -67,35 +69,31 @@ fun ProfileScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        Button(
+        AppButton(
             onClick = { showUpdateDialog = true },
             modifier = Modifier.fillMaxWidth(0.8f),
-            shape = MaterialTheme.shapes.medium
-        ) {
-            Icon(Icons.Filled.ModeEditOutline, contentDescription = null)
-            Spacer(Modifier.width(8.dp))
-            Text("Обновить профиль")
-        }
+            icon = (Icons.Filled.ModeEditOutline),
+            text = "Обновить профиль"
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedButton(
+        AppButton(
+            variant = AppButtonVariant.Outlined,
+            tone = AppButtonTone.Danger,
             onClick = { showDeleteDialog = true },
             modifier = Modifier.fillMaxWidth(0.8f),
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = Color.Transparent,
-                contentColor = colorScheme.error
-            ),
-            border = BorderStroke(1.5.dp, colorScheme.error)
-        ) {
-            Icon(
-                imageVector = Icons.Filled.Delete,
-                contentDescription = "Удалить профиль"
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(text = "Удалить профиль", color = colorScheme.error)
-        }
+            text = "Удалить профиль",
+            icon = (Icons.Filled.Delete)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        AppButton(
+            onClick = { showUserSessionsDialog = true },
+            icon = (Icons.Filled.Devices),
+            text = "Просмотреть активные сессии"
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -139,6 +137,14 @@ fun ProfileScreen(
             onSuccess = {
                 showUpdateDialog = false
             }
+        )
+    }
+    
+    if (showUserSessionsDialog) {
+        UserSessionsModal(
+            onDismiss = { showUserSessionsDialog = false },
+            userProfileViewModel = userProfileViewModel,
+            authStateViewModel = authStateViewModel
         )
     }
 }

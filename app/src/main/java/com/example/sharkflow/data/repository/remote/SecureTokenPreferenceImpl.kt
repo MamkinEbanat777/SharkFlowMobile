@@ -1,7 +1,7 @@
 package com.example.sharkflow.data.repository.remote
 
 import android.content.Context
-import com.example.sharkflow.data.local.SecureTokenPreference
+import com.example.sharkflow.data.local.preference.SecureTokenPreference
 import com.example.sharkflow.data.storage.TokenStorage
 import javax.inject.*
 

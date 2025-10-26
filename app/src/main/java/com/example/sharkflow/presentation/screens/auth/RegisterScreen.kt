@@ -1,6 +1,7 @@
 package com.example.sharkflow.presentation.screens.auth
 
 
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,7 +17,11 @@ fun RegisterScreen(
     navController: NavController,
 ) {
     var step by remember { mutableIntStateOf(1) }
-    Column {
+    Column(
+        modifier = Modifier.verticalScroll(
+            rememberScrollState()
+        ),
+    ) {
         Text(
             text = when (step) {
                 1 -> "Шаг 1/3"

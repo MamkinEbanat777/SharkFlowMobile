@@ -1,32 +1,21 @@
 package com.example.sharkflow.presentation.screens.auth
 
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.sharkflow.presentation.screens.auth.components.LoginForm
-import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
 
 @Composable
 fun LoginScreen(
     navController: NavController
 ) {
-    val userProfileViewModel: UserProfileViewModel = hiltViewModel()
-    val currentUser by userProfileViewModel.currentUser.collectAsState(initial = null)
-
-    LaunchedEffect(currentUser) {
-        if (currentUser != null) {
-            navController.navigate("dashboard") {
-                popUpTo("login") { inclusive = true }
-                launchSingleTop = true
-            }
-        }
-    }
-
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {

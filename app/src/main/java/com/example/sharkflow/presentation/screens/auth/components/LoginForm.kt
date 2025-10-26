@@ -6,6 +6,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -21,12 +22,12 @@ fun LoginForm(navController: NavController) {
     val loginViewModel: LoginViewModel = hiltViewModel()
     val emptyFieldWarning = Lang.string(R.string.login_empty_fields_warning)
 
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var passwordVisible by rememberSaveable { mutableStateOf(false) }
 
-    var emailError by remember { mutableStateOf(false) }
-    var passwordError by remember { mutableStateOf(false) }
+    var emailError by rememberSaveable { mutableStateOf(false) }
+    var passwordError by rememberSaveable { mutableStateOf(false) }
 
     val context = LocalContext.current
 
@@ -97,7 +98,6 @@ fun LoginForm(navController: NavController) {
                 }
             },
             modifier = Modifier.fillMaxWidth(),
-            variant = AppButtonVariant.Primary,
             text = if (isLoading)
                 Lang.string(R.string.login_button_sending)
             else

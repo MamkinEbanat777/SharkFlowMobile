@@ -1,0 +1,130 @@
+# Diff Details
+
+Date : 2025-10-20 00:12:00
+
+Directory c:\\Users\\karen\\AndroidStudioProjects\\SharkFlow\\app\\src\\main\\java\\com\\example\\sharkflow
+
+Total : 115 files,  -1070 codes, 7 comments, -82 blanks, all -1145 lines
+
+[Summary](results.md) / [Details](details.md) / [Diff Summary](diff.md) / Diff Details
+
+## Files
+| filename | language | code | comment | blank | total |
+| :--- | :--- | ---: | ---: | ---: | ---: |
+| [sharkflow/data/manager/AuthManager.kt](/sharkflow/data/manager/AuthManager.kt) | Kotlin | -66 | 0 | -12 | -78 |
+| [sharkflow/data/manager/CloudinaryManager.kt](/sharkflow/data/manager/CloudinaryManager.kt) | Kotlin | -19 | 0 | -7 | -26 |
+| [sharkflow/data/manager/RegisterManager.kt](/sharkflow/data/manager/RegisterManager.kt) | Kotlin | -11 | 0 | -4 | -15 |
+| [sharkflow/data/manager/TokenManager.kt](/sharkflow/data/manager/TokenManager.kt) | Kotlin | -17 | 0 | -5 | -22 |
+| [sharkflow/data/manager/UserManager.kt](/sharkflow/data/manager/UserManager.kt) | Kotlin | -15 | 0 | -5 | -20 |
+| [sharkflow/data/repository/AuthRepositoryImpl.kt](/sharkflow/data/repository/AuthRepositoryImpl.kt) | Kotlin | 1 | 1 | -2 | 0 |
+| [sharkflow/data/repository/CloudinaryRepositoryImpl.kt](/sharkflow/data/repository/CloudinaryRepositoryImpl.kt) | Kotlin | -12 | 0 | -3 | -15 |
+| [sharkflow/data/repository/LanguageRepositoryImpl.kt](/sharkflow/data/repository/LanguageRepositoryImpl.kt) | Kotlin | 0 | 0 | -1 | -1 |
+| [sharkflow/data/repository/RegisterRepositoryImpl.kt](/sharkflow/data/repository/RegisterRepositoryImpl.kt) | Kotlin | -5 | 0 | -1 | -6 |
+| [sharkflow/data/repository/TokenRepositoryImpl.kt](/sharkflow/data/repository/TokenRepositoryImpl.kt) | Kotlin | -6 | 0 | -2 | -8 |
+| [sharkflow/data/repository/UserRepositoryImpl.kt](/sharkflow/data/repository/UserRepositoryImpl.kt) | Kotlin | -21 | 0 | -3 | -24 |
+| [sharkflow/domain/manager/TokenManager.kt](/sharkflow/domain/manager/TokenManager.kt) | Kotlin | 32 | 0 | 6 | 38 |
+| [sharkflow/domain/manager/UserManager.kt](/sharkflow/domain/manager/UserManager.kt) | Kotlin | 15 | 0 | 4 | 19 |
+| [sharkflow/domain/repository/CloudinaryRepository.kt](/sharkflow/domain/repository/CloudinaryRepository.kt) | Kotlin | -3 | 0 | -1 | -4 |
+| [sharkflow/domain/repository/TokenRepository.kt](/sharkflow/domain/repository/TokenRepository.kt) | Kotlin | -2 | 0 | -1 | -3 |
+| [sharkflow/domain/repository/UserRepository.kt](/sharkflow/domain/repository/UserRepository.kt) | Kotlin | -4 | 0 | -1 | -5 |
+| [sharkflow/domain/usecase/ClearTokensUseCase.kt](/sharkflow/domain/usecase/ClearTokensUseCase.kt) | Kotlin | 10 | 0 | 2 | 12 |
+| [sharkflow/domain/usecase/ConfirmRegistrationCodeUseCase.kt](/sharkflow/domain/usecase/ConfirmRegistrationCodeUseCase.kt) | Kotlin | 24 | 0 | 3 | 27 |
+| [sharkflow/domain/usecase/LoginUseCase.kt](/sharkflow/domain/usecase/LoginUseCase.kt) | Kotlin | 28 | 0 | 8 | 36 |
+| [sharkflow/domain/usecase/RefreshTokenUseCase.kt](/sharkflow/domain/usecase/RefreshTokenUseCase.kt) | Kotlin | 18 | 0 | 3 | 21 |
+| [sharkflow/domain/usecase/RegisterUserUseCase.kt](/sharkflow/domain/usecase/RegisterUserUseCase.kt) | Kotlin | 15 | 0 | 3 | 18 |
+| [sharkflow/domain/usecase/SaveTokensUseCase.kt](/sharkflow/domain/usecase/SaveTokensUseCase.kt) | Kotlin | 10 | 0 | 2 | 12 |
+| [sharkflow/domain/usecase/UpdateUserUseCase.kt](/sharkflow/domain/usecase/UpdateUserUseCase.kt) | Kotlin | 24 | 0 | 3 | 27 |
+| [sharkflow/domain/usecase/UploadUserAvatarUseCase.kt](/sharkflow/domain/usecase/UploadUserAvatarUseCase.kt) | Kotlin | 16 | 0 | 3 | 19 |
+| [sharkflow/hs\_err\_pid13328.log](/sharkflow/hs_err_pid13328.log) | log | -1,109 | 0 | -64 | -1,173 |
+| [sharkflow/presentation/common/Accordion.kt](/sharkflow/presentation/common/Accordion.kt) | Kotlin | 50 | 0 | 6 | 56 |
+| [sharkflow/presentation/common/AppButton.kt](/sharkflow/presentation/common/AppButton.kt) | Kotlin | 91 | 0 | 17 | 108 |
+| [sharkflow/presentation/common/AppField.kt](/sharkflow/presentation/common/AppField.kt) | Kotlin | 71 | 0 | 6 | 77 |
+| [sharkflow/presentation/common/ConfirmationModal.kt](/sharkflow/presentation/common/ConfirmationModal.kt) | Kotlin | 40 | 0 | 2 | 42 |
+| [sharkflow/presentation/common/Link.kt](/sharkflow/presentation/common/Link.kt) | Kotlin | 69 | 0 | 10 | 79 |
+| [sharkflow/presentation/common/ObserveToastMessages.kt](/sharkflow/presentation/common/ObserveToastMessages.kt) | Kotlin | 21 | 0 | 5 | 26 |
+| [sharkflow/presentation/common/Slider.kt](/sharkflow/presentation/common/Slider.kt) | Kotlin | 1 | 74 | 0 | 75 |
+| [sharkflow/presentation/navigation/AppNavHost.kt](/sharkflow/presentation/navigation/AppNavHost.kt) | Kotlin | 100 | 0 | 4 | 104 |
+| [sharkflow/presentation/navigation/NavScreen.kt](/sharkflow/presentation/navigation/NavScreen.kt) | Kotlin | 38 | 2 | 6 | 46 |
+| [sharkflow/presentation/navigation/components/LanguageButton.kt](/sharkflow/presentation/navigation/components/LanguageButton.kt) | Kotlin | 105 | 2 | 15 | 122 |
+| [sharkflow/presentation/navigation/components/LogoutButton.kt](/sharkflow/presentation/navigation/components/LogoutButton.kt) | Kotlin | 44 | 0 | 6 | 50 |
+| [sharkflow/presentation/navigation/components/LogoutModal.kt](/sharkflow/presentation/navigation/components/LogoutModal.kt) | Kotlin | 32 | 0 | 4 | 36 |
+| [sharkflow/presentation/navigation/components/NavigationBar.kt](/sharkflow/presentation/navigation/components/NavigationBar.kt) | Kotlin | 109 | 0 | 7 | 116 |
+| [sharkflow/presentation/navigation/viewmodel/LanguageViewModel.kt](/sharkflow/presentation/navigation/viewmodel/LanguageViewModel.kt) | Kotlin | 17 | 0 | 5 | 22 |
+| [sharkflow/presentation/screens/auth/LoginScreen.kt](/sharkflow/presentation/screens/auth/LoginScreen.kt) | Kotlin | 32 | 0 | 5 | 37 |
+| [sharkflow/presentation/screens/auth/RegisterScreen.kt](/sharkflow/presentation/screens/auth/RegisterScreen.kt) | Kotlin | 51 | 0 | 8 | 59 |
+| [sharkflow/presentation/screens/auth/components/CodeConfirmation.kt](/sharkflow/presentation/screens/auth/components/CodeConfirmation.kt) | Kotlin | 91 | 0 | 13 | 104 |
+| [sharkflow/presentation/screens/auth/components/LoginForm.kt](/sharkflow/presentation/screens/auth/components/LoginForm.kt) | Kotlin | 108 | 0 | 15 | 123 |
+| [sharkflow/presentation/screens/auth/components/RegisterForm.kt](/sharkflow/presentation/screens/auth/components/RegisterForm.kt) | Kotlin | 140 | 0 | 17 | 157 |
+| [sharkflow/presentation/screens/auth/components/RegisterSuccess.kt](/sharkflow/presentation/screens/auth/components/RegisterSuccess.kt) | Kotlin | 43 | 0 | 4 | 47 |
+| [sharkflow/presentation/screens/auth/viewmodel/AuthStateViewModel.kt](/sharkflow/presentation/screens/auth/viewmodel/AuthStateViewModel.kt) | Kotlin | 39 | 6 | 6 | 51 |
+| [sharkflow/presentation/screens/auth/viewmodel/ConfirmationCodeViewModel.kt](/sharkflow/presentation/screens/auth/viewmodel/ConfirmationCodeViewModel.kt) | Kotlin | 45 | 0 | 7 | 52 |
+| [sharkflow/presentation/screens/auth/viewmodel/LoginViewModel.kt](/sharkflow/presentation/screens/auth/viewmodel/LoginViewModel.kt) | Kotlin | 35 | 0 | 6 | 41 |
+| [sharkflow/presentation/screens/auth/viewmodel/RegisterViewModel.kt](/sharkflow/presentation/screens/auth/viewmodel/RegisterViewModel.kt) | Kotlin | 46 | 0 | 9 | 55 |
+| [sharkflow/presentation/screens/common/HeroScreen.kt](/sharkflow/presentation/screens/common/HeroScreen.kt) | Kotlin | 69 | 0 | 9 | 78 |
+| [sharkflow/presentation/screens/common/SplashScreen.kt](/sharkflow/presentation/screens/common/SplashScreen.kt) | Kotlin | 157 | 0 | 10 | 167 |
+| [sharkflow/presentation/screens/common/SupportScreen.kt](/sharkflow/presentation/screens/common/SupportScreen.kt) | Kotlin | 55 | 0 | 10 | 65 |
+| [sharkflow/presentation/screens/common/components/ContactForm.kt](/sharkflow/presentation/screens/common/components/ContactForm.kt) | Kotlin | 86 | 1 | 8 | 95 |
+| [sharkflow/presentation/screens/dashboard/DashboardScreen.kt](/sharkflow/presentation/screens/dashboard/DashboardScreen.kt) | Kotlin | 22 | 0 | 4 | 26 |
+| [sharkflow/presentation/screens/marketing/AboutScreen.kt](/sharkflow/presentation/screens/marketing/AboutScreen.kt) | Kotlin | 110 | 0 | 8 | 118 |
+| [sharkflow/presentation/screens/marketing/AdvangatesScreen.kt](/sharkflow/presentation/screens/marketing/AdvangatesScreen.kt) | Kotlin | 97 | 0 | 8 | 105 |
+| [sharkflow/presentation/screens/marketing/FAQScreen.kt](/sharkflow/presentation/screens/marketing/FAQScreen.kt) | Kotlin | 42 | 0 | 6 | 48 |
+| [sharkflow/presentation/screens/marketing/FeaturesScreen.kt](/sharkflow/presentation/screens/marketing/FeaturesScreen.kt) | Kotlin | 50 | 0 | 6 | 56 |
+| [sharkflow/presentation/screens/marketing/HowItWorksScreen.kt](/sharkflow/presentation/screens/marketing/HowItWorksScreen.kt) | Kotlin | 68 | 0 | 7 | 75 |
+| [sharkflow/presentation/screens/marketing/SecurityScreen.kt](/sharkflow/presentation/screens/marketing/SecurityScreen.kt) | Kotlin | 57 | 0 | 6 | 63 |
+| [sharkflow/presentation/screens/profile/ProfileScreen.kt](/sharkflow/presentation/screens/profile/ProfileScreen.kt) | Kotlin | 140 | 0 | 18 | 158 |
+| [sharkflow/presentation/screens/profile/components/ConfirmDeleteUserModal.kt](/sharkflow/presentation/screens/profile/components/ConfirmDeleteUserModal.kt) | Kotlin | 70 | 0 | 6 | 76 |
+| [sharkflow/presentation/screens/profile/components/DeleteUserModal.kt](/sharkflow/presentation/screens/profile/components/DeleteUserModal.kt) | Kotlin | 77 | 0 | 4 | 81 |
+| [sharkflow/presentation/screens/profile/components/ProfileAvatar.kt](/sharkflow/presentation/screens/profile/components/ProfileAvatar.kt) | Kotlin | 229 | 0 | 14 | 243 |
+| [sharkflow/presentation/screens/profile/components/UpdateUserModal.kt](/sharkflow/presentation/screens/profile/components/UpdateUserModal.kt) | Kotlin | 131 | 0 | 13 | 144 |
+| [sharkflow/presentation/screens/profile/viewmodel/UserProfileViewModel.kt](/sharkflow/presentation/screens/profile/viewmodel/UserProfileViewModel.kt) | Kotlin | 141 | 0 | 17 | 158 |
+| [sharkflow/presentation/theme/Color.kt](/sharkflow/presentation/theme/Color.kt) | Kotlin | 12 | 34 | 10 | 56 |
+| [sharkflow/presentation/theme/Theme.kt](/sharkflow/presentation/theme/Theme.kt) | Kotlin | 48 | 0 | 6 | 54 |
+| [sharkflow/presentation/theme/Type.kt](/sharkflow/presentation/theme/Type.kt) | Kotlin | 14 | 17 | 3 | 34 |
+| [sharkflow/ui/common/Accordion.kt](/sharkflow/ui/common/Accordion.kt) | Kotlin | -50 | 0 | -6 | -56 |
+| [sharkflow/ui/common/AppButton.kt](/sharkflow/ui/common/AppButton.kt) | Kotlin | -91 | 0 | -17 | -108 |
+| [sharkflow/ui/common/AppField.kt](/sharkflow/ui/common/AppField.kt) | Kotlin | -71 | 0 | -6 | -77 |
+| [sharkflow/ui/common/ConfirmationModal.kt](/sharkflow/ui/common/ConfirmationModal.kt) | Kotlin | -40 | 0 | -2 | -42 |
+| [sharkflow/ui/common/Link.kt](/sharkflow/ui/common/Link.kt) | Kotlin | -69 | 0 | -10 | -79 |
+| [sharkflow/ui/common/ObserveToastMessages.kt](/sharkflow/ui/common/ObserveToastMessages.kt) | Kotlin | -21 | 0 | -5 | -26 |
+| [sharkflow/ui/common/Slider.kt](/sharkflow/ui/common/Slider.kt) | Kotlin | -1 | -74 | 0 | -75 |
+| [sharkflow/ui/navigation/AppNavHost.kt](/sharkflow/ui/navigation/AppNavHost.kt) | Kotlin | -100 | 0 | -6 | -106 |
+| [sharkflow/ui/navigation/NavScreen.kt](/sharkflow/ui/navigation/NavScreen.kt) | Kotlin | -38 | -2 | -6 | -46 |
+| [sharkflow/ui/navigation/components/LanguageButton.kt](/sharkflow/ui/navigation/components/LanguageButton.kt) | Kotlin | -106 | -2 | -15 | -123 |
+| [sharkflow/ui/navigation/components/LogoutButton.kt](/sharkflow/ui/navigation/components/LogoutButton.kt) | Kotlin | -44 | 0 | -6 | -50 |
+| [sharkflow/ui/navigation/components/LogoutModal.kt](/sharkflow/ui/navigation/components/LogoutModal.kt) | Kotlin | -32 | 0 | -4 | -36 |
+| [sharkflow/ui/navigation/components/NavigationBar.kt](/sharkflow/ui/navigation/components/NavigationBar.kt) | Kotlin | -109 | 0 | -8 | -117 |
+| [sharkflow/ui/navigation/viewmodel/LanguageViewModel.kt](/sharkflow/ui/navigation/viewmodel/LanguageViewModel.kt) | Kotlin | -17 | 0 | -6 | -23 |
+| [sharkflow/ui/screens/auth/LoginScreen.kt](/sharkflow/ui/screens/auth/LoginScreen.kt) | Kotlin | -32 | 0 | -5 | -37 |
+| [sharkflow/ui/screens/auth/RegisterScreen.kt](/sharkflow/ui/screens/auth/RegisterScreen.kt) | Kotlin | -51 | 0 | -8 | -59 |
+| [sharkflow/ui/screens/auth/components/CodeConfirmation.kt](/sharkflow/ui/screens/auth/components/CodeConfirmation.kt) | Kotlin | -91 | 0 | -14 | -105 |
+| [sharkflow/ui/screens/auth/components/LoginForm.kt](/sharkflow/ui/screens/auth/components/LoginForm.kt) | Kotlin | -108 | 0 | -15 | -123 |
+| [sharkflow/ui/screens/auth/components/RegisterForm.kt](/sharkflow/ui/screens/auth/components/RegisterForm.kt) | Kotlin | -140 | 0 | -17 | -157 |
+| [sharkflow/ui/screens/auth/components/RegisterSuccess.kt](/sharkflow/ui/screens/auth/components/RegisterSuccess.kt) | Kotlin | -43 | 0 | -4 | -47 |
+| [sharkflow/ui/screens/auth/viewmodel/AuthStateViewModel.kt](/sharkflow/ui/screens/auth/viewmodel/AuthStateViewModel.kt) | Kotlin | -42 | 0 | -6 | -48 |
+| [sharkflow/ui/screens/auth/viewmodel/ConfirmationCodeViewModel.kt](/sharkflow/ui/screens/auth/viewmodel/ConfirmationCodeViewModel.kt) | Kotlin | -40 | 0 | -9 | -49 |
+| [sharkflow/ui/screens/auth/viewmodel/LoginViewModel.kt](/sharkflow/ui/screens/auth/viewmodel/LoginViewModel.kt) | Kotlin | -43 | 0 | -9 | -52 |
+| [sharkflow/ui/screens/auth/viewmodel/RegisterViewModel.kt](/sharkflow/ui/screens/auth/viewmodel/RegisterViewModel.kt) | Kotlin | -37 | 0 | -8 | -45 |
+| [sharkflow/ui/screens/common/HeroScreen.kt](/sharkflow/ui/screens/common/HeroScreen.kt) | Kotlin | -69 | 0 | -9 | -78 |
+| [sharkflow/ui/screens/common/SplashScreen.kt](/sharkflow/ui/screens/common/SplashScreen.kt) | Kotlin | -157 | 0 | -10 | -167 |
+| [sharkflow/ui/screens/common/SupportScreen.kt](/sharkflow/ui/screens/common/SupportScreen.kt) | Kotlin | -55 | 0 | -10 | -65 |
+| [sharkflow/ui/screens/common/components/ContactForm.kt](/sharkflow/ui/screens/common/components/ContactForm.kt) | Kotlin | -86 | -1 | -8 | -95 |
+| [sharkflow/ui/screens/dashboard/DashboardScreen.kt](/sharkflow/ui/screens/dashboard/DashboardScreen.kt) | Kotlin | -22 | 0 | -4 | -26 |
+| [sharkflow/ui/screens/marketing/AboutScreen.kt](/sharkflow/ui/screens/marketing/AboutScreen.kt) | Kotlin | -110 | 0 | -8 | -118 |
+| [sharkflow/ui/screens/marketing/AdvangatesScreen.kt](/sharkflow/ui/screens/marketing/AdvangatesScreen.kt) | Kotlin | -97 | 0 | -8 | -105 |
+| [sharkflow/ui/screens/marketing/FAQScreen.kt](/sharkflow/ui/screens/marketing/FAQScreen.kt) | Kotlin | -42 | 0 | -6 | -48 |
+| [sharkflow/ui/screens/marketing/FeaturesScreen.kt](/sharkflow/ui/screens/marketing/FeaturesScreen.kt) | Kotlin | -50 | 0 | -6 | -56 |
+| [sharkflow/ui/screens/marketing/HowItWorksScreen.kt](/sharkflow/ui/screens/marketing/HowItWorksScreen.kt) | Kotlin | -68 | 0 | -7 | -75 |
+| [sharkflow/ui/screens/marketing/SecurityScreen.kt](/sharkflow/ui/screens/marketing/SecurityScreen.kt) | Kotlin | -57 | 0 | -6 | -63 |
+| [sharkflow/ui/screens/profile/ProfileScreen.kt](/sharkflow/ui/screens/profile/ProfileScreen.kt) | Kotlin | -140 | 0 | -18 | -158 |
+| [sharkflow/ui/screens/profile/components/ConfirmDeleteUserModal.kt](/sharkflow/ui/screens/profile/components/ConfirmDeleteUserModal.kt) | Kotlin | -70 | 0 | -6 | -76 |
+| [sharkflow/ui/screens/profile/components/DeleteUserModal.kt](/sharkflow/ui/screens/profile/components/DeleteUserModal.kt) | Kotlin | -77 | 0 | -4 | -81 |
+| [sharkflow/ui/screens/profile/components/ProfileAvatar.kt](/sharkflow/ui/screens/profile/components/ProfileAvatar.kt) | Kotlin | -223 | 0 | -13 | -236 |
+| [sharkflow/ui/screens/profile/components/UpdateUserModal.kt](/sharkflow/ui/screens/profile/components/UpdateUserModal.kt) | Kotlin | -131 | 0 | -13 | -144 |
+| [sharkflow/ui/screens/profile/viewmodel/UserProfileViewModel.kt](/sharkflow/ui/screens/profile/viewmodel/UserProfileViewModel.kt) | Kotlin | -125 | 0 | -15 | -140 |
+| [sharkflow/ui/theme/Color.kt](/sharkflow/ui/theme/Color.kt) | Kotlin | -12 | -34 | -10 | -56 |
+| [sharkflow/ui/theme/Theme.kt](/sharkflow/ui/theme/Theme.kt) | Kotlin | -48 | 0 | -6 | -54 |
+| [sharkflow/ui/theme/Type.kt](/sharkflow/ui/theme/Type.kt) | Kotlin | -14 | -17 | -3 | -34 |
+| [sharkflow/utils/ToastManager.kt](/sharkflow/utils/ToastManager.kt) | Kotlin | 0 | 0 | -1 | -1 |
+| [sharkflow/viewmodel/AppViewModel.kt](/sharkflow/viewmodel/AppViewModel.kt) | Kotlin | 3 | 0 | 0 | 3 |
+
+[Summary](results.md) / [Details](details.md) / [Diff Summary](diff.md) / Diff Details

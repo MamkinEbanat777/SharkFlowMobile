@@ -4,12 +4,13 @@ import androidx.room.*
 
 @Entity(tableName = "tasks")
 data class TaskEntity(
-    @PrimaryKey val id: Int,
-    val uuid: String,
+    @PrimaryKey val uuid: String,
     val title: String,
     val description: String?,
-    val boardId: Int,
+    val boardUuid: String,
     val status: String = "PENDING",
     val priority: String = "MEDIUM",
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+    val isSynced: Boolean = false,
+    val dueDate: String?
 )

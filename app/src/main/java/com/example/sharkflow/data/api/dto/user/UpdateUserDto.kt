@@ -14,7 +14,9 @@ data class UpdateUserRequestDto(
 )
 
 data class UpdateUserResponseDto(
+    @SerializedName("message")
     val message: String,
+    @SerializedName("user")
     val user: User
 )
 

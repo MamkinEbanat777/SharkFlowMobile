@@ -3,6 +3,7 @@ package com.example.sharkflow.domain.usecase.user.init
 import com.example.sharkflow.domain.manager.UserManager
 import com.example.sharkflow.domain.usecase.auth.*
 import com.example.sharkflow.domain.usecase.user.get.LoadUserUseCase
+import com.example.sharkflow.utils.AppLog
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.first
 
@@ -19,6 +20,7 @@ class InitializeUserSessionUseCase @Inject constructor(
             userManager.setUser(user)
             return true
         } else {
+            AppLog.i("токены подчищены")
             clearTokensUseCase()
             return false
         }

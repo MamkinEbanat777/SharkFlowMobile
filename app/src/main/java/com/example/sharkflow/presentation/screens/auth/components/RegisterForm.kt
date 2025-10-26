@@ -6,6 +6,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -26,18 +27,19 @@ fun RegisterForm(
 
     val emptyWarning = Lang.string(R.string.register_warning_empty_fields)
 
-    var login by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
-    var confirmPassword by remember { mutableStateOf("") }
+    var login by rememberSaveable { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var confirmPassword by rememberSaveable { mutableStateOf("") }
 
-    var showPassword by remember { mutableStateOf(false) }
-    var showEmptyFieldsWarning by remember { mutableStateOf(false) }
+    var showPassword by rememberSaveable { mutableStateOf(false) }
+    var showEmptyFieldsWarning by rememberSaveable { mutableStateOf(false) }
 
-    var loginError by remember { mutableStateOf(false) }
-    var emailError by remember { mutableStateOf(false) }
-    var passwordError by remember { mutableStateOf(false) }
-    var confirmPasswordError by remember { mutableStateOf(false) }
+    var loginError by rememberSaveable { mutableStateOf(false) }
+    var emailError by rememberSaveable { mutableStateOf(false) }
+    var passwordError by rememberSaveable { mutableStateOf(false) }
+    var confirmPasswordError by rememberSaveable { mutableStateOf(false) }
+
 
     val isLoading by registerViewModel.isLoading.collectAsState()
     val errorMessage by registerViewModel.errorMessage.collectAsState()
@@ -127,7 +129,6 @@ fun RegisterForm(
                     }
                 }
             },
-            variant = AppButtonVariant.Primary,
             text = if (isLoading) Lang.string(R.string.register_button_sending)
             else Lang.string(R.string.register_button_register),
             enabled = !isLoading,

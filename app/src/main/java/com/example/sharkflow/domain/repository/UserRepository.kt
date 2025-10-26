@@ -1,7 +1,7 @@
 package com.example.sharkflow.domain.repository
 
 import com.example.sharkflow.data.api.dto.user.*
-import com.example.sharkflow.domain.model.User
+import com.example.sharkflow.domain.model.*
 
 interface UserRepository {
     suspend fun loadUser(): Result<User>
@@ -20,4 +20,5 @@ interface UserRepository {
     ): Result<UpdateUserAvatarResponseDto>
 
     suspend fun deleteUserAvatar(): Result<String>
+    suspend fun loadUserSessions(): Result<List<UserSession>>
 }

@@ -4,6 +4,8 @@ import android.app.Application
 import com.example.sharkflow.domain.repository.LanguageRepository
 import com.example.sharkflow.utils.*
 import com.google.crypto.tink.aead.AeadConfig
+import com.google.firebase.*
+import com.google.firebase.analytics.analytics
 import dagger.hilt.android.HiltAndroidApp
 import jakarta.inject.Inject
 
@@ -13,6 +15,8 @@ class SharkFlowApp : Application() {
     lateinit var languageRepository: LanguageRepository
     override fun onCreate() {
         super.onCreate()
+        FirebaseApp.initializeApp(this)
+        Firebase.analytics
         Lang.init(languageRepository)
         try {
             AeadConfig.register()

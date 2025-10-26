@@ -30,7 +30,7 @@ fun BottomNavBar(
     Surface(color = colorScheme.primary, tonalElevation = 8.dp) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(),
         ) {
             PrimaryScrollableTabRow(
                 selectedTabIndex = selectedIndex,

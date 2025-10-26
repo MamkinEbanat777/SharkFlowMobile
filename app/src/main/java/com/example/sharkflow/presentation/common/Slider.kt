@@ -52,7 +52,6 @@ fun Slider() {
             )
         }
 
-        // Индикаторы
         Row(
             horizontalArrangement = Arrangement.Center,
             modifier = Modifier

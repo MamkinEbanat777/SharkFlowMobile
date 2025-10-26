@@ -6,8 +6,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
-    @Query("SELECT * FROM tasks WHERE boardId = :boardId AND isDeleted = 0")
-    fun getTasksForBoard(boardId: Int): Flow<List<TaskEntity>>
+    @Query("SELECT * FROM tasks WHERE boardUuid = :boardUuid AND isDeleted = 0")
+    fun getTasksForBoard(boardUuid: String): Flow<List<TaskEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertTasks(tasks: List<TaskEntity>)
@@ -15,6 +15,11 @@ interface TaskDao {
     @Update
     suspend fun updateTask(task: TaskEntity)
 
-    @Query("DELETE FROM tasks WHERE boardId = :boardId")
-    suspend fun clearTasksForBoard(boardId: Int)
+    @Query("DELETE FROM tasks WHERE boardUuid = :boardUuid")
+    suspend fun clearTasksForBoard(boardUuid: String)
+
+    @Delete
+    suspend fun deleteTask(task: TaskEntity)
+
 }
+

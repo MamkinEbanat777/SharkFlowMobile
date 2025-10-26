@@ -3,6 +3,7 @@ package com.example.sharkflow.presentation.screens.profile.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -44,7 +45,7 @@ fun UpdateUserModal(
                     if (errorMessage != null) {
                         Text(
                             text = errorMessage!!,
-                            color = MaterialTheme.colorScheme.error,
+                            color = colorScheme.error,
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -88,7 +89,7 @@ fun UpdateUserModal(
                     if (errorMessage != null) {
                         Text(
                             text = errorMessage!!,
-                            color = MaterialTheme.colorScheme.error,
+                            color = colorScheme.error,
                             style = MaterialTheme.typography.bodySmall
                         )
                     }
@@ -127,14 +128,17 @@ fun UpdateUserModal(
                         }
                     }
                 },
-                enabled = !isLoading
+                enabled = !isLoading,
             ) {
                 Text(if (step == 1) "Продолжить" else "Обновить")
             }
         },
 
         dismissButton = {
-            TextButton(onClick = { if (!isLoading) onDismiss() }, enabled = !isLoading) {
+            TextButton(
+                onClick = { if (!isLoading) onDismiss() },
+                enabled = !isLoading,
+            ) {
                 Text("Отмена")
             }
         }

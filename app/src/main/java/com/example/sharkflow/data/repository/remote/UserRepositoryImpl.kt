@@ -2,8 +2,8 @@ package com.example.sharkflow.data.repository.remote
 
 import com.example.sharkflow.data.api.UserApi
 import com.example.sharkflow.data.api.dto.user.*
-import com.example.sharkflow.data.mapper.UserMapper
-import com.example.sharkflow.domain.model.User
+import com.example.sharkflow.data.mapper.*
+import com.example.sharkflow.domain.model.*
 import com.example.sharkflow.domain.repository.UserRepository
 import com.example.sharkflow.utils.safeApiCall
 import javax.inject.*
@@ -46,7 +46,7 @@ class UserRepositoryImpl @Inject constructor(
             it.message ?: "Пользователь удалён"
         }
     }
-    
+
     override suspend fun updateUserAvatar(
         avatarUrl: String,
         publicId: String
@@ -59,5 +59,14 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun deleteUserAvatar(): Result<String> {
         return safeApiCall { userApi.deleteUserAvatar() }.map { it.message ?: "Аватар удалён" }
     }
+
+    override suspend fun loadUserSessions(): Result<List<UserSession>> {
+        return safeApiCall { userApi.loadUserDevices() }
+            .mapCatching { wrapperDto ->
+                UserSessionMapper.fromWrapper(wrapperDto)
+            }
+    }
+
+
 }
 

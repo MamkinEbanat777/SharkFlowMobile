@@ -1,6 +1,6 @@
 package com.example.sharkflow.data.network
 
-import com.example.sharkflow.data.local.DeviceIdPreference
+import com.example.sharkflow.data.local.preference.DeviceIdPreference
 import okhttp3.*
 
 class DeviceIdInterceptor(private val deviceIdPreference: DeviceIdPreference) : Interceptor {

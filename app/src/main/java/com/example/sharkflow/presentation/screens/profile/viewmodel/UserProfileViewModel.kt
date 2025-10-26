@@ -2,9 +2,13 @@ package com.example.sharkflow.presentation.screens.profile.viewmodel
 
 import androidx.lifecycle.viewModelScope
 import com.example.sharkflow.domain.manager.UserManager
+import com.example.sharkflow.domain.model.UserSession
+import com.example.sharkflow.domain.repository.DeviceIdRepository
 import com.example.sharkflow.domain.usecase.user.delete.*
+import com.example.sharkflow.domain.usecase.user.get.LoadUserSessionsUseCase
 import com.example.sharkflow.domain.usecase.user.init.InitializeUserSessionUseCase
 import com.example.sharkflow.domain.usecase.user.update.*
+import com.example.sharkflow.utils.UaParser
 import com.example.sharkflow.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -21,7 +25,9 @@ class UserProfileViewModel @Inject constructor(
     private val requestDeleteUserCodeUseCase: RequestDeleteUserCodeUseCase,
     private val deleteUserAvatarUseCase: DeleteUserAvatarUseCase,
     private val updateUserAvatarUseCase: UpdateUserAvatarUseCase,
-    private val deleteUserAccountUseCase: DeleteUserAccountUseCase
+    private val deleteUserAccountUseCase: DeleteUserAccountUseCase,
+    private val loadUserSessionsUseCase: LoadUserSessionsUseCase,
+    private val deviceIdRepository: DeviceIdRepository
 ) : BaseViewModel() {
     val currentUser = userManager.currentUser
 
@@ -37,12 +43,57 @@ class UserProfileViewModel @Inject constructor(
     val avatarUrl = userManager.currentUser.map { it?.avatarUrl }
     val avatarPublicId = userManager.currentUser.map { it?.publicId }
 
+    private val _sessions = MutableStateFlow<List<UserSession>>(emptyList())
+    val sessions: StateFlow<List<UserSession>> = _sessions.asStateFlow()
+
+    private val _isLoadingSessions = MutableStateFlow(false)
+    val isLoadingSessions: StateFlow<Boolean> = _isLoadingSessions.asStateFlow()
+
+    private val _sessionsError = MutableStateFlow<String?>(null)
+    val sessionsError: StateFlow<String?> = _sessionsError.asStateFlow()
+
+    val currentDeviceId: StateFlow<String> = deviceIdRepository.deviceIdFlow()
+
     init {
         viewModelScope.launch {
             _isUserLoading.value = true
             initializeUserSessionUseCase()
             _isUserLoading.value = false
         }
+    }
+
+    fun loadSessions() {
+        _isLoadingSessions.value = true
+        launchResult(
+            block = { loadUserSessionsUseCase() },
+            onSuccess = { list ->
+                val enriched = list.map { s ->
+                    val parsed = UaParser.parse(s.userAgent)
+                    s.copy(
+                        osName = s.osName ?: parsed.os,
+                        osVersion = s.osVersion ?: parsed.osVersion,
+                        deviceBrand = s.deviceBrand ?: parsed.deviceBrand,
+                        deviceModel = s.deviceModel ?: parsed.deviceModel,
+                        clientName = s.clientName ?: parsed.browser,
+                        clientVersion = s.clientVersion ?: parsed.browserVersion
+                    )
+                }
+                _sessions.value = enriched
+                _isLoadingSessions.value = false
+            },
+            onFailure = { throwable ->
+                _sessionsError.value = throwable?.message ?: "Ошибка загрузки сессий"
+                _isLoadingSessions.value = false
+            }
+        )
+    }
+
+    fun loadUserSessions(onResult: (success: Boolean, sessions: List<UserSession>?, error: String?) -> Unit) {
+        launchResult(
+            block = { loadUserSessionsUseCase() },
+            onSuccess = { sessions -> onResult(true, sessions, null) },
+            onFailure = { throwable -> onResult(false, null, throwable?.message) }
+        )
     }
 
     fun requestDeleteUserCode(onResult: (success: Boolean, message: String?) -> Unit) {
@@ -109,25 +160,27 @@ class UserProfileViewModel @Inject constructor(
         imageBytes: ByteArray,
         onResult: (Boolean, String?, String?) -> Unit
     ) {
-        viewModelScope.launch {
-            _isUploading.value = true
-            try {
-                val result = uploadUserAvatarUseCase(imageBytes)
-                result.fold(
-                    onSuccess = { (url, publicId) ->
-                        _lastUpload.value = url to publicId
-                        updateUserAvatar(url, publicId) { success, message ->
-                            onResult(success, url, publicId)
-                        }
-                    },
-                    onFailure = {
-                        onResult(false, null, null)
-                    }
-                )
-            } finally {
+        _isUploading.value = true
+        launchResult(
+            block = { uploadUserAvatarUseCase(imageBytes) },
+            onSuccess = { (url, publicId) ->
+                _lastUpload.value = url to publicId
+                updateUserAvatar(url, publicId) { success, _ ->
+                    onResult(success, url, publicId)
+                }
+                _isUploading.value = false
+            },
+            onFailure = {
+                onResult(false, null, null)
                 _isUploading.value = false
             }
-        }
+        )
+
     }
 
+    fun markSessionInactive(deviceId: String) {
+        _sessions.value = _sessions.value.map { session ->
+            if (session.deviceId == deviceId) session.copy(isActive = false) else session
+        }
+    }
 }

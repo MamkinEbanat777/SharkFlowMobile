@@ -19,7 +19,11 @@ sealed class NavScreen(val route: String, val label: Int, val icon: ImageVector)
     object Security : NavScreen("security", R.string.nav_security, Icons.Filled.Lock)
     object FAQ : NavScreen("faq", R.string.nav_faq, Icons.Filled.QuestionMark)
     object Support : NavScreen("support", R.string.nav_support, Icons.Filled.SupportAgent)
-    object Dashboard : NavScreen("dashboard", R.string.nav_dashboard, Icons.Filled.CheckBox)
+    object Boards : NavScreen(
+        "boards", R.string.nav_dashboard,
+        Icons.AutoMirrored.Filled.ListAlt
+    )
+
     object Profile : NavScreen("profile", R.string.nav_profile, Icons.Filled.AccountCircle)
 }
 
@@ -39,7 +43,7 @@ val publicBottomNavItems = listOf(
 val userBottomNavItems = listOf(
     //NavScreen.Hero,
     NavScreen.Profile,
-    NavScreen.Dashboard,
+    NavScreen.Boards,
     //NavScreen.FAQ,
     NavScreen.Support,
 )
