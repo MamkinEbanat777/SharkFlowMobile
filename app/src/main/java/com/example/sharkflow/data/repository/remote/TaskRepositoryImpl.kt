@@ -5,6 +5,7 @@ import com.example.sharkflow.data.api.dto.task.*
 import com.example.sharkflow.data.mapper.TaskMapper
 import com.example.sharkflow.domain.model.Task
 import com.example.sharkflow.domain.repository.TaskRepository
+import com.example.sharkflow.utils.AppLog
 import jakarta.inject.Inject
 
 class TaskRepositoryImpl @Inject constructor(
@@ -52,8 +53,22 @@ class TaskRepositoryImpl @Inject constructor(
         boardUuid: String,
         taskUuid: String
     ): Result<DeletedTaskInfoDto> = runCatching {
+        AppLog.d("RemoteRepo", "Calling API deleteTask(board=$boardUuid, id=$taskUuid)")
         val resp = api.deleteTask(boardUuid, taskUuid)
-        if (!resp.isSuccessful) throw Exception("Delete failed")
-        resp.body()?.deletedTask ?: throw Exception("Delete failed")
+        AppLog.d(
+            "RemoteRepo",
+            "HTTP response code=${resp.code()}, isSuccessful=${resp.isSuccessful}"
+        )
+        val body = resp.body()
+        AppLog.d("RemoteRepo", "HTTP body=${body}")
+        if (!resp.isSuccessful) {
+            val err = resp.errorBody()?.string()
+            AppLog.e("RemoteRepo", "Delete failed with code=${resp.code()}, error=$err")
+            throw Exception("Delete failed: ${resp.code()}")
+        }
+        resp.body()?.deletedTask ?: throw Exception("Delete failed: empty body")
+    }.onFailure { e ->
+        AppLog.e("RemoteRepo", "deleteTask error", e)
     }
+
 }

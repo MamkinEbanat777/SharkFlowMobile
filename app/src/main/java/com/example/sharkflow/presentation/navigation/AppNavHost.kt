@@ -1,5 +1,6 @@
 package com.example.sharkflow.presentation.navigation
 
+import android.app.Activity
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -8,6 +9,7 @@ import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
 import androidx.navigation.compose.*
@@ -21,7 +23,7 @@ import com.example.sharkflow.presentation.screens.marketing.*
 import com.example.sharkflow.presentation.screens.profile.ProfileScreen
 import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
 import com.example.sharkflow.presentation.screens.task.TaskDetailScreen
-import com.example.sharkflow.utils.Lang
+import com.example.sharkflow.utils.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,9 +34,35 @@ fun AppNavHost(
     onThemeChange: (Boolean) -> Unit
 ) {
     val navController = rememberNavController()
+
     val isLoggedIn by authStateViewModel.isLoggedIn.collectAsState()
     val bottomNavItems = if (isLoggedIn) userBottomNavItems else publicBottomNavItems
     val startDestination = if (isLoggedIn) "boards" else "hero"
+    val context = LocalContext.current
+    val activity = remember { context as? Activity }
+
+    LaunchedEffect(Unit) {
+        IntentBus.flow.collect { intent ->
+            try {
+                val navigate = intent.getBooleanExtra("navigate_to_task", false)
+                if (navigate) {
+                    val boardUuid = intent.getStringExtra("board_uuid")
+                    val taskUuid = intent.getStringExtra("task_uuid")
+                    AppLog.d(
+                        "AppNavHost",
+                        "IntentBus received navigate_to_task board=$boardUuid task=$taskUuid"
+                    )
+                    if (!boardUuid.isNullOrBlank() && !taskUuid.isNullOrBlank()) {
+                        navController.navigate("task/$boardUuid/$taskUuid") {
+                            launchSingleTop = true
+                        }
+                    }
+                }
+            } catch (t: Throwable) {
+                AppLog.e("AppNavHost", "Failed to handle intent", t)
+            }
+        }
+    }
 
     Scaffold(
         topBar = {

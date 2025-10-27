@@ -1,7 +1,6 @@
 package com.example.sharkflow.presentation.screens.profile.components
 
 import android.app.Activity
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
@@ -49,7 +48,10 @@ fun ProfileAvatar(
                 val bytes = stream.readBytes()
                 userProfileViewModel.uploadUserAvatar(bytes) { success, _, _ ->
                     if (!success) {
-                        ToastManager.error(context, "Ошибка загрузки аватара")
+                        ToastManager.error(
+                            context,
+                            "Ошибка загрузки аватара, проверьте подключение"
+                        )
                     }
                 }
             }
@@ -186,11 +188,7 @@ fun ProfileAvatar(
                     TextButton(onClick = {
                         showDeleteConfirm = false
                         userProfileViewModel.deleteUserAvatar { success, msg ->
-                            if (!success) Toast.makeText(
-                                context,
-                                msg ?: "Ошибка при удалении",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                            ToastManager.error(context, msg ?: "Ошибка при удалении")
                         }
                     }) { Text("Да") }
                 },

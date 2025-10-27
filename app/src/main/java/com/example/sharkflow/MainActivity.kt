@@ -1,5 +1,6 @@
 package com.example.sharkflow
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,14 +13,28 @@ import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewMo
 import com.example.sharkflow.presentation.screens.common.SplashScreen
 import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
 import com.example.sharkflow.presentation.theme.SharkFlowTheme
+import com.example.sharkflow.utils.*
 import com.example.sharkflow.viewmodel.*
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        intent?.let {
+            IntentBus.flow.tryEmit(it)
+            AppLog.d("MainActivity", "onCreate: emitted initial intent extras=${it.extras}")
+        }
+
+        requestNotificationPermissionIfNeeded { granted ->
+            if (granted) {
+                AppLog.d("NotificationPermission", "granted")
+            } else {
+                AppLog.d("NotificationPermission", "denied")
+            }
+        }
         setContent {
             val authStateViewModel: AuthStateViewModel = hiltViewModel()
             val userProfileViewModel: UserProfileViewModel = hiltViewModel()
@@ -61,5 +76,16 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        intent.let {
+            setIntent(it)
+            IntentBus.flow.tryEmit(it)
+            AppLog.d("MainActivity", "onNewIntent: emitted intent extras=${it.extras}")
+        }
     }
 }
+

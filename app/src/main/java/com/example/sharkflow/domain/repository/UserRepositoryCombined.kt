@@ -5,7 +5,7 @@ import com.example.sharkflow.domain.model.User
 import kotlinx.coroutines.flow.Flow
 
 interface UserRepositoryCombined {
-    suspend fun loadUser(uuid: String): Result<User>
+    suspend fun loadUser(): Result<User>
 
     suspend fun requestUpdateUserCode(): Result<String>
 

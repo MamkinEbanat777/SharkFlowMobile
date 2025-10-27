@@ -17,4 +17,7 @@ interface UserDao {
 
     @Query("DELETE FROM users")
     suspend fun clearUsers()
+
+    @Query("SELECT * FROM users LIMIT 1")
+    fun getFirstUser(): Flow<UserEntity?>
 }

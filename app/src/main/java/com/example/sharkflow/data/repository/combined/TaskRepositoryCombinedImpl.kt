@@ -7,6 +7,7 @@ import com.example.sharkflow.data.repository.local.TaskLocalRepositoryImpl
 import com.example.sharkflow.data.repository.remote.TaskRepositoryImpl
 import com.example.sharkflow.domain.model.Task
 import com.example.sharkflow.domain.repository.TaskRepositoryCombined
+import com.example.sharkflow.utils.AppLog
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.*
 import java.time.Instant
@@ -89,7 +90,7 @@ class TaskRepositoryCombinedImpl @Inject constructor(
                 priority = createDto.priority.name,
                 dueDate = createDto.dueDate,
                 isSynced = false,
-                isDeleted = false
+                isDeleted = false,
             )
             local.updateTask(tempUpdated)
 
@@ -120,8 +121,8 @@ class TaskRepositoryCombinedImpl @Inject constructor(
             priority = createDto.priority.name,
             isSynced = false,
             dueDate = createDto.dueDate,
-            createdAt = createDto.createdAt,
-            updatedAt = createDto.updatedAt,
+            createdAt = createDto.createdAt ?: Instant.now().toString(),
+            updatedAt = createDto.updatedAt ?: Instant.now().toString(),
         )
         local.insertOrUpdateTasks(listOf(tempEntity))
 
@@ -186,25 +187,52 @@ class TaskRepositoryCombinedImpl @Inject constructor(
         taskUuid: String,
         hardDelete: Boolean
     ): Result<DeletedTaskInfoDto> = runCatching {
-        val localEntity = local.getTasksFlow(boardUuid).first().find { it.uuid == taskUuid }
+        AppLog.d("TaskRepoCombined", "ТУТ ЭЭЭ ДА")
 
-        val remoteResult = when (val serverUuid = localEntity?.serverUuid) {
-            null -> null
-            else -> remote.deleteTask(boardUuid, serverUuid).getOrNull()
+        val localEntity = local.getTasksOnce(boardUuid)
+            .find { it.uuid == taskUuid || it.serverUuid == taskUuid }
+            ?: return@runCatching DeletedTaskInfoDto(
+                title = "Unknown task",
+                removedFromBoard = true
+            )
+
+        var remoteResult: DeletedTaskInfoDto? = null
+
+        if (localEntity.serverUuid != null) {
+            AppLog.d(
+                "TaskRepoCombined",
+                "Attempting remote.deleteTask for local ${localEntity.uuid} -> server ${localEntity.serverUuid}"
+            )
+            try {
+                remoteResult = remote.deleteTask(boardUuid, localEntity.serverUuid).getOrThrow()
+                AppLog.d(
+                    "TaskRepoCombined",
+                    "Remote delete succeeded for serverUuid=${localEntity.serverUuid}: $remoteResult"
+                )
+            } catch (e: Exception) {
+                AppLog.e(
+                    "TaskRepoCombined",
+                    "Remote delete failed for serverUuid=${localEntity.serverUuid}",
+                    e
+                )
+                local.updateTask(localEntity.copy(isDeleted = true, isSynced = false))
+            }
         }
 
-        if (localEntity != null) {
-            if (hardDelete) local.deleteTask(localEntity)
-            else local.updateTask(localEntity.copy(isDeleted = true))
+        if (hardDelete) {
+            local.deleteTask(localEntity)
+        } else {
+            local.updateTask(localEntity.copy(isDeleted = true, isSynced = true))
         }
+
 
         remoteResult ?: DeletedTaskInfoDto(
-            title = localEntity?.title ?: "Unknown task",
+            title = localEntity.title,
             removedFromBoard = true
         )
     }
 
-
+    override suspend fun getAllTasks(): List<Task> = local.getAllTasks().map(TaskMapper::fromEntity)
     override suspend fun getUnsyncedTasks(): List<Task> =
         local.getUnsyncedTasks().map(TaskMapper::fromEntity)
 

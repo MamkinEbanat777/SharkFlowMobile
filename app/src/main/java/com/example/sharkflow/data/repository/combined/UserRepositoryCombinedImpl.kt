@@ -7,7 +7,6 @@ import com.example.sharkflow.domain.manager.UserManager
 import com.example.sharkflow.domain.model.User
 import com.example.sharkflow.domain.repository.UserRepositoryCombined
 import jakarta.inject.*
-import kotlinx.coroutines.flow.firstOrNull
 
 @Singleton
 class UserRepositoryCombinedImpl @Inject constructor(
@@ -15,13 +14,13 @@ class UserRepositoryCombinedImpl @Inject constructor(
     private val remote: UserRepositoryImpl,
     private val userManager: UserManager
 ) : UserRepositoryCombined {
-    override suspend fun loadUser(uuid: String): Result<User> {
+    override suspend fun loadUser(): Result<User> {
         return remote.loadUser()
             .mapCatching { user ->
                 local.insertOrUpdate(user)
                 user
             }.recoverCatching { e ->
-                val cachedUser = local.getUserFlow(uuid).firstOrNull()
+                val cachedUser = local.getFirstUserOnce()
                 cachedUser ?: throw e
             }
     }

@@ -30,4 +30,5 @@ interface TaskRepositoryCombined {
 
     suspend fun getUnsyncedTasks(): List<Task>
     suspend fun getDeletedTasks(): List<Task>
+    suspend fun getAllTasks(): List<Task>
 }

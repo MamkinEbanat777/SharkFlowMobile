@@ -1,4 +1,4 @@
-package com.example.sharkflow.worker
+package com.example.sharkflow.worker.task
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
@@ -25,19 +25,35 @@ class TaskSyncWorker @AssistedInject constructor(
             val semaphore = Semaphore(5)
 
             val deletedTasks = repository.getDeletedTasks()
+            AppLog.d("TaskSyncWorker", "Found ${deletedTasks.size} deleted tasks total")
+
             deletedTasks.map { task ->
                 async {
                     semaphore.withPermit {
                         try {
-                            repository.deleteTask(task.boardUuid, task.uuid, hardDelete = false)
-                            AppLog.d("TaskSyncWorker", "Deleted task ${task.uuid}")
+                            AppLog.d(
+                                "TaskSyncWorker",
+                                "Processing task ${task.uuid}, serverUuid=${task.serverUuid}"
+                            )
+                            val hardDelete = task.serverUuid == null
+                            val result =
+                                repository.deleteTask(task.boardUuid, task.uuid, hardDelete)
+                            AppLog.d(
+                                "TaskSyncWorker",
+                                "DeleteTask result for ${task.uuid}: $result"
+                            )
                         } catch (e: Exception) {
                             hasErrors.set(true)
-                            AppLog.e("TaskSyncWorker", "Failed to delete task ${task.uuid}", e)
+                            AppLog.e(
+                                "TaskSyncWorker",
+                                "Failed to delete task ${task.uuid} on server",
+                                e
+                            )
                         }
                     }
                 }
             }.awaitAll()
+
 
             val unsyncedTasks = repository.getUnsyncedTasks().filter { !it.isDeleted }
             unsyncedTasks.map { task ->

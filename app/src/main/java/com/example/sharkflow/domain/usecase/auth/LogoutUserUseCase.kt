@@ -10,8 +10,12 @@ class LogoutUserUseCase @Inject constructor(
     private val userManager: UserManager
 ) {
     suspend operator fun invoke(): Result<String> {
-        tokenManager.clearTokens()
-        userManager.clearUser()
-        return authRepository.logout()
+        val result = authRepository.logout()
+        if (result.isSuccess) {
+            tokenManager.clearTokens()
+            userManager.clearUser()
+        }
+        return result
+
     }
 }

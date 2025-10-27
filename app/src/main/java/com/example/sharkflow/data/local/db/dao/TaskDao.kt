@@ -33,5 +33,10 @@ interface TaskDao {
     @Query("SELECT * FROM tasks WHERE isDeleted = 1")
     suspend fun getDeletedTasks(): List<TaskEntity>
 
+    @Query("SELECT * FROM tasks")
+    suspend fun getAllTasks(): List<TaskEntity>
+
+    @Query("SELECT * FROM tasks WHERE boardUuid = :boardUuid")
+    suspend fun getTasksForBoardOnce(boardUuid: String): List<TaskEntity>
 
 }

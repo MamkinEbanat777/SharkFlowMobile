@@ -9,7 +9,10 @@ class DeleteUserAvatarUseCase @Inject constructor(
     private val userManager: UserManager
 ) {
     suspend operator fun invoke(): Result<String> {
-        userManager.clearAvatar()
-        return userRepositoryCombined.deleteUserAvatar()
+        val result = userRepositoryCombined.deleteUserAvatar()
+        result.onSuccess {
+            userManager.clearAvatar()
+        }
+        return result
     }
 }

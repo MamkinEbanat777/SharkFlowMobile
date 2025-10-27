@@ -16,6 +16,12 @@ class UserLocalRepositoryImpl @Inject constructor(
     suspend fun getUserOnce(uuid: String): User? =
         userDao.getUserByUuid(uuid).firstOrNull()?.let { UserMapper.toDomain(it) }
 
+    fun getFirstUserFlow(): Flow<User?> =
+        userDao.getFirstUser().map { it?.let { UserMapper.toDomain(it) } }
+
+    suspend fun getFirstUserOnce(): User? =
+        userDao.getFirstUser().firstOrNull()?.let { UserMapper.toDomain(it) }
+
     suspend fun insertOrUpdate(user: User?) {
         if (user == null) return
         userDao.insertUser(UserMapper.fromDomain(user))
