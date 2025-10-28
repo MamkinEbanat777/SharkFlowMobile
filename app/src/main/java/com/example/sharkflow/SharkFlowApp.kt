@@ -7,7 +7,6 @@ import androidx.work.Configuration
 import com.example.sharkflow.core.common.*
 import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.domain.repository.LanguageRepository
-import com.example.sharkflow.worker.deadline.startDeadlineReminderWorker
 import com.example.sharkflow.worker.task.startTaskSyncWorker
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.firebase.*
@@ -28,9 +27,10 @@ class SharkFlowApp : Application(), Configuration.Provider {
         FirebaseApp.initializeApp(this)
         Firebase.analytics
         Lang.init(languageRepository)
-        startTaskSyncWorker(this)
-        startDeadlineReminderWorker(this)
+
         observeNetworkChanges()
+        startTaskSyncWorker(this)
+//        startDeadlineReminderWorker(this)
 
         try {
             AeadConfig.register()

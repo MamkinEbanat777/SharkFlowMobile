@@ -20,10 +20,11 @@ import com.example.sharkflow.presentation.navigation.components.*
 import com.example.sharkflow.presentation.screens.auth.*
 import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewModel
 import com.example.sharkflow.presentation.screens.board.*
-import com.example.sharkflow.presentation.screens.common.*
+import com.example.sharkflow.presentation.screens.hero.HeroScreen
 import com.example.sharkflow.presentation.screens.marketing.*
 import com.example.sharkflow.presentation.screens.profile.ProfileScreen
 import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
+import com.example.sharkflow.presentation.screens.support.SupportScreen
 import com.example.sharkflow.presentation.screens.task.TaskDetailScreen
 
 @OptIn(ExperimentalMaterial3Api::class)

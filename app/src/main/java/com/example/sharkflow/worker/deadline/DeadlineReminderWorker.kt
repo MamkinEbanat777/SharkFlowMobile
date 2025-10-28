@@ -155,7 +155,6 @@ class DeadlineReminderWorker @AssistedInject constructor(
         manager.notify(notifyId, notif)
     }
 
-
     private fun createNotificationChannel() {
         val manager =
             applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

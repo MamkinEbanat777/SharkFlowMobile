@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.sharkflow.core.common.DateUtils
 import com.example.sharkflow.core.presentation.AppDropdownField
@@ -64,7 +65,7 @@ fun CreateEditTaskDialog(
                 val time = z.toLocalTime()
                 if (time != LocalTime.MIDNIGHT) z.format(dateTimeFormatter)
                 else z.toLocalDate().format(dateFormatter)
-            } else "Не выбрано"
+            } else "Срок"
         }
     }
 
@@ -109,18 +110,20 @@ fun CreateEditTaskDialog(
 
                 AppField(description, { description = it }, "Описание")
 
-                Text(
-                    text = "Дедлайн",
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(12.dp)
                         .height(56.dp)
-                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(6.dp))
-                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(6.dp))
+                        .border(
+                            1.dp,
+                            MaterialTheme.colorScheme.onSurfaceVariant,
+                            RoundedCornerShape(12.dp)
+                        )
+                        .background(
+                            Color.Transparent,
+                            RoundedCornerShape(12.dp)
+                        )
                         .clickable { openCalendar() }
                 ) {
                     Row(
@@ -129,12 +132,19 @@ fun CreateEditTaskDialog(
                             .padding(horizontal = 12.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = dueDateText, modifier = Modifier.weight(1f))
-                        Icon(Icons.Default.CalendarMonth, contentDescription = "Календарь")
+                        Text(
+                            text = dueDateText,
+                            modifier = Modifier.weight(1f),
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        Icon(
+                            Icons.Default.CalendarMonth,
+                            contentDescription = "Календарь",
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
 
                 AppDropdownField(
                     value = status,
@@ -168,7 +178,6 @@ fun CreateEditTaskDialog(
         DatePickerDialog(
             onDismissRequest = { showCalendarDialog = false },
             confirmButton = {
-
                 AppButton(variant = AppButtonVariant.Text, onClick = {
                     val millis = datePickerState.selectedDateMillis
                     if (millis != null) {

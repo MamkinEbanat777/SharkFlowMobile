@@ -1,4 +1,4 @@
-package com.example.sharkflow.presentation.screens.common
+package com.example.sharkflow.presentation.screens.splash
 
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*

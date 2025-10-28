@@ -1,4 +1,4 @@
-package com.example.sharkflow.presentation.screens.common.components
+package com.example.sharkflow.presentation.screens.support.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*

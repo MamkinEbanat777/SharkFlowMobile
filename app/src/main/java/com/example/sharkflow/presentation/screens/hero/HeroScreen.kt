@@ -1,4 +1,4 @@
-package com.example.sharkflow.presentation.screens.common
+package com.example.sharkflow.presentation.screens.hero
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*

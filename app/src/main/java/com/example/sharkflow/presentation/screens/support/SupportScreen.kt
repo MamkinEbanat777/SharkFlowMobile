@@ -1,4 +1,4 @@
-package com.example.sharkflow.presentation.screens.common
+package com.example.sharkflow.presentation.screens.support
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -10,7 +10,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.sharkflow.R
 import com.example.sharkflow.core.common.Lang
-import com.example.sharkflow.presentation.screens.common.components.ContactForm
+import com.example.sharkflow.presentation.screens.support.components.ContactForm
 
 @Composable
 fun SupportScreen() {
