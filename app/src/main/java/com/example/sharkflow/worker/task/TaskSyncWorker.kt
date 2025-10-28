@@ -3,9 +3,9 @@ package com.example.sharkflow.worker.task
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.*
+import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.data.api.dto.task.*
 import com.example.sharkflow.data.repository.combined.TaskRepositoryCombinedImpl
-import com.example.sharkflow.utils.AppLog
 import dagger.assisted.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.*

@@ -1,5 +1,6 @@
 package com.example.sharkflow.data.repository.combined
 
+import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.data.api.dto.task.*
 import com.example.sharkflow.data.local.db.entities.TaskEntity
 import com.example.sharkflow.data.mapper.TaskMapper
@@ -7,7 +8,6 @@ import com.example.sharkflow.data.repository.local.TaskLocalRepositoryImpl
 import com.example.sharkflow.data.repository.remote.TaskRepositoryImpl
 import com.example.sharkflow.domain.model.Task
 import com.example.sharkflow.domain.repository.TaskRepositoryCombined
-import com.example.sharkflow.utils.AppLog
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.*
 import java.time.Instant

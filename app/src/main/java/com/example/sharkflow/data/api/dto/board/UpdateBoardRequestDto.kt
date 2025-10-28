@@ -9,6 +9,3 @@ data class UpdateBoardRequestDto(
     @SerializedName("isFavorite") val isFavorite: Boolean? = false
 )
 
-data class UpdateBoardResponseDto(
-    @SerializedName("updatedBoard") val updatedBoard: UpdateBoardRequestDto
-)

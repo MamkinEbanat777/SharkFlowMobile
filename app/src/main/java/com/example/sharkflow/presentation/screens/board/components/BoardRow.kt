@@ -12,8 +12,8 @@ import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
+import com.example.sharkflow.core.common.DateUtils.formatDateTimeReadable
 import com.example.sharkflow.domain.model.Board
-import com.example.sharkflow.utils.DateUtils.formatDateTimeReadable
 
 @Composable
 fun BoardRow(

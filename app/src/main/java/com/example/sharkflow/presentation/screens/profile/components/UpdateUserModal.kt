@@ -7,7 +7,7 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.sharkflow.presentation.common.AppField
+import com.example.sharkflow.presentation.common.*
 import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
 
 @Composable
@@ -135,12 +135,10 @@ fun UpdateUserModal(
         },
 
         dismissButton = {
-            TextButton(
-                onClick = { if (!isLoading) onDismiss() },
-                enabled = !isLoading,
-            ) {
-                Text("Отмена")
-            }
+            AppButton(
+                variant = AppButtonVariant.Text, onClick = { if (!isLoading) onDismiss() },
+                enabled = !isLoading, text = "Отмена"
+            )
         }
     )
 }

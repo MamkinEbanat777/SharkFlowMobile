@@ -6,8 +6,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.sharkflow.R
+import com.example.sharkflow.core.common.Lang
+import com.example.sharkflow.presentation.common.*
 import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
-import com.example.sharkflow.utils.Lang
 
 @Composable
 fun DeleteUserModal(
@@ -29,14 +30,13 @@ fun DeleteUserModal(
                     style = MaterialTheme.typography.bodyMedium
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                OutlinedTextField(
+
+                AppField(
                     value = code,
                     onValueChange = { code = it },
-                    label = { Text("Код с почты") },
-                    singleLine = true,
+                    label = "Код с почты",
                     isError = errorMessage != null,
                     enabled = !isLoading,
-                    modifier = Modifier.fillMaxWidth()
                 )
                 if (isLoading) {
                     Spacer(modifier = Modifier.height(8.dp))
@@ -72,9 +72,11 @@ fun DeleteUserModal(
             }
         },
         dismissButton = {
-            TextButton(onClick = { if (!isLoading) onDismiss() }, enabled = !isLoading) {
-                Text(Lang.string(R.string.common_no))
-            }
+            AppButton(
+                onClick = { if (!isLoading) onDismiss() },
+                enabled = !isLoading,
+                text = Lang.string(R.string.common_no)
+            )
         }
     )
 }

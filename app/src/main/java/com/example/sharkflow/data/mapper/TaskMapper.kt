@@ -2,22 +2,22 @@ package com.example.sharkflow.data.mapper
 
 import com.example.sharkflow.data.api.dto.task.*
 import com.example.sharkflow.data.local.db.entities.TaskEntity
-import com.example.sharkflow.domain.model.Task
+import com.example.sharkflow.domain.model.*
 
 object TaskMapper {
-    private fun toStatus(status: String?): Status = when (status) {
-        "PENDING" -> Status.PENDING
-        "IN_PROGRESS" -> Status.IN_PROGRESS
-        "COMPLETED" -> Status.COMPLETED
-        "CANCELLED" -> Status.CANCELLED
-        else -> Status.PENDING
+    private fun toStatus(status: String?): TaskStatus = when (status) {
+        "PENDING" -> TaskStatus.PENDING
+        "IN_PROGRESS" -> TaskStatus.IN_PROGRESS
+        "COMPLETED" -> TaskStatus.COMPLETED
+        "CANCELLED" -> TaskStatus.CANCELLED
+        else -> TaskStatus.PENDING
     }
 
-    private fun toPriority(priority: String?): Priority = when (priority) {
-        "LOW" -> Priority.LOW
-        "MEDIUM" -> Priority.MEDIUM
-        "HIGH" -> Priority.HIGH
-        else -> Priority.MEDIUM
+    private fun toPriority(priority: String?): TaskPriority = when (priority) {
+        "LOW" -> TaskPriority.LOW
+        "MEDIUM" -> TaskPriority.MEDIUM
+        "HIGH" -> TaskPriority.HIGH
+        else -> TaskPriority.MEDIUM
     }
 
     fun fromResponseDto(dto: TaskResponseDto, boardUuid: String): Task {

@@ -1,11 +1,11 @@
 package com.example.sharkflow.data.repository.remote
 
+import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.data.api.TaskApi
 import com.example.sharkflow.data.api.dto.task.*
 import com.example.sharkflow.data.mapper.TaskMapper
 import com.example.sharkflow.domain.model.Task
 import com.example.sharkflow.domain.repository.TaskRepository
-import com.example.sharkflow.utils.AppLog
 import jakarta.inject.Inject
 
 class TaskRepositoryImpl @Inject constructor(
@@ -37,7 +37,6 @@ class TaskRepositoryImpl @Inject constructor(
     }.onFailure { e ->
         println("❌ [Remote createTask] Ошибка при создании таски: ${e.message}")
     }
-
 
     override suspend fun updateTask(
         boardUuid: String,

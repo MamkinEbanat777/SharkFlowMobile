@@ -13,9 +13,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.example.sharkflow.core.common.Lang
 import com.example.sharkflow.presentation.navigation.NavScreen
 import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewModel
-import com.example.sharkflow.utils.Lang
 
 @Composable
 fun BottomNavBar(

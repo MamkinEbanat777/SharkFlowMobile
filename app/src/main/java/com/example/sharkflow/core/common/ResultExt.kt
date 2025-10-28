@@ -1,4 +1,4 @@
-package com.example.sharkflow.utils
+package com.example.sharkflow.core.common
 
 inline fun <T, R> Result<T>.flatMap(transform: (T) -> Result<R>): Result<R> =
     fold(onSuccess = { transform(it) }, onFailure = { Result.failure(it) })

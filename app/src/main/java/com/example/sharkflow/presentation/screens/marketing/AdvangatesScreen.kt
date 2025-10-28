@@ -13,8 +13,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
 import com.example.sharkflow.R
+import com.example.sharkflow.core.common.Lang
 import com.example.sharkflow.presentation.common.Link
-import com.example.sharkflow.utils.Lang
 
 @Composable
 fun AdvantagesScreen() {

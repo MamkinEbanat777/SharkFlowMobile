@@ -1,6 +1,7 @@
 package com.example.sharkflow.presentation.screens.profile.viewmodel
 
 import androidx.lifecycle.viewModelScope
+import com.example.sharkflow.core.common.UaParser
 import com.example.sharkflow.domain.manager.UserManager
 import com.example.sharkflow.domain.model.UserSession
 import com.example.sharkflow.domain.repository.DeviceIdRepository
@@ -8,7 +9,6 @@ import com.example.sharkflow.domain.usecase.user.delete.*
 import com.example.sharkflow.domain.usecase.user.get.LoadUserSessionsUseCase
 import com.example.sharkflow.domain.usecase.user.init.InitializeUserSessionUseCase
 import com.example.sharkflow.domain.usecase.user.update.*
-import com.example.sharkflow.utils.UaParser
 import com.example.sharkflow.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -55,6 +55,10 @@ class UserProfileViewModel @Inject constructor(
     val currentDeviceId: StateFlow<String> = deviceIdRepository.deviceIdFlow()
 
     init {
+        loadUser()
+    }
+
+    fun loadUser() {
         viewModelScope.launch {
             _isUserLoading.value = true
             initializeUserSessionUseCase()

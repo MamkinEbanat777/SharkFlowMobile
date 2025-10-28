@@ -1,4 +1,4 @@
-package com.example.sharkflow.utils
+package com.example.sharkflow.core.system
 
 import android.content.Intent
 import kotlinx.coroutines.flow.MutableSharedFlow

@@ -1,4 +1,5 @@
 [versions]
+accompanistSwiperefresh = "0.36.0"
 agp = "8.13.0"
 androidImageCropper = "2.8.0"
 coilCompose = "3.3.0"
@@ -22,6 +23,7 @@ lifecycleViewmodelCompose = "2.9.4"
 activityCompose = "1.11.0"
 composeBom = "2025.10.00"
 loggingInterceptor = "5.2.1"
+material3Pullrefresh = "1.6.0"
 materialIconsCore = "1.7.8"
 navigationComposeVersion = "2.9.5"
 navigationCompose = "2.9.5"
@@ -48,9 +50,11 @@ workRuntimeKtx = "2.11.0"
 
 
 [libraries]
+accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanistSwiperefresh" }
 android-image-cropper = { module = "com.theartofdev.edmodo:android-image-cropper", version.ref = "androidImageCropper" }
 androidx-compose-material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "materialIconsCore" }
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsCore" }
+androidx-compose-material3-pullrefresh = { module = "androidx.compose.material3:material3-pullrefresh", version.ref = "material3Pullrefresh" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }

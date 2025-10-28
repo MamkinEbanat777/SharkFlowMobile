@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.sharkflow.R
+import com.example.sharkflow.core.common.Lang
 import com.example.sharkflow.presentation.common.ConfirmationModal
 import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewModel
-import com.example.sharkflow.utils.Lang
 
 @Composable
 fun LogoutModal(

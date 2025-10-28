@@ -1,4 +1,4 @@
-package com.example.sharkflow.utils
+package com.example.sharkflow.core.common
 
 import ua_parser.Parser
 

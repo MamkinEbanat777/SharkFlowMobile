@@ -1,10 +1,10 @@
 package com.example.sharkflow.domain.usecase.auth
 
+import com.example.sharkflow.core.common.flatMap
 import com.example.sharkflow.data.mapper.AuthMapper
 import com.example.sharkflow.domain.manager.*
 import com.example.sharkflow.domain.repository.AuthRepository
 import com.example.sharkflow.domain.usecase.user.get.LoadUserUseCase
-import com.example.sharkflow.utils.flatMap
 import jakarta.inject.Inject
 
 class LoginUseCase @Inject constructor(

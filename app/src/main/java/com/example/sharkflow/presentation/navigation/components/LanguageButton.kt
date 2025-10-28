@@ -111,7 +111,6 @@ private fun FlagIcon(
         return
     }
 
-
     val flagDrawable = remember(code) { FlagKit.getDrawable(context, code) }
 
     if (flagDrawable != null) {

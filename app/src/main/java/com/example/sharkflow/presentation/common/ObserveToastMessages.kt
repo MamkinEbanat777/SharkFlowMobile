@@ -2,7 +2,7 @@ package com.example.sharkflow.presentation.common
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
-import com.example.sharkflow.utils.ToastManager
+import com.example.sharkflow.core.presentation.ToastManager
 
 @Composable
 fun ObserveToastMessages(

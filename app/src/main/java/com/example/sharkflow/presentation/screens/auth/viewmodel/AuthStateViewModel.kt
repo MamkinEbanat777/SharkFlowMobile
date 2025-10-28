@@ -36,7 +36,6 @@ class AuthStateViewModel @Inject constructor(
         )
     }
 
-
     fun logout(onResult: (success: Boolean, message: String?) -> Unit = { _, _ -> }) {
         launchResult(
             block = { logoutUserUseCase() },

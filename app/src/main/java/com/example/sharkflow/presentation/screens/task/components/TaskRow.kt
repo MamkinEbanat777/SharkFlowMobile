@@ -1,6 +1,5 @@
 package com.example.sharkflow.presentation.screens.task.components
 
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,15 +7,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.example.sharkflow.data.api.dto.task.*
+import com.example.sharkflow.core.common.DateUtils
+import com.example.sharkflow.core.common.DateUtils.formatDateTimeReadable
+import com.example.sharkflow.core.presentation.toUi
+import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.domain.model.Task
-import com.example.sharkflow.presentation.theme.SuccessColor
-import com.example.sharkflow.utils.DateUtils
-import com.example.sharkflow.utils.DateUtils.formatDateTimeReadable
 import java.time.*
 import java.util.concurrent.TimeUnit
 
@@ -27,21 +26,14 @@ fun TaskRow(
     onEdit: () -> Unit,
     onDelete: () -> Unit
 ) {
-    val statusColor = when (task.status) {
-        Status.PENDING -> MaterialTheme.colorScheme.primary
-        Status.IN_PROGRESS -> MaterialTheme.colorScheme.secondary
-        Status.COMPLETED -> SuccessColor
-        Status.CANCELLED -> MaterialTheme.colorScheme.error
-    }
+    val statusUi = remember(task.status) { task.status.toUi() }
+    val priorityUi = remember(task.priority) { task.priority.toUi() }
 
-    val priorityColor = when (task.priority) {
-        Priority.LOW -> MaterialTheme.colorScheme.secondary
-        Priority.MEDIUM -> MaterialTheme.colorScheme.primary
-        Priority.HIGH -> MaterialTheme.colorScheme.error
-    }
+    val statusColor = statusUi.color
+    val priorityColor = priorityUi.color
 
     val syncColor =
-        if (task.isSynced) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.error
+        if (task.isSynced) colorScheme.secondary else colorScheme.error
 
     Card(
         modifier = Modifier
@@ -49,7 +41,7 @@ fun TaskRow(
             .padding(8.dp)
             .clickable(onClick = onClick),
         elevation = CardDefaults.cardElevation(4.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary)
+        colors = CardDefaults.cardColors(containerColor = colorScheme.primary)
     ) {
         Box(modifier = Modifier.padding(18.dp)) {
             Column(modifier = Modifier.fillMaxWidth()) {
@@ -64,15 +56,15 @@ fun TaskRow(
 
                 task.dueDate?.let { rawDate ->
                     val dueInstant = DateUtils.parseToInstant(rawDate)
-                    val dueDateFormatted = DateUtils.formatDateTimeReadable(rawDate) ?: rawDate
+                    val dueDateFormatted = formatDateTimeReadable(rawDate) ?: rawDate
 
-                    Log.d("TaskRow", "rawDate='$rawDate' instant=$dueInstant")
+                    AppLog.d("TaskRow", "rawDate='$rawDate' instant=$dueInstant")
 
                     val now = ZonedDateTime.now()
                     val dueZdt = dueInstant?.atZone(ZoneId.systemDefault())
                     val dueDateColor =
-                        if (dueZdt != null && dueZdt.isBefore(now)) MaterialTheme.colorScheme.error
-                        else MaterialTheme.colorScheme.onSurface
+                        if (dueZdt != null && dueZdt.isBefore(now)) colorScheme.error
+                        else colorScheme.onSurface
 
                     val isDeadlineSoon = dueZdt?.let {
                         val diff = it.toInstant().toEpochMilli() - now.toInstant().toEpochMilli()
@@ -86,7 +78,7 @@ fun TaskRow(
                             color = dueDateColor,
                             modifier = Modifier
                                 .background(
-                                    color = MaterialTheme.colorScheme.background,
+                                    color = colorScheme.background,
                                     shape = RoundedCornerShape(6.dp)
                                 )
                                 .padding(horizontal = 6.dp, vertical = 2.dp)
@@ -97,11 +89,11 @@ fun TaskRow(
                             Icon(
                                 imageVector = Icons.Default.AccessAlarm,
                                 contentDescription = "Скоро дедлайн",
-                                tint = MaterialTheme.colorScheme.error,
+                                tint = colorScheme.error,
                                 modifier = Modifier
                                     .size(20.dp)
                                     .background(
-                                        color = MaterialTheme.colorScheme.background,
+                                        color = colorScheme.background,
                                         shape = RoundedCornerShape(6.dp)
                                     )
                             )
@@ -121,7 +113,7 @@ fun TaskRow(
                         color = statusColor,
                         modifier = Modifier
                             .background(
-                                color = MaterialTheme.colorScheme.background,
+                                color = colorScheme.background,
                                 shape = RoundedCornerShape(6.dp)
                             )
                             .padding(horizontal = 6.dp, vertical = 2.dp)
@@ -133,7 +125,7 @@ fun TaskRow(
                         color = priorityColor,
                         modifier = Modifier
                             .background(
-                                color = MaterialTheme.colorScheme.background,
+                                color = colorScheme.background,
                                 shape = RoundedCornerShape(6.dp)
                             )
                             .padding(horizontal = 6.dp, vertical = 2.dp)

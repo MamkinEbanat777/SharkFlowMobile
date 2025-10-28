@@ -1,15 +1,14 @@
 package com.example.sharkflow.presentation.screens.board.components
 
-import androidx.compose.foundation.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
+import com.example.sharkflow.presentation.common.*
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -26,7 +25,6 @@ fun CreateOrEditBoardDialog(
             initialColor.trim().removePrefix("#").lowercase()
         )
     }
-    var expanded by remember { mutableStateOf(false) }
 
     val availableColors = listOf(
         "ffffff",
@@ -60,14 +58,7 @@ fun CreateOrEditBoardDialog(
         },
         text = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text("Название доски") },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
+                AppField(title, { title = it }, "Название доски")
                 Spacer(Modifier.height(12.dp))
 
                 Text("Выберите цвет", style = MaterialTheme.typography.bodyMedium)
@@ -82,61 +73,13 @@ fun CreateOrEditBoardDialog(
 
                     Spacer(Modifier.width(12.dp))
 
-                    Box {
-                        OutlinedTextField(
-                            value = "#${selectedColor.uppercase()}",
-                            onValueChange = {},
-                            modifier = Modifier
-                                .width(160.dp)
-                                .clickable { expanded = true },
-                            label = { Text("HEX") },
-                            trailingIcon = {
-                                IconButton(onClick = { expanded = !expanded }) {
-                                    Icon(
-                                        imageVector = if (expanded) Icons.Default.ArrowDropUp else Icons.Default.ArrowDropDown,
-                                        contentDescription = if (expanded) "Свернуть" else "Открыть"
-                                    )
-                                }
-                            }
-                        )
-
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false },
-                            modifier = Modifier.width(260.dp)
-                        ) {
-                            androidx.compose.foundation.layout.FlowRow(
-                                modifier = Modifier.padding(12.dp)
-                            ) {
-                                availableColors.forEach { hex ->
-                                    val isSelected = hex == selectedColor
-                                    Box(
-                                        modifier = Modifier
-                                            .size(48.dp)
-                                            .padding(2.dp)
-                                            .background(Color("#$hex".toColorInt()))
-                                            .clickable {
-                                                selectedColor = hex
-                                                expanded = false
-                                            },
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        if (isSelected) {
-                                            Icon(
-                                                imageVector = Icons.Default.Check,
-                                                contentDescription = "Выбран",
-                                                tint = contentColorFor(
-                                                    backgroundColor = Color(
-                                                        "#$hex".toColorInt()
-                                                    )
-                                                )
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+                    AppColorPickerField(
+                        value = selectedColor,
+                        availableColors = availableColors,
+                        label = "HEX",
+                        onColorSelected = { selectedColor = it },
+                        modifier = Modifier.width(180.dp)
+                    )
 
                     Spacer(Modifier.weight(1f))
                 }

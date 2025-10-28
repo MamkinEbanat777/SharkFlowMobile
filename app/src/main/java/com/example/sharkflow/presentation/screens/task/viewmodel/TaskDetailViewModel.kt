@@ -2,10 +2,11 @@ package com.example.sharkflow.presentation.screens.task.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.*
+import com.example.sharkflow.core.common.DateUtils.formatDateTimeReadable
+import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.data.api.dto.task.UpdateTaskRequestDto
 import com.example.sharkflow.domain.model.Task
 import com.example.sharkflow.domain.repository.TaskRepositoryCombined
-import com.example.sharkflow.utils.DateUtils.formatDateTimeReadable
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.*
@@ -79,7 +80,7 @@ class TaskDetailViewModel @Inject constructor(
 //                }
 
             } catch (e: Exception) {
-                android.util.Log.e("TaskDetailVM", "updateTask failed: ${e.message}")
+                AppLog.e("updateTask failed: ${e.message}", e)
                 _uiState.update { it.copy(isLoading = false) }
                 return@launch
             }
@@ -97,7 +98,6 @@ class TaskDetailViewModel @Inject constructor(
         }
     }
 
-    // Методы для диалогов
     fun showEditDialog(task: Task) {
         editingTask.value = task
     }

@@ -1,5 +1,6 @@
-package com.example.sharkflow.utils
+package com.example.sharkflow.core.network
 
+import com.example.sharkflow.core.system.AppLog
 import retrofit2.Response
 import java.io.IOException
 

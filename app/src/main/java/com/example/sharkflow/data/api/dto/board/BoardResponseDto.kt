@@ -14,7 +14,3 @@ data class BoardResponseDto(
     @SerializedName("updatedAt") val updatedAt: Instant?
 )
 
-data class BoardsListResponseDto(
-    @SerializedName("boards") val boards: List<BoardResponseDto>,
-    @SerializedName("totalBoards") val totalBoards: String
-)

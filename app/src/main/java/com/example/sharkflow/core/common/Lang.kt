@@ -1,4 +1,4 @@
-package com.example.sharkflow.utils
+package com.example.sharkflow.core.common
 
 import android.content.Context
 import androidx.annotation.*

@@ -1,4 +1,4 @@
-package com.example.sharkflow.utils
+package com.example.sharkflow.core.network
 
 import com.google.gson.*
 import java.lang.reflect.Type

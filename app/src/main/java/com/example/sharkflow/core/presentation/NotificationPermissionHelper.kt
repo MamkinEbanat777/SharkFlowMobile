@@ -1,4 +1,4 @@
-package com.example.sharkflow.utils
+package com.example.sharkflow.core.presentation
 
 import android.Manifest
 import android.content.pm.PackageManager

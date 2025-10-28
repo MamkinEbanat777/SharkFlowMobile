@@ -12,13 +12,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.example.sharkflow.core.common.DateUtils.formatDateTimeReadable
+import com.example.sharkflow.core.common.UaParser
 import com.example.sharkflow.domain.model.UserSession
 import com.example.sharkflow.presentation.common.*
 import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewModel
 import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
 import com.example.sharkflow.presentation.theme.SuccessColor
-import com.example.sharkflow.utils.DateUtils.formatDateTimeReadable
-import com.example.sharkflow.utils.UaParser
 
 @Composable
 fun UserSessionsModal(
@@ -275,7 +275,11 @@ fun UserSessionsModal(
         },
         confirmButton = {},
         dismissButton = {
-            TextButton(onClick = { onDismiss() }) { Text("Закрыть") }
+            AppButton(
+                variant = AppButtonVariant.Text,
+                onClick = { onDismiss() },
+                text = "Закрыть"
+            )
         }
     )
 

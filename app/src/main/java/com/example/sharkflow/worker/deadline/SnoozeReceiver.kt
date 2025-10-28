@@ -2,7 +2,7 @@ package com.example.sharkflow.worker.deadline
 
 import android.content.*
 import androidx.work.*
-import com.example.sharkflow.utils.AppLog
+import com.example.sharkflow.core.system.AppLog
 import java.util.concurrent.TimeUnit
 
 class SnoozeReceiver : BroadcastReceiver() {

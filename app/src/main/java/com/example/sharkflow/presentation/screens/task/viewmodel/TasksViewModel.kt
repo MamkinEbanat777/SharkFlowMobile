@@ -2,11 +2,12 @@ package com.example.sharkflow.presentation.screens.task.viewmodel
 
 import androidx.compose.runtime.*
 import androidx.lifecycle.*
+import com.example.sharkflow.core.common.DateUtils
+import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.data.api.dto.task.*
 import com.example.sharkflow.domain.manager.UserManager
-import com.example.sharkflow.domain.model.Task
+import com.example.sharkflow.domain.model.*
 import com.example.sharkflow.domain.repository.TaskRepositoryCombined
-import com.example.sharkflow.utils.DateUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.*
@@ -50,12 +51,30 @@ class TasksViewModel @Inject constructor(
         }
     }
 
+    fun refreshTasks(boardUuid: String) {
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoading = true) }
+            try {
+                AppLog.d("TasksVM", "refreshTasks -> calling repo.refreshTasks for $boardUuid")
+                repo.refreshTasks(boardUuid)
+                AppLog.d("TasksVM", "refreshTasks -> repo.refreshTasks returned")
+                _events.send(TasksUiEvent.ShowMessage("Tasks refreshed"))
+            } catch (e: Exception) {
+                AppLog.e("TasksVM", "refreshTasks failed", e)
+                _events.send(TasksUiEvent.ShowMessage("Failed to refresh tasks: ${e.message}"))
+            } finally {
+                _uiState.update { it.copy(isLoading = false) }
+            }
+        }
+    }
+
+
     fun createTask(
         title: String,
         description: String?,
         dueDate: String? = null,
-        status: Status = Status.PENDING,
-        priority: Priority = Priority.MEDIUM
+        status: TaskStatus = TaskStatus.PENDING,
+        priority: TaskPriority = TaskPriority.MEDIUM
     ) {
         val board = currentBoardUuid ?: return
         viewModelScope.launch {

@@ -14,10 +14,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.example.sharkflow.data.api.dto.task.*
+import com.example.sharkflow.data.api.dto.task.UpdateTaskRequestDto
+import com.example.sharkflow.domain.model.*
 import com.example.sharkflow.presentation.screens.board.viewmodel.BoardDetailViewModel
 import com.example.sharkflow.presentation.screens.task.components.*
 import com.example.sharkflow.presentation.screens.task.viewmodel.TasksViewModel
+import com.google.accompanist.swiperefresh.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -34,7 +36,11 @@ fun BoardDetailScreen(
     LaunchedEffect(Unit) {
         boardVm.startListening(boardUuid)
         tasksVm.start(boardUuid)
+        tasksVm.refreshTasks(boardUuid)
     }
+
+    val refreshing = tasksState.isLoading
+    val swipeState = rememberSwipeRefreshState(isRefreshing = refreshing)
 
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -48,7 +54,7 @@ fun BoardDetailScreen(
                     title = {
                         Text(
                             boardState.board?.title ?: "Доска",
-                            color = colorScheme.onPrimary
+                            color = colorScheme.onPrimary,
                         )
                     },
                     navigationIcon = {
@@ -77,38 +83,53 @@ fun BoardDetailScreen(
             }
         }
     ) { padding ->
-        Box(
+        SwipeRefresh(
+            state = swipeState,
+            onRefresh = { tasksVm.refreshTasks(boardUuid) },
             modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
+                .fillMaxSize(),
+            indicator = { s, _ ->
+                SwipeRefreshIndicator(
+                    state = s,
+                    refreshTriggerDistance = 80.dp,
+                    contentColor = colorScheme.primary,
+                    backgroundColor = colorScheme.background
+                )
+            }
         ) {
-            when {
-                boardState.isLoading || tasksState.isLoading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
-
-                tasksState.tasks.isEmpty() -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "Пока нет задач",
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                color = colorScheme.onSurfaceVariant
-                            )
-                        )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(padding)
+            ) {
+                when {
+                    boardState.isLoading || tasksState.isLoading -> {
+                        CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                     }
-                }
 
-                else -> {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    tasksState.tasks.isEmpty() -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "Пока нет задач",
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    color = colorScheme.onSurfaceVariant
+                                )
+                            )
+                        }
+                    }
+
+                    else -> {
                         Spacer(modifier = Modifier.height(16.dp))
                         LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            modifier = Modifier
+                                .fillMaxSize(),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
                         ) {
                             items(tasksState.tasks, key = { it.uuid }) { task ->
                                 TaskRow(
@@ -121,59 +142,59 @@ fun BoardDetailScreen(
                         }
                     }
                 }
-            }
 
-            if (tasksVm.showCreateDialog.value) {
-                CreateEditTaskDialog(
-                    onDismiss = { tasksVm.dismissCreateDialog() },
-                    onConfirm = { title, desc, dueDate, status, priority ->
-                        tasksVm.createTask(
-                            title = title,
-                            description = desc,
-                            dueDate = dueDate,
-                            status = status ?: Status.PENDING,
-                            priority = priority ?: Priority.MEDIUM
-                        )
-                        tasksVm.dismissCreateDialog()
-                    }
-
-                )
-            }
-
-            tasksVm.editingTask.value?.let { task ->
-                CreateEditTaskDialog(
-                    initialTitle = task.title,
-                    initialDescription = task.description,
-                    initialDueDate = task.dueDate,
-                    initialStatus = task.status,
-                    initialPriority = task.priority,
-                    onDismiss = { tasksVm.dismissEditDialog() },
-                    onConfirm = { title, desc, dueDate, status, priority ->
-                        tasksVm.updateTask(
-                            task.uuid,
-                            UpdateTaskRequestDto(
+                if (tasksVm.showCreateDialog.value) {
+                    CreateEditTaskDialog(
+                        onDismiss = { tasksVm.dismissCreateDialog() },
+                        onConfirm = { title, desc, dueDate, status, priority ->
+                            tasksVm.createTask(
                                 title = title,
                                 description = desc,
                                 dueDate = dueDate,
-                                status = status,
-                                priority = priority
+                                status = status ?: TaskStatus.PENDING,
+                                priority = priority ?: TaskPriority.MEDIUM
                             )
-                        )
-                        tasksVm.dismissEditDialog()
-                    }
-                )
-            }
+                            tasksVm.dismissCreateDialog()
+                        }
 
-            tasksVm.showConfirmDelete.value?.let { task ->
-                ConfirmDeleteDialog(
-                    title = "Удаление задачи",
-                    message = "Удалить \"${task.title}\"?",
-                    onConfirm = {
-                        tasksVm.deleteTask(task.uuid)
-                        tasksVm.dismissDeleteDialog()
-                    },
-                    onDismiss = { tasksVm.dismissDeleteDialog() }
-                )
+                    )
+                }
+
+                tasksVm.editingTask.value?.let { task ->
+                    CreateEditTaskDialog(
+                        initialTitle = task.title,
+                        initialDescription = task.description,
+                        initialDueDate = task.dueDate,
+                        initialStatus = task.status,
+                        initialPriority = task.priority,
+                        onDismiss = { tasksVm.dismissEditDialog() },
+                        onConfirm = { title, desc, dueDate, status, priority ->
+                            tasksVm.updateTask(
+                                task.uuid,
+                                UpdateTaskRequestDto(
+                                    title = title,
+                                    description = desc,
+                                    dueDate = dueDate,
+                                    status = status,
+                                    priority = priority
+                                )
+                            )
+                            tasksVm.dismissEditDialog()
+                        }
+                    )
+                }
+
+                tasksVm.showConfirmDelete.value?.let { task ->
+                    ConfirmDeleteDialog(
+                        title = "Удаление задачи",
+                        message = "Удалить \"${task.title}\"?",
+                        onConfirm = {
+                            tasksVm.deleteTask(task.uuid)
+                            tasksVm.dismissDeleteDialog()
+                        },
+                        onDismiss = { tasksVm.dismissDeleteDialog() }
+                    )
+                }
             }
         }
     }

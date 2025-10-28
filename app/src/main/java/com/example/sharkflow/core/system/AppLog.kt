@@ -1,4 +1,4 @@
-package com.example.sharkflow.utils
+package com.example.sharkflow.core.system
 
 import com.example.sharkflow.BuildConfig
 import timber.log.Timber

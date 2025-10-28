@@ -24,19 +24,15 @@ fun ConfirmationModal(
             }
         },
         confirmButton = {
-            TextButton(onClick = {
+            AppButton(onClick = {
                 onConfirm()
                 onDismiss()
-            }) {
-                Text(confirmButtonText)
-            }
+            }, text = confirmButtonText)
         },
         dismissButton = {
-            TextButton(onClick = {
+            AppButton(onClick = {
                 onDismiss()
-            }) {
-                Text(dismissButtonText)
-            }
+            }, text = dismissButtonText)
         }
     )
 }

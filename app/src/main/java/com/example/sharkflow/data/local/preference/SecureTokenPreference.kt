@@ -2,7 +2,8 @@ package com.example.sharkflow.data.local.preference
 
 import android.content.*
 import androidx.core.content.edit
-import com.example.sharkflow.utils.*
+import com.example.sharkflow.core.common.SecureCrypto
+import com.example.sharkflow.core.system.AppLog
 
 object SecureTokenPreference {
     private const val PREFS_NAME = "secure_tokens_enc"

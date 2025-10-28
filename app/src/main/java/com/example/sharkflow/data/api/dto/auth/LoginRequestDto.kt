@@ -8,6 +8,3 @@ data class LoginRequestDto(
     @SerializedName("rememberMe") val rememberMe: Boolean = true
 )
 
-data class LoginUserDto(
-    @SerializedName("user") val user: LoginRequestDto
-)

@@ -6,10 +6,9 @@ import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.*
 import com.example.sharkflow.MainActivity
-import com.example.sharkflow.data.api.dto.task.*
+import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.data.repository.combined.TaskRepositoryCombinedImpl
-import com.example.sharkflow.domain.model.Task
-import com.example.sharkflow.utils.AppLog
+import com.example.sharkflow.domain.model.*
 import dagger.assisted.*
 import java.time.Instant
 import java.util.concurrent.TimeUnit
@@ -48,7 +47,7 @@ class DeadlineReminderWorker @AssistedInject constructor(
 
         val now = Instant.now()
         val activeTasks = tasks.filter {
-            !it.isDeleted && it.status != Status.COMPLETED && it.status != Status.CANCELLED && it.dueDate != null
+            !it.isDeleted && it.status != TaskStatus.COMPLETED && it.status != TaskStatus.CANCELLED && it.dueDate != null
         }
 
         AppLog.d("DeadlineReminder", "Active tasks for notification: ${activeTasks.size}")
@@ -101,11 +100,10 @@ class DeadlineReminderWorker @AssistedInject constructor(
             applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
 
         val colorInt = when (task.priority) {
-            Priority.HIGH -> 0xFFD32F2F.toInt()
-            Priority.MEDIUM -> 0xFFFFB74D.toInt()
-            Priority.LOW -> 0xFF90A4AE.toInt()
+            TaskPriority.HIGH -> 0xFFD32F2F.toInt()
+            TaskPriority.MEDIUM -> 0xFFFFB74D.toInt()
+            TaskPriority.LOW -> 0xFF90A4AE.toInt()
         }
-
 
         val openIntent = Intent(applicationContext, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP

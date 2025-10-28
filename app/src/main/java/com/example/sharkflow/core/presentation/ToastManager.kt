@@ -1,17 +1,18 @@
-package com.example.sharkflow.utils
+package com.example.sharkflow.core.presentation
 
 import android.content.Context
 import android.view.Gravity
+import android.widget.Toast
 import es.dmoral.toasty.Toasty
 
 object ToastManager {
-    private var currentToast: android.widget.Toast? = null
+    private var currentToast: Toast? = null
     private const val POS_TOP_CENTER = Gravity.TOP or Gravity.CENTER_HORIZONTAL
     private const val OFFSET_X = 0
     private const val OFFSET_Y = 200
     private const val DURATION = 3000
 
-    private fun show(toast: android.widget.Toast) {
+    private fun show(toast: Toast) {
         currentToast?.cancel()
         currentToast = toast
         toast.setGravity(POS_TOP_CENTER, OFFSET_X, OFFSET_Y)

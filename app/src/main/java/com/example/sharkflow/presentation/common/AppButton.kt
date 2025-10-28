@@ -92,7 +92,7 @@ fun AppButton(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp)
+                modifier = Modifier.padding(end = if (text.isNotEmpty()) 8.dp else 0.dp)
             )
         }
         Text(text)

@@ -18,8 +18,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
 import coil3.compose.AsyncImage
+import com.example.sharkflow.core.presentation.ToastManager
 import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
-import com.example.sharkflow.utils.ToastManager
 import com.theartofdev.edmodo.cropper.*
 
 @Composable

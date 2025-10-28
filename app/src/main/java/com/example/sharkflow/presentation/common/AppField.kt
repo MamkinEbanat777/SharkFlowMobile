@@ -23,9 +23,11 @@ fun AppField(
     isPassword: Boolean = false,
     showPassword: Boolean = false,
     onToggleVisibility: (() -> Unit)? = null,
+    readOnly: Boolean = false,
     singleLine: Boolean = true,
     isError: Boolean = false,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    trailing: (@Composable (() -> Unit))? = null,
 ) {
     val context = LocalContext.current
 
@@ -41,6 +43,7 @@ fun AppField(
             .fillMaxWidth()
             .heightIn(min = if (singleLine) 56.dp else 250.dp)
             .padding(12.dp),
+        readOnly = readOnly,
         shape = RoundedCornerShape(12.dp),
         colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = colorScheme.primary,
@@ -56,18 +59,21 @@ fun AppField(
         else
             VisualTransformation.None,
         trailingIcon = {
-            if (isPassword && onToggleVisibility != null) {
-                val icon =
-                    if (showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                Icon(
-                    imageVector = icon,
-                    contentDescription = if (showPassword)
-                        context.getString(R.string.common_hide_password)
-                    else
-                        context.getString(R.string.common_show_password),
-                    modifier = Modifier.clickable { onToggleVisibility() }
-                )
+            when {
+                isPassword && onToggleVisibility != null -> {
+                    val icon =
+                        if (showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = if (showPassword)
+                            context.getString(R.string.common_hide_password)
+                        else
+                            context.getString(R.string.common_show_password),
+                        modifier = Modifier.clickable { onToggleVisibility() }
+                    )
+                }
 
+                trailing != null -> trailing()
             }
         },
         enabled = enabled,

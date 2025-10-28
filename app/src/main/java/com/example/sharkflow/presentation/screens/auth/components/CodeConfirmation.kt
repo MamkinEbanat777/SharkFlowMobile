@@ -10,9 +10,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.sharkflow.R
+import com.example.sharkflow.core.common.Lang
+import com.example.sharkflow.core.presentation.ToastManager
 import com.example.sharkflow.presentation.common.*
 import com.example.sharkflow.presentation.screens.auth.viewmodel.ConfirmationCodeViewModel
-import com.example.sharkflow.utils.*
 
 @Composable
 fun CodeConfirmation(

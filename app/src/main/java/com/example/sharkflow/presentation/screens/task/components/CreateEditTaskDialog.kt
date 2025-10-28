@@ -4,14 +4,15 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.PopupProperties
-import com.example.sharkflow.data.api.dto.task.*
-import com.example.sharkflow.utils.DateUtils
+import com.example.sharkflow.core.common.DateUtils
+import com.example.sharkflow.core.presentation.AppDropdownField
+import com.example.sharkflow.domain.model.*
+import com.example.sharkflow.presentation.common.*
 import java.time.*
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -22,21 +23,21 @@ fun CreateEditTaskDialog(
     initialTitle: String = "",
     initialDescription: String? = "",
     initialDueDate: String? = null,
-    initialStatus: Status? = Status.PENDING,
-    initialPriority: Priority? = Priority.MEDIUM,
+    initialStatus: TaskStatus? = TaskStatus.PENDING,
+    initialPriority: TaskPriority? = TaskPriority.MEDIUM,
     onDismiss: () -> Unit,
     onConfirm: (
         title: String,
         description: String?,
         dueDate: String?,
-        status: Status?,
-        priority: Priority?
+        status: TaskStatus?,
+        priority: TaskPriority?
     ) -> Unit
 ) {
     var title by remember { mutableStateOf(initialTitle) }
     var description by remember { mutableStateOf(initialDescription ?: "") }
-    var status by remember { mutableStateOf(initialStatus ?: Status.PENDING) }
-    var priority by remember { mutableStateOf(initialPriority ?: Priority.MEDIUM) }
+    var status by remember { mutableStateOf(initialStatus ?: TaskStatus.PENDING) }
+    var priority by remember { mutableStateOf(initialPriority ?: TaskPriority.MEDIUM) }
 
     var selectedDateMillis by remember {
         mutableLongStateOf(DateUtils.parseToInstant(initialDueDate)?.toEpochMilli() ?: 0L)
@@ -72,7 +73,6 @@ fun CreateEditTaskDialog(
         initialSelectedDateMillis = selectedDateMillis.takeIf { it > 0L }
     )
 
-    // Time picker state
     val timePickerState = rememberTimePickerState(
         initialHour = initialLocalTime.hour,
         initialMinute = initialLocalTime.minute,
@@ -101,29 +101,19 @@ fun CreateEditTaskDialog(
         onDismissRequest = onDismiss,
         title = { Text(if (initialTitle.isEmpty()) "Создание задачи" else "Редактирование задачи") },
         text = {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    label = { Text("Название") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                AppField(title, { title = it }, "Название")
 
-                OutlinedTextField(
-                    value = description,
-                    onValueChange = { description = it },
-                    label = { Text("Описание") },
-                    modifier = Modifier.fillMaxWidth()
-                )
-                Spacer(modifier = Modifier.height(8.dp))
+                AppField(description, { description = it }, "Описание")
 
                 Text(
                     text = "Дедлайн",
                     style = MaterialTheme.typography.labelSmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(modifier = Modifier.height(6.dp))
 
                 Box(
                     modifier = Modifier
@@ -144,113 +134,66 @@ fun CreateEditTaskDialog(
                     }
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(4.dp))
 
-                // Статус
-                var statusExpanded by remember { mutableStateOf(false) }
-                Box {
-                    OutlinedTextField(
-                        value = status.displayName(),
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Статус") },
-                        trailingIcon = {
-                            IconButton(onClick = { statusExpanded = !statusExpanded }) {
-                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    DropdownMenu(
-                        expanded = statusExpanded,
-                        onDismissRequest = { statusExpanded = false },
-                        properties = PopupProperties(focusable = false)
-                    ) {
-                        Status.entries.forEach { s ->
-                            DropdownMenuItem(text = { Text(s.displayName()) }, onClick = {
-                                status = s
-                                statusExpanded = false
-                            })
-                        }
-                    }
-                }
+                AppDropdownField(
+                    value = status,
+                    options = TaskStatus.entries,
+                    label = "Статус",
+                    valueText = { it.displayName() },
+                    onOptionSelected = { status = it }
+                )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Приоритет
-                var priorityExpanded by remember { mutableStateOf(false) }
-                Box {
-                    OutlinedTextField(
-                        value = priority.displayName(),
-                        onValueChange = {},
-                        readOnly = true,
-                        label = { Text("Приоритет") },
-                        trailingIcon = {
-                            IconButton(onClick = { priorityExpanded = !priorityExpanded }) {
-                                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    DropdownMenu(
-                        expanded = priorityExpanded,
-                        onDismissRequest = { priorityExpanded = false },
-                        properties = PopupProperties(focusable = false)
-                    ) {
-                        Priority.entries.forEach { p ->
-                            DropdownMenuItem(text = { Text(p.displayName()) }, onClick = {
-                                priority = p
-                                priorityExpanded = false
-                            })
-                        }
-                    }
-                }
+                AppDropdownField(
+                    value = priority,
+                    options = TaskPriority.entries,
+                    label = "Приоритет",
+                    valueText = { it.displayName() },
+                    onOptionSelected = { priority = it }
+                )
             }
         },
         confirmButton = {
-            TextButton(onClick = {
+            AppButton(variant = AppButtonVariant.Text, onClick = {
                 val sendDue = dueDateIso.ifBlank { null }
                 onConfirm(title.trim(), description.trim(), sendDue, status, priority)
-            }) { Text("Сохранить") }
+            }, text = "Сохранить")
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Отмена") }
+            AppButton(variant = AppButtonVariant.Text, onClick = onDismiss, text = "Отмена")
         }
     )
 
-    // DatePickerDialog — показываем только если нужно
     if (showCalendarDialog) {
         DatePickerDialog(
             onDismissRequest = { showCalendarDialog = false },
             confirmButton = {
-                TextButton(onClick = {
+
+                AppButton(variant = AppButtonVariant.Text, onClick = {
                     val millis = datePickerState.selectedDateMillis
                     if (millis != null) {
-                        // datePickerState обычно даёт millis на startOfDay(system)
                         selectedDateMillis = millis
-                        // сразу открываем выбор времени
                         showTimeDialog = true
                     }
                     showCalendarDialog = false
-                }) { Text("OK") }
+                }, text = "OK")
             },
             dismissButton = {
-                TextButton(onClick = {
+                AppButton(variant = AppButtonVariant.Text, onClick = {
                     showCalendarDialog = false
-                }) { Text("Отмена") }
+                }, text = "Отмена")
             }
         ) {
             DatePicker(state = datePickerState, showModeToggle = false)
         }
     }
 
-    // TimePickerDialog — показываем после выбора даты
     if (showTimeDialog) {
         TimePickerDialog(
             onDismissRequest = { showTimeDialog = false },
             title = { Text("Выберите время") },
             confirmButton = {
-                TextButton(onClick = {
+                AppButton(variant = AppButtonVariant.Text, onClick = {
                     val localDate = Instant.ofEpochMilli(selectedDateMillis)
                         .atZone(ZoneId.systemDefault()).toLocalDate()
                     val chosenLocalDateTime = LocalDateTime.of(
@@ -261,9 +204,15 @@ fun CreateEditTaskDialog(
                     selectedDateMillis = instant.toEpochMilli()
                     dueDateIso = instant.toString()
                     showTimeDialog = false
-                }) { Text("OK") }
+                }, text = "OK")
             },
-            dismissButton = { TextButton(onClick = { showTimeDialog = false }) { Text("Отмена") } }
+            dismissButton = {
+                AppButton(
+                    variant = AppButtonVariant.Text,
+                    onClick = { showTimeDialog = false },
+                    text = "Отмена"
+                )
+            }
         ) {
             TimePicker(state = timePickerState)
         }

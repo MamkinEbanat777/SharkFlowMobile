@@ -10,6 +10,3 @@ data class RegisterRequestDto(
     @SerializedName("acceptedPolicies") val acceptedPolicies: Boolean = true
 )
 
-data class RegisterUserDto(
-    @SerializedName("user") val user: RegisterRequestDto
-)

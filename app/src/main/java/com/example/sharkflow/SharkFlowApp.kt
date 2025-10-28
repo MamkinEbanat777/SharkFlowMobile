@@ -4,8 +4,9 @@ import android.app.Application
 import android.net.*
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
+import com.example.sharkflow.core.common.*
+import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.domain.repository.LanguageRepository
-import com.example.sharkflow.utils.*
 import com.example.sharkflow.worker.deadline.startDeadlineReminderWorker
 import com.example.sharkflow.worker.task.startTaskSyncWorker
 import com.google.crypto.tink.aead.AeadConfig

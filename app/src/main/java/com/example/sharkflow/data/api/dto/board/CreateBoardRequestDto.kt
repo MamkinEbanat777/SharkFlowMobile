@@ -7,7 +7,3 @@ data class CreateBoardRequestDto(
     @SerializedName("color") val color: String
 )
 
-data class CreateBoardResponseDto(
-    @SerializedName("message") val message: String,
-    @SerializedName("board") val board: BoardResponseDto
-)

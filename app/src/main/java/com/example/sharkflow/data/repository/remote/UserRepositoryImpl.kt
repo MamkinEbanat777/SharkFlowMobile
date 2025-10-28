@@ -1,11 +1,11 @@
 package com.example.sharkflow.data.repository.remote
 
+import com.example.sharkflow.core.network.safeApiCall
 import com.example.sharkflow.data.api.UserApi
 import com.example.sharkflow.data.api.dto.user.*
 import com.example.sharkflow.data.mapper.*
 import com.example.sharkflow.domain.model.*
 import com.example.sharkflow.domain.repository.UserRepository
-import com.example.sharkflow.utils.safeApiCall
 import javax.inject.*
 
 @Singleton

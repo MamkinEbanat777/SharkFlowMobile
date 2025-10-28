@@ -3,11 +3,11 @@ package com.example.sharkflow.di
 import android.content.Context
 import android.os.Build
 import com.example.sharkflow.BuildConfig
+import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.data.api.*
 import com.example.sharkflow.data.local.preference.DeviceIdPreference
 import com.example.sharkflow.data.network.*
 import com.example.sharkflow.domain.repository.TokenRepository
-import com.example.sharkflow.utils.AppLog
 import com.google.gson.*
 import dagger.*
 import dagger.hilt.InstallIn

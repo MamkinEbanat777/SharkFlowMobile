@@ -1,12 +1,14 @@
-package com.example.sharkflow.utils
+package com.example.sharkflow.core.common
 
 import android.content.Context
 import android.util.Base64
 import androidx.core.content.edit
+import com.example.sharkflow.core.system.AppLog
 import com.google.crypto.tink.Aead
 import com.google.crypto.tink.aead.*
 import com.google.crypto.tink.integration.android.AndroidKeysetManager
 import java.nio.charset.StandardCharsets
+import java.security.InvalidKeyException
 
 object SecureCrypto {
     private lateinit var aead: Aead
@@ -31,7 +33,7 @@ object SecureCrypto {
 
                     aead = keysetManager.keysetHandle.getPrimitive(Aead::class.java) as Aead
                     initialized = true
-                } catch (e: java.security.InvalidKeyException) {
+                } catch (e: InvalidKeyException) {
                     AppLog.w("Keystore key missing or invalid, recreating...", e)
                     context.getSharedPreferences("tink_key_prefs", Context.MODE_PRIVATE)
                         .edit { clear() }

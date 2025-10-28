@@ -7,7 +7,3 @@ data class DeletedBoardInfoDto(
     @SerializedName("tasksRemoved") val tasksRemoved: String
 )
 
-data class DeleteBoardResponseDto(
-    @SerializedName("message") val message: String,
-    @SerializedName("deletedBoard") val deletedBoard: DeletedBoardInfoDto
-)

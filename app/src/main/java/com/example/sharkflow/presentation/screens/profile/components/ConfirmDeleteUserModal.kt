@@ -6,8 +6,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.sharkflow.R
+import com.example.sharkflow.core.common.Lang
+import com.example.sharkflow.presentation.common.*
 import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
-import com.example.sharkflow.utils.Lang
 
 @Composable
 fun ConfirmDeleteUserModal(
@@ -49,7 +50,8 @@ fun ConfirmDeleteUserModal(
             }
         },
         confirmButton = {
-            TextButton(
+            AppButton(
+                variant = AppButtonVariant.Text,
                 onClick = {
                     isLoading = true
                     errorMessage = null
@@ -61,15 +63,16 @@ fun ConfirmDeleteUserModal(
                             errorMessage = message ?: "Ошибка при отправке кода"
                         }
                     }
-                }
-            ) {
-                Text(Lang.string(R.string.common_yes))
-            }
+                },
+                text = Lang.string(R.string.common_yes)
+            )
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(Lang.string(R.string.common_no))
-            }
+            AppButton(
+                variant = AppButtonVariant.Text,
+                onClick = onDismiss,
+                text = Lang.string(R.string.common_no)
+            )
         }
     )
 }

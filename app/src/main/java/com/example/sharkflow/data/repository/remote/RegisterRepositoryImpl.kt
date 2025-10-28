@@ -1,10 +1,10 @@
 package com.example.sharkflow.data.repository.remote
 
+import com.example.sharkflow.core.network.safeApiCall
 import com.example.sharkflow.data.api.UserApi
 import com.example.sharkflow.data.api.dto.auth.*
 import com.example.sharkflow.data.api.dto.user.ConfirmationCodeRequestDto
 import com.example.sharkflow.domain.repository.RegisterRepository
-import com.example.sharkflow.utils.safeApiCall
 import jakarta.inject.Inject
 import javax.inject.Singleton
 

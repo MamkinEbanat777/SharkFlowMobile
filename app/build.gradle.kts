@@ -135,18 +135,16 @@ dependencies {
     kapt("androidx.room:room-compiler:2.8.2")
     implementation(libs.androidx.room.ktx)
     implementation("com.github.ua-parser:uap-java:1.6.1")
-
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-inappmessaging")
     implementation("com.google.firebase:firebase-inappmessaging-display")
     implementation("com.google.firebase:firebase-perf")
     implementation("com.google.firebase:firebase-crashlytics")
-
+    implementation(libs.accompanist.swiperefresh)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.hilt.work)
     kapt(libs.androidx.hilt.compiler)
-
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

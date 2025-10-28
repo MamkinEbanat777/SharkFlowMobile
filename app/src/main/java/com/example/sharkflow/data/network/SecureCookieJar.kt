@@ -2,7 +2,8 @@ package com.example.sharkflow.data.network
 
 import android.content.Context
 import androidx.core.content.edit
-import com.example.sharkflow.utils.*
+import com.example.sharkflow.core.common.SecureCrypto
+import com.example.sharkflow.core.system.AppLog
 import com.google.gson.Gson
 import okhttp3.*
 

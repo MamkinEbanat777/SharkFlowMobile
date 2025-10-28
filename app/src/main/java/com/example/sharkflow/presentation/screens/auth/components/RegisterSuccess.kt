@@ -12,7 +12,7 @@ import androidx.compose.ui.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.sharkflow.R
-import com.example.sharkflow.utils.Lang
+import com.example.sharkflow.core.common.Lang
 
 @Composable
 fun RegistrationSuccess() {

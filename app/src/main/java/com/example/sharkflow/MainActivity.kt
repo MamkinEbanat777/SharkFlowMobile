@@ -8,12 +8,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.sharkflow.core.presentation.requestNotificationPermissionIfNeeded
+import com.example.sharkflow.core.system.*
 import com.example.sharkflow.presentation.navigation.AppNavHost
 import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewModel
 import com.example.sharkflow.presentation.screens.common.SplashScreen
 import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
 import com.example.sharkflow.presentation.theme.SharkFlowTheme
-import com.example.sharkflow.utils.*
 import com.example.sharkflow.viewmodel.*
 import dagger.hilt.android.AndroidEntryPoint
 
