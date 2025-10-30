@@ -4,6 +4,7 @@ import java.time.Instant
 
 data class Board(
     val uuid: String,
+    val serverUuid: String? = null,
     val title: String,
     val color: String?,
     val userUuid: String,

@@ -7,8 +7,8 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.*
 import com.example.sharkflow.MainActivity
 import com.example.sharkflow.core.system.AppLog
-import com.example.sharkflow.data.repository.combined.TaskRepositoryCombinedImpl
 import com.example.sharkflow.domain.model.*
+import com.example.sharkflow.domain.usecase.task.GetAllTasksUseCase
 import dagger.assisted.*
 import java.time.Instant
 import java.util.concurrent.TimeUnit
@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit
 class DeadlineReminderWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    private val repository: TaskRepositoryCombinedImpl
+    private val getAllTasksUseCase: GetAllTasksUseCase
 ) : CoroutineWorker(context, workerParams) {
 
     companion object {
@@ -42,7 +42,7 @@ class DeadlineReminderWorker @AssistedInject constructor(
         AppLog.d("DeadlineReminder", "Worker started at ${Instant.now()}")
         createNotificationChannel()
 
-        val tasks = repository.getAllTasks()
+        val tasks = getAllTasksUseCase()
         AppLog.d("DeadlineReminder", "Tasks loaded: ${tasks.size}")
 
         val now = Instant.now()

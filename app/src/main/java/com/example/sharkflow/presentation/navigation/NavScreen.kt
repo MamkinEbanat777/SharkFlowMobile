@@ -11,7 +11,7 @@ sealed class NavScreen(val route: String, val label: Int, val icon: ImageVector)
     object Login : NavScreen("login", R.string.nav_login, Icons.AutoMirrored.Filled.Login)
     object Register : NavScreen("register", R.string.nav_register, Icons.Filled.Key)
     object HowItWorks :
-        NavScreen("how_it_works", R.string.nav_how_it_works, Icons.AutoMirrored.Filled.Help)
+        NavScreen("how-it-works", R.string.nav_how_it_works, Icons.AutoMirrored.Filled.Help)
 
     object Features : NavScreen("features", R.string.nav_features, Icons.AutoMirrored.Filled.List)
     object Advantages : NavScreen("advantages", R.string.nav_advantages, Icons.Filled.ThumbUp)

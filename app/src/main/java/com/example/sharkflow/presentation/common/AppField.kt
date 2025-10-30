@@ -29,9 +29,8 @@ fun AppField(
     enabled: Boolean = true,
     trailing: (@Composable (() -> Unit))? = null,
 ) {
-    val context = LocalContext.current
-
     val borderColor = if (isError) colorScheme.error else colorScheme.onSurfaceVariant
+    val context = LocalContext.current
 
     OutlinedTextField(
         value = value,
@@ -65,6 +64,7 @@ fun AppField(
                         if (showPassword) Icons.Default.Visibility else Icons.Default.VisibilityOff
                     Icon(
                         imageVector = icon,
+                        tint = colorScheme.primary,
                         contentDescription = if (showPassword)
                             context.getString(R.string.common_hide_password)
                         else

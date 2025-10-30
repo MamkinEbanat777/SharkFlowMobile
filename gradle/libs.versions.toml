@@ -28,6 +28,7 @@ materialIconsCore = "1.7.8"
 navigationComposeVersion = "2.9.5"
 navigationCompose = "2.9.5"
 okhttp = "5.2.1"
+otpviewCompose = "1.0.3"
 perfPlugin = "2.0.1"
 profileinstaller = "1.4.1"
 retrofit = "3.0.0"
@@ -50,6 +51,7 @@ workRuntimeKtx = "2.11.0"
 
 
 [libraries]
+accompanist-navigation-animation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanistSwiperefresh" }
 accompanist-swiperefresh = { module = "com.google.accompanist:accompanist-swiperefresh", version.ref = "accompanistSwiperefresh" }
 android-image-cropper = { module = "com.theartofdev.edmodo:android-image-cropper", version.ref = "androidImageCropper" }
 androidx-compose-material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "materialIconsCore" }
@@ -97,6 +99,7 @@ kotlinx-coroutines-android = { module = "org.jetbrains.kotlinx:kotlinx-coroutine
 leakcanary-android = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakcanaryAndroid" }
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+otpview-compose = { module = "com.github.itsay:OtpView-Compose", version.ref = "otpviewCompose" }
 perf-plugin = { module = "com.google.firebase:perf-plugin", version.ref = "perfPlugin" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 androidx-compose-animation = { group = "androidx.compose.animation", name = "animation", version.ref = "animation" }

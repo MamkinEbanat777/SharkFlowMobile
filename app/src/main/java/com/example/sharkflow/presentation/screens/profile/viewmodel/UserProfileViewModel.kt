@@ -1,19 +1,18 @@
 package com.example.sharkflow.presentation.screens.profile.viewmodel
 
-import androidx.lifecycle.viewModelScope
 import com.example.sharkflow.core.common.UaParser
+import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.domain.manager.UserManager
 import com.example.sharkflow.domain.model.UserSession
-import com.example.sharkflow.domain.repository.DeviceIdRepository
+import com.example.sharkflow.domain.usecase.auth.DeviceIdUseCase
 import com.example.sharkflow.domain.usecase.user.delete.*
-import com.example.sharkflow.domain.usecase.user.get.LoadUserSessionsUseCase
+import com.example.sharkflow.domain.usecase.user.get.*
 import com.example.sharkflow.domain.usecase.user.init.InitializeUserSessionUseCase
 import com.example.sharkflow.domain.usecase.user.update.*
 import com.example.sharkflow.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
 
 @HiltViewModel
 class UserProfileViewModel @Inject constructor(
@@ -27,9 +26,11 @@ class UserProfileViewModel @Inject constructor(
     private val updateUserAvatarUseCase: UpdateUserAvatarUseCase,
     private val deleteUserAccountUseCase: DeleteUserAccountUseCase,
     private val loadUserSessionsUseCase: LoadUserSessionsUseCase,
-    private val deviceIdRepository: DeviceIdRepository
+    private val loadUserUseCase: LoadUserUseCase,
+    private val deviceIdUseCase: DeviceIdUseCase
 ) : BaseViewModel() {
     val currentUser = userManager.currentUser
+    private var hasLoadedUser = false
 
     private val _isUploading = MutableStateFlow(false)
     val isUploading: StateFlow<Boolean> = _isUploading.asStateFlow()
@@ -52,22 +53,39 @@ class UserProfileViewModel @Inject constructor(
     private val _sessionsError = MutableStateFlow<String?>(null)
     val sessionsError: StateFlow<String?> = _sessionsError.asStateFlow()
 
-    val currentDeviceId: StateFlow<String> = deviceIdRepository.deviceIdFlow()
+    val currentDeviceId: StateFlow<String> by lazy { deviceIdUseCase() }
 
-    init {
-        loadUser()
-    }
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
 
     fun loadUser() {
-        viewModelScope.launch {
-            _isUserLoading.value = true
-            initializeUserSessionUseCase()
-            _isUserLoading.value = false
-        }
+        if (hasLoadedUser) return
+        hasLoadedUser = true
+        launchResult(
+            block = { initializeUserSessionUseCase(); Result.success(Unit) },
+            onSuccess = { _isUserLoading.value = false },
+            onFailure = { throwable ->
+                _isUserLoading.value = false
+                AppLog.e("UserProfileViewModel", "loadUser failed", throwable)
+            }
+        )
+    }
+
+    fun refreshUser(onResult: ((success: Boolean, error: String?) -> Unit)? = null) {
+        launchResult(
+            block = { loadUserUseCase() },
+            onSuccess = { user ->
+                userManager.setUser(user)
+                onResult?.invoke(true, null)
+            },
+            onFailure = { throwable ->
+                AppLog.e("UserProfileViewModel", "refreshUser failed", throwable)
+                onResult?.invoke(false, throwable?.message ?: "Ошибка")
+            }
+        )
     }
 
     fun loadSessions() {
-        _isLoadingSessions.value = true
         launchResult(
             block = { loadUserSessionsUseCase() },
             onSuccess = { list ->
@@ -83,20 +101,10 @@ class UserProfileViewModel @Inject constructor(
                     )
                 }
                 _sessions.value = enriched
-                _isLoadingSessions.value = false
             },
             onFailure = { throwable ->
                 _sessionsError.value = throwable?.message ?: "Ошибка загрузки сессий"
-                _isLoadingSessions.value = false
             }
-        )
-    }
-
-    fun loadUserSessions(onResult: (success: Boolean, sessions: List<UserSession>?, error: String?) -> Unit) {
-        launchResult(
-            block = { loadUserSessionsUseCase() },
-            onSuccess = { sessions -> onResult(true, sessions, null) },
-            onFailure = { throwable -> onResult(false, null, throwable?.message) }
         )
     }
 

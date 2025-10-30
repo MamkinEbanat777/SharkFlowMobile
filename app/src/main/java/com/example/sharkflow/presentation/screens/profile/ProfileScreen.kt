@@ -16,7 +16,6 @@ import com.example.sharkflow.presentation.common.*
 import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewModel
 import com.example.sharkflow.presentation.screens.profile.components.*
 import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
-import com.google.accompanist.swiperefresh.*
 
 @Composable
 fun ProfileScreen(
@@ -30,6 +29,7 @@ fun ProfileScreen(
     var showUserSessionsDialog by remember { mutableStateOf(false) }
 
     val currentUser by userProfileViewModel.currentUser.collectAsState()
+    val isRefreshing by userProfileViewModel.isRefreshing.collectAsState()
 
     if (currentUser == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -37,14 +37,10 @@ fun ProfileScreen(
         }
         return
     }
-    val isLoading by userProfileViewModel.isLoading.collectAsState()
-    val swipeState = rememberSwipeRefreshState(isRefreshing = isLoading)
 
-    // подумать как сделать локально а то все приложение перезагружается!
-    SwipeRefresh(
-        state = swipeState,
-        onRefresh = { userProfileViewModel.loadUser() },
-        modifier = Modifier.fillMaxSize()
+    AppSwipeRefresh(
+        isRefreshing = isRefreshing,
+        onRefresh = { userProfileViewModel.refreshUser() }
     ) {
         Column(
             modifier = Modifier
@@ -107,7 +103,7 @@ fun ProfileScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = "Здесь вы можете обновить свои данные или удалить аккаунт.",
+                text = "Здесь вы можете обновить свои данные или удалить аккаунт, а также просмотреть активные сессии.",
                 style = typography.bodySmall,
                 color = colorScheme.onSurface.copy(alpha = 0.6f),
                 modifier = Modifier.padding(horizontal = 16.dp),

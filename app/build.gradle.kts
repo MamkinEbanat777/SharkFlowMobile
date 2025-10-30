@@ -118,6 +118,8 @@ dependencies {
     implementation(libs.androidx.hilt.lifecycle.viewmodel)
     implementation("com.google.dagger:hilt-android:2.57.2")
     kapt("com.google.dagger:hilt-compiler:2.57.2")
+
+    implementation("com.github.mukeshsolanki.android-otpview-pinview:otpview-compose:3.1.0")
     "baselineProfile"(project(":baselineprofile"))
     implementation(libs.androidx.media3.exoplayer.dash)
     implementation(libs.coil.compose)
@@ -144,6 +146,7 @@ dependencies {
     implementation(libs.accompanist.swiperefresh)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.hilt.work)
+    implementation(libs.accompanist.navigation.animation)
     kapt(libs.androidx.hilt.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

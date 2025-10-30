@@ -9,7 +9,6 @@ import androidx.compose.ui.*
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.*
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.sharkflow.R
 import com.example.sharkflow.core.common.Lang
@@ -19,9 +18,9 @@ import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewMo
 @SuppressLint("ConfigurationScreenWidthHeight")
 @Composable
 fun HeroScreen(
-    navController: NavController
+    navController: NavController,
+    authStateViewModel: AuthStateViewModel
 ) {
-    val authStateViewModel: AuthStateViewModel = hiltViewModel()
     val isLoggedIn by authStateViewModel.isLoggedIn.collectAsState()
     val steps = Lang.stringArray(R.array.hero_array_step)
 

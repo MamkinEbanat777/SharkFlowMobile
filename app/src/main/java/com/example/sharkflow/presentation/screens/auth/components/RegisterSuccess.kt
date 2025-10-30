@@ -21,26 +21,23 @@ fun RegistrationSuccess() {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(bottom = 80.dp)
     ) {
         Icon(
             imageVector = Icons.Filled.Check,
             contentDescription = successText,
             tint = colorScheme.onPrimary,
             modifier = Modifier
-                .size(120.dp)
-                .padding(20.dp)
+                .size(90.dp)
                 .background(
                     color = colorScheme.primary,
                     shape = RoundedCornerShape(100)
                 )
         )
+        Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = successText,
             textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.displaySmall
+            style = MaterialTheme.typography.headlineMedium
         )
     }
 }

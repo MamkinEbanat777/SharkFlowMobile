@@ -3,6 +3,8 @@ package com.example.sharkflow.data.mapper
 import com.example.sharkflow.data.api.dto.task.*
 import com.example.sharkflow.data.local.db.entities.TaskEntity
 import com.example.sharkflow.domain.model.*
+import java.time.Instant
+import java.util.UUID
 
 object TaskMapper {
     private fun toStatus(status: String?): TaskStatus = when (status) {
@@ -95,5 +97,121 @@ object TaskMapper {
         )
     }
 
+    fun mergeEntityWithUpdate(
+        entity: TaskEntity,
+        update: UpdateTaskRequestDto,
+        remote: UpdateTaskRequestDto? = null
+    ): TaskEntity {
+        return entity.copy(
+            title = remote?.title ?: update.title ?: entity.title,
+            description = remote?.description ?: update.description ?: entity.description,
+            status = remote?.status?.name ?: update.status?.name ?: entity.status,
+            priority = remote?.priority?.name ?: update.priority?.name ?: entity.priority,
+            dueDate = remote?.dueDate ?: update.dueDate ?: entity.dueDate,
+            updatedAt = Instant.now().toString(),
+            isSynced = remote != null,
+            isDeleted = false
+        )
+    }
+
+    fun toLocalEntityForCreate(
+        boardUuid: String,
+        createDto: CreateTaskRequestDto,
+        existingUuid: String? = null
+    ): TaskEntity {
+        val now = Instant.now().toString()
+        return TaskEntity(
+            uuid = existingUuid ?: UUID.randomUUID().toString(),
+            serverUuid = null,
+            title = createDto.title,
+            description = createDto.description,
+            boardUuid = boardUuid,
+            status = createDto.status.name,
+            priority = createDto.priority.name,
+            isDeleted = false,
+            isSynced = false,
+            dueDate = createDto.dueDate,
+            createdAt = createDto.createdAt ?: now,
+            updatedAt = createDto.updatedAt ?: now
+        )
+    }
+
+    fun mergeLocalWithRemoteAfterCreate(
+        local: TaskEntity,
+        remoteServerUuid: String?
+    ): TaskEntity {
+        return if (remoteServerUuid != null) {
+            local.copy(
+                serverUuid = remoteServerUuid,
+                isSynced = true
+            )
+        } else {
+            local.copy(isSynced = false)
+        }
+    }
+
+
+    fun mergeRemoteWithLocalList(
+        boardUuid: String,
+        remoteTasks: List<Task>,
+        localTasks: List<TaskEntity>
+    ): List<TaskEntity> {
+        val localByServer = localTasks
+            .filter { it.serverUuid != null }
+            .associateBy { it.serverUuid }
+
+        val toInsertOrUpdate = mutableListOf<TaskEntity>()
+
+        remoteTasks.forEach { remote ->
+            val serverUuid =
+                remote.serverUuid ?: throw IllegalStateException("remote task must have serverUuid")
+            val existing = localByServer[serverUuid]
+
+            if (existing != null) {
+                toInsertOrUpdate.add(
+                    existing.copy(
+                        title = remote.title,
+                        description = remote.description,
+                        status = remote.status.name,
+                        priority = remote.priority.name,
+                        dueDate = remote.dueDate,
+                        createdAt = remote.createdAt,
+                        updatedAt = remote.updatedAt,
+                        isSynced = true
+                    )
+                )
+            } else {
+                val unsyncedLocal = localTasks.find {
+                    it.serverUuid == null &&
+                            !it.isDeleted &&
+                            it.title == remote.title &&
+                            (it.description == remote.description ||
+                                    (it.description.isNullOrBlank() && remote.description.isNullOrBlank())) &&
+                            it.dueDate == remote.dueDate
+                }
+
+                val uuidToUse = unsyncedLocal?.uuid ?: java.util.UUID.randomUUID().toString()
+
+                toInsertOrUpdate.add(
+                    TaskEntity(
+                        uuid = uuidToUse,
+                        serverUuid = serverUuid,
+                        title = remote.title,
+                        description = remote.description,
+                        boardUuid = boardUuid,
+                        status = remote.status.name,
+                        priority = remote.priority.name,
+                        dueDate = remote.dueDate,
+                        createdAt = remote.createdAt,
+                        updatedAt = remote.updatedAt,
+                        isSynced = true,
+                        isDeleted = false
+                    )
+                )
+            }
+        }
+
+        return toInsertOrUpdate
+    }
 
 }

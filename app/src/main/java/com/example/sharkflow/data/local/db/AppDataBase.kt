@@ -7,7 +7,7 @@ import com.example.sharkflow.data.local.db.entities.*
 
 @Database(
     entities = [UserEntity::class, BoardEntity::class, TaskEntity::class],
-    version = 9,
+    version = 10,
     exportSchema = true
 )
 

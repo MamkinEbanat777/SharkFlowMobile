@@ -8,19 +8,20 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.sharkflow.core.common.DateUtils.formatDateTimeReadable
-import com.example.sharkflow.core.presentation.toUi
+import com.example.sharkflow.core.presentation.ToastManager
+import com.example.sharkflow.core.validators.TaskValidator
 import com.example.sharkflow.data.api.dto.task.UpdateTaskRequestDto
 import com.example.sharkflow.presentation.common.*
 import com.example.sharkflow.presentation.screens.task.components.*
-import com.example.sharkflow.presentation.screens.task.viewmodel.TaskDetailViewModel
-import com.google.accompanist.swiperefresh.*
+import com.example.sharkflow.presentation.screens.task.viewmodel.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,50 +29,84 @@ fun TaskDetailScreen(
     navController: NavController,
     boardUuid: String,
     taskUuid: String,
-    vm: TaskDetailViewModel = hiltViewModel()
+    taskDetailViewModel: TaskDetailViewModel,
+    tasksViewModel: TasksViewModel
 ) {
-    val state by vm.uiState.collectAsState()
+    val state by taskDetailViewModel.uiState.collectAsState()
+    val tasksState by tasksViewModel.uiState.collectAsState()
+    val context = LocalContext.current
 
-    val refreshing = state.isLoading
-    val swipeState = rememberSwipeRefreshState(isRefreshing = refreshing)
+    LaunchedEffect(Unit) { taskDetailViewModel.start(boardUuid, taskUuid) }
 
-    LaunchedEffect(Unit) { vm.start(boardUuid, taskUuid) }
+    LaunchedEffect(state.message) {
+        state.message?.let { msg ->
+            if (state.isMessageSuccess) ToastManager.success(context, msg)
+            else ToastManager.error(context, msg)
+            taskDetailViewModel.clearMessage()
+        }
+    }
+
+    val cardsOffset = 0
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text(state.task?.title ?: "Задача") },
-                navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Назад",
-                            tint = Color.White
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = colorScheme.primary,
-                    titleContentColor = colorScheme.onPrimary,
-                    actionIconContentColor = colorScheme.onPrimary
-                )
-            )
-        }
-    ) { padding ->
-        SwipeRefresh(
-            state = swipeState,
-            onRefresh = { vm.start(boardUuid, taskUuid) },
-            modifier = Modifier
-                .fillMaxSize(),
-            indicator = { s, _ ->
-                SwipeRefreshIndicator(
-                    state = s,
-                    refreshTriggerDistance = 80.dp,
-                    contentColor = colorScheme.primary,
-                    backgroundColor = colorScheme.background
+        topBar = @Composable {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = colorScheme.primary,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
+            ) {
+                TopAppBar(
+                    title = { Text(state.task?.title ?: "Задача") },
+                    navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Назад",
+                                tint = colorScheme.onPrimary
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        titleContentColor = colorScheme.onPrimary,
+                        actionIconContentColor = colorScheme.onPrimary
+                    ),
+                    modifier = Modifier.fillMaxWidth()
                 )
             }
-        ) {
+        },
+
+        floatingActionButton = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                FloatingActionButton(
+                    onClick = { taskDetailViewModel.showEditDialog() },
+                    containerColor = colorScheme.primary,
+                    contentColor = colorScheme.onPrimary
+                ) {
+                    Icon(Icons.Filled.Edit, contentDescription = "Редактировать")
+                }
+
+                FloatingActionButton(
+                    onClick = { taskDetailViewModel.showConfirmDelete() },
+                    containerColor = colorScheme.error,
+                    contentColor = colorScheme.onSecondary
+                ) {
+                    Icon(Icons.Filled.Delete, contentDescription = "Удалить")
+                }
+            }
+        }
+
+    ) { padding ->
+        AppSwipeRefresh(
+            isRefreshing = state.isLoading,
+            onRefresh = { taskDetailViewModel.refreshOnly(boardUuid) }
+        )
+        {
             Box(
                 modifier = Modifier
                     .padding(padding)
@@ -81,17 +116,11 @@ fun TaskDetailScreen(
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 } else {
                     state.task?.let { task ->
-                        val status = task.status
-                        val priority = task.priority
-
-                        val statusUi = remember(task.status) { task.status.toUi() }
-                        val priorityUi = remember(task.priority) { task.priority.toUi() }
-
-                        val statusColor = statusUi.color
-                        val statusIcon = statusUi.icon
-
-                        val priorityColor = priorityUi.color
-                        val priorityIcon = priorityUi.icon
+                        val desc = task.description
+                        val descPreview = desc?.let {
+                            val max = 60
+                            if (it.length > max) it.take(max).trimEnd() + "…" else it
+                        } ?: "Нет описания"
 
                         Column(
                             modifier = Modifier
@@ -100,185 +129,102 @@ fun TaskDetailScreen(
                                 .verticalScroll(rememberScrollState()),
                             verticalArrangement = Arrangement.spacedBy(12.dp),
                         ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                StatusBadge(task.status)
+                                PriorityBadge(task.priority)
+                            }
+                            SyncBadge(task.isSynced)
+
                             // Описание
-                            Card(
-                                shape = RoundedCornerShape(12.dp),
-                                colors = CardDefaults.cardColors(containerColor = colorScheme.surface),
-                                modifier = Modifier.fillMaxWidth(),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
+                            TaskInfoCard(
+                                title = "Описание",
+                                leadingIcon = Icons.Filled.Description,
+                                index = 1,
+                                initiallyExpanded = true,
+                                inlineValue = descPreview,
+                                expandable = true
                             ) {
-                                Column(modifier = Modifier.padding(16.dp)) {
-                                    Text("Описание", style = MaterialTheme.typography.titleMedium)
-                                    Spacer(modifier = Modifier.height(8.dp))
-                                    Text(
-                                        task.description ?: "Нет описания",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                            }
-
-                            // Статус
-                            Card(
-                                shape = RoundedCornerShape(12.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = statusColor.copy(
-                                        alpha = 0.1f
-                                    )
-                                ),
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        statusIcon,
-                                        contentDescription = "Статус",
-                                        tint = statusColor
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        "Статус: ${status.displayName()}",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                            }
-
-                            // Приоритет
-                            Card(
-                                shape = RoundedCornerShape(12.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = priorityColor.copy(
-                                        alpha = 0.1f
-                                    )
-                                ),
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        priorityIcon,
-                                        contentDescription = "Приоритет",
-                                        tint = priorityColor
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        "Приоритет: ${priority.displayName()}",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                            }
-
-                            // Срок
-                            Card(
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        Icons.Filled.DateRange,
-                                        contentDescription = "Срок",
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        "Срок: ${formatDateTimeReadable(task.dueDate ?: "—")}",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                            }
-
-                            // Создано
-                            Card(
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(Icons.Filled.AddTask, contentDescription = "Создано")
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        "Создано: ${formatDateTimeReadable(task.createdAt)}",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                            }
-
-                            // Обновлено
-                            Card(
-                                shape = RoundedCornerShape(12.dp),
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(16.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(Icons.Filled.Update, contentDescription = "Обновлено")
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(
-                                        "Обновлено: ${formatDateTimeReadable(task.updatedAt)}",
-                                        style = MaterialTheme.typography.bodyMedium
-                                    )
-                                }
-                            }
-
-
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                AppButton(
-                                    onClick = { vm.showEditDialog(task) },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    icon = (Icons.Filled.Edit),
-                                    text = "Редактировать"
-                                )
-
-                                AppButton(
-                                    onClick = { vm.showConfirmDelete(task) },
-                                    icon = (Icons.Filled.Delete),
-                                    modifier = Modifier.fillMaxWidth(),
-                                    variant = AppButtonVariant.Outlined,
-                                    tone = AppButtonTone.Danger,
-                                    text = "Удалить"
+                                Text(
+                                    text = desc ?: "Нет описания",
+                                    style = typography.bodyMedium
                                 )
                             }
+
+                            state.task!!.dueDate?.let { due ->
+                                TaskInfoCard(
+                                    title = "Срок",
+                                    leadingIcon = Icons.Filled.DateRange,
+                                    index = cardsOffset + 2,
+                                    expandable = false
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    ) {
+                                        Text(
+                                            text = formatDateTimeReadable(due) ?: "-",
+                                            style = typography.bodyMedium,
+                                            modifier = Modifier.weight(1f)
+                                        )
+
+                                        if (due.isNotEmpty()) {
+                                            DeadlineBadge(due)
+                                        }
+                                    }
+                                }
+                            }
+                            DateBadge("Создано", task.createdAt, Icons.Filled.AddTask)
+                            DateBadge("Обновлено", task.updatedAt, Icons.Filled.Update)
                         }
 
-                        vm.editingTask.value?.let { task ->
+                        if (state.showEditDialog) {
+                            val task = state.task
                             CreateEditTaskDialog(
-                                initialTitle = task.title,
-                                initialDescription = task.description,
-                                initialDueDate = task.dueDate,
-                                initialStatus = task.status,
-                                initialPriority = task.priority,
-                                onDismiss = { vm.dismissEditDialog() },
+                                initialTitle = task?.title ?: "",
+                                initialDescription = task?.description,
+                                initialDueDate = task?.dueDate,
+                                initialStatus = task?.status,
+                                initialPriority = task?.priority,
+                                onDismiss = { taskDetailViewModel.dismissEditDialog() },
                                 onConfirm = { title, desc, dueDate, status, priority ->
-                                    vm.updateTask(
-                                        task.uuid,
-                                        UpdateTaskRequestDto(title, desc, dueDate, status, priority)
-                                    )
-                                    vm.dismissEditDialog()
+                                    if (TaskValidator.validateTitle(
+                                            title,
+                                            context,
+                                            tasksState.tasks,
+                                            task?.uuid
+                                        )
+                                    ) {
+                                        taskDetailViewModel.updateTask(
+                                            task?.uuid ?: "",
+                                            UpdateTaskRequestDto(
+                                                title = title.trim(),
+                                                description = desc,
+                                                dueDate = dueDate,
+                                                status = status,
+                                                priority = priority
+                                            )
+                                        )
+                                        taskDetailViewModel.dismissEditDialog()
+                                    }
                                 }
                             )
                         }
 
-                        vm.showConfirmDelete.value?.let { task ->
+                        if (state.showConfirmDeleteDialog) {
+                            val task = state.task
                             ConfirmDeleteDialog(
                                 title = "Удаление задачи",
-                                message = "Удалить \"${task.title}\"?",
+                                message = "Удалить \"${task?.title}\"?",
                                 onConfirm = {
-                                    vm.deleteTask(task.uuid)
-                                    vm.dismissDeleteDialog()
+                                    taskDetailViewModel.deleteTask(task?.uuid ?: "")
+                                    taskDetailViewModel.dismissConfirmDelete()
                                     navController.popBackStack()
                                 },
-                                onDismiss = { vm.dismissDeleteDialog() }
+                                onDismiss = { taskDetailViewModel.dismissConfirmDelete() }
                             )
                         }
                     }

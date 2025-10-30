@@ -6,7 +6,9 @@ import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.example.sharkflow.core.validators.RegisterValidator
 import com.example.sharkflow.presentation.common.*
 import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
 
@@ -23,8 +25,11 @@ fun UpdateUserModal(
     var isLoading by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
+    val context = LocalContext.current
+
     AlertDialog(
         onDismissRequest = { if (!isLoading) onDismiss() },
+        containerColor = colorScheme.background,
         title = {
             Text(
                 text = if (step == 1) "Подтвердите обновление данных" else "Введите код и новые данные",
@@ -44,7 +49,7 @@ fun UpdateUserModal(
                     }
                     if (errorMessage != null) {
                         Text(
-                            text = errorMessage!!,
+                            text = errorMessage ?: "Ошибка при обновлении данных пользователя",
                             color = colorScheme.error,
                             style = MaterialTheme.typography.bodySmall
                         )
@@ -61,7 +66,7 @@ fun UpdateUserModal(
                         onValueChange = { code = it },
                         label = "Код с почты",
                         enabled = !isLoading,
-                        isError = errorMessage != null,
+                        isError = errorMessage != null
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -70,7 +75,7 @@ fun UpdateUserModal(
                         value = email,
                         onValueChange = { email = it },
                         label = "Email",
-                        enabled = !isLoading,
+                        enabled = !isLoading
                     )
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -78,8 +83,8 @@ fun UpdateUserModal(
                     AppField(
                         value = login,
                         onValueChange = { login = it },
-                        label = "Логин",
-                        enabled = !isLoading,
+                        label = "Вход",
+                        enabled = !isLoading
                     )
 
                     if (isLoading) {
@@ -88,7 +93,8 @@ fun UpdateUserModal(
                     }
                     if (errorMessage != null) {
                         Text(
-                            text = errorMessage!!,
+                            text = errorMessage
+                                ?: "Произошла ошибка при входе в аккаунт. Пожалуйста повторите позже",
                             color = colorScheme.error,
                             style = MaterialTheme.typography.bodySmall
                         )
@@ -102,6 +108,7 @@ fun UpdateUserModal(
                     if (step == 1) {
                         isLoading = true
                         errorMessage = null
+
                         userProfileViewModel.requestUpdateUserCode { success, message ->
                             isLoading = false
                             if (success) {
@@ -111,20 +118,24 @@ fun UpdateUserModal(
                             }
                         }
                     } else {
-                        if (code.isBlank() || email.isBlank() || login.isBlank()) {
-                            errorMessage = "Все поля должны быть заполнены"
-                            return@TextButton
-                        }
-                        isLoading = true
-                        errorMessage = null
-                        userProfileViewModel.confirmUpdateUser(
-                            code,
-                            email,
-                            login
-                        ) { success, message ->
-                            isLoading = false
-                            if (success) onSuccess() else errorMessage =
-                                message ?: "Ошибка обновления"
+                        when {
+                            !RegisterValidator.validateLogin(login, context) -> Unit
+                            !RegisterValidator.validateEmail(email, context) -> Unit
+                            !RegisterValidator.validateConfirmationCode(code, context) -> Unit
+                            else -> {
+                                isLoading = true
+                                errorMessage = null
+
+                                userProfileViewModel.confirmUpdateUser(
+                                    code,
+                                    email,
+                                    login
+                                ) { success, message ->
+                                    isLoading = false
+                                    if (success) onSuccess()
+                                    else errorMessage = message ?: "Ошибка обновления"
+                                }
+                            }
                         }
                     }
                 },

@@ -1,6 +1,6 @@
 package com.example.sharkflow.presentation.screens.auth.components
 
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -14,7 +14,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.sharkflow.R
 import com.example.sharkflow.core.common.Lang
-import com.example.sharkflow.core.presentation.ToastManager
+import com.example.sharkflow.core.validators.RegisterValidator
 import com.example.sharkflow.presentation.common.*
 import com.example.sharkflow.presentation.screens.auth.viewmodel.RegisterViewModel
 
@@ -26,15 +26,12 @@ fun RegisterForm(
     val registerViewModel: RegisterViewModel = hiltViewModel()
     val context = LocalContext.current
 
-    val emptyWarning = Lang.string(R.string.register_warning_empty_fields)
-
     var login by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var confirmPassword by rememberSaveable { mutableStateOf("") }
 
     var showPassword by rememberSaveable { mutableStateOf(false) }
-    var showEmptyFieldsWarning by rememberSaveable { mutableStateOf(false) }
 
     var loginError by rememberSaveable { mutableStateOf(false) }
     var emailError by rememberSaveable { mutableStateOf(false) }
@@ -48,7 +45,9 @@ fun RegisterForm(
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
             .border(width = 2.dp, color = colorScheme.primary, shape = RoundedCornerShape(16.dp)),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
@@ -108,39 +107,33 @@ fun RegisterForm(
 
         AppButton(
             onClick = {
-                var hasError = false
-                if (login.isEmpty()) {
-                    loginError = true; hasError = true
-                }
-                if (email.isEmpty()) {
-                    emailError = true; hasError = true
-                }
-                if (password.isEmpty()) {
-                    passwordError = true; hasError = true
-                }
-                if (confirmPassword.isEmpty()) {
-                    confirmPasswordError = true; hasError = true
-                }
+                loginError = false
+                emailError = false
+                passwordError = false
+                confirmPasswordError = false
 
-                if (hasError) {
-                    ToastManager.warning(context, emptyWarning)
-                } else {
-                    registerViewModel.register(login, email, password, confirmPassword) {
+                when {
+                    !RegisterValidator.validateLogin(login, context) -> loginError = true
+                    !RegisterValidator.validateEmail(email, context) -> emailError = true
+                    !RegisterValidator.validatePassword(password, context) -> passwordError = true
+                    !RegisterValidator.validatePasswordConfirmation(
+                        password,
+                        confirmPassword,
+                        context
+                    ) -> confirmPasswordError = true
+
+                    else -> registerViewModel.register(login, email, password, confirmPassword) {
                         onNext()
                     }
                 }
             },
-            text = if (isLoading) Lang.string(R.string.register_button_sending)
-            else Lang.string(R.string.register_button_register),
+            text = if (isLoading)
+                Lang.string(R.string.register_button_sending)
+            else
+                Lang.string(R.string.register_button_register),
             enabled = !isLoading,
             modifier = Modifier.fillMaxWidth()
         )
-
-        if (showEmptyFieldsWarning) {
-            LaunchedEffect(Unit) {
-                ToastManager.warning(context, emptyWarning)
-            }
-        }
 
         Row(
             horizontalArrangement = Arrangement.Center,

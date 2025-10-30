@@ -17,47 +17,61 @@ class BoardRepositoryCombinedImpl @Inject constructor(
     private val remote: BoardRepositoryImpl,
     private val userManager: UserManager
 ) : BoardRepositoryCombined {
-
     @OptIn(ExperimentalCoroutinesApi::class)
-    override fun getBoardsFlow(userId: Int): Flow<List<Board>> =
+    override fun getBoardsFlow(): Flow<List<Board>> =
         userManager.currentUser.flatMapLatest { user ->
             if (user == null) emptyFlow()
-            else local.getBoardsFlow(userUuid = user.uuid).map { it.map(BoardMapper::fromEntity) }
+            else local.getBoardsFlow(user.uuid).map { it.map(BoardMapper::fromEntity) }
         }
 
-    override suspend fun refreshBoards(userId: Int) {
+    override suspend fun refreshBoards() {
         val user = userManager.currentUser.value ?: return
         val remoteBoards = remote.getBoards().getOrNull() ?: return
+
         val boardsWithUser = remoteBoards.map { it.copy(userUuid = user.uuid) }
         local.insertOrUpdateBoards(boardsWithUser.map(BoardMapper::toEntity))
     }
 
-    override suspend fun createBoard(title: String, color: String): Result<Board> =
-        remote.createBoard(title, color).onSuccess { board ->
-            val userUuid = userManager.currentUser.value?.uuid ?: ""
-            val entity = BoardMapper.toEntity(board.copy(userUuid = userUuid))
-            local.insertOrUpdateBoards(listOf(entity))
+    override suspend fun createBoard(title: String, color: String): Result<BoardResponseDto> =
+        runCatching {
+            val board = remote.createBoard(title, color).getOrNull()
+                ?: throw Exception("Failed to create board remotely")
+            val user = userManager.currentUser.value ?: throw Exception("User not logged in")
+
+            val boardWithUser = board.copy(userUuid = user.uuid)
+            local.insertOrUpdateBoards(listOf(BoardMapper.toEntity(boardWithUser)))
+
+            BoardResponseDto(
+                uuid = boardWithUser.uuid,
+                title = boardWithUser.title,
+                color = boardWithUser.color ?: "#FFFFFF",
+                isPinned = boardWithUser.isPinned,
+                isFavorite = boardWithUser.isFavorite,
+                taskCount = boardWithUser.taskCount ?: "0",
+                createdAt = boardWithUser.createdAt,
+                updatedAt = boardWithUser.updatedAt
+            )
         }
 
     override suspend fun updateBoard(
         boardUuid: String,
         update: UpdateBoardRequestDto
-    ): Result<Board> = runCatching {
+    ): Result<UpdateBoardRequestDto> = runCatching {
         val user = userManager.currentUser.value ?: throw Exception("User not logged in")
-        val updatedFields = remote.updateBoard(boardUuid, update).getOrNull()
+        val updateDto = remote.updateBoard(boardUuid, update).getOrNull()
             ?: throw Exception("Failed to update board remotely")
 
         val currentBoardEntity =
-            local.getBoardsFlow(userUuid = user.uuid).first().find { it.uuid == boardUuid }
+            local.getBoardsFlow(userUuid = user.uuid).firstOrNull()?.find { it.uuid == boardUuid }
                 ?: throw Exception("Board not found locally")
 
         val updatedBoard = Board(
             uuid = currentBoardEntity.uuid,
-            title = updatedFields.title ?: currentBoardEntity.title,
-            color = updatedFields.color ?: currentBoardEntity.color,
+            title = updateDto.title ?: currentBoardEntity.title,
+            color = updateDto.color ?: currentBoardEntity.color,
             userUuid = user.uuid,
-            isPinned = updatedFields.isPinned ?: currentBoardEntity.isPinned,
-            isFavorite = updatedFields.isFavorite ?: currentBoardEntity.isFavorite,
+            isPinned = updateDto.isPinned ?: currentBoardEntity.isPinned,
+            isFavorite = updateDto.isFavorite ?: currentBoardEntity.isFavorite,
             isDeleted = currentBoardEntity.isDeleted,
             updatedAt = Instant.now(),
             createdAt = currentBoardEntity.createdAt,
@@ -65,26 +79,28 @@ class BoardRepositoryCombinedImpl @Inject constructor(
         )
 
         local.updateBoard(BoardMapper.toEntity(updatedBoard))
-        updatedBoard
+        updateDto
     }
 
-    override suspend fun deleteBoard(boardUuid: String): Result<DeletedBoardInfoDto> =
-        remote.deleteBoard(boardUuid).onSuccess { deleted ->
-            val userUuid = userManager.currentUser.value?.uuid ?: ""
-            val entity = BoardMapper.toEntity(
-                Board(
-                    uuid = boardUuid,
-                    title = deleted.title,
-                    color = "#FFFFFF",
-                    userUuid = userUuid,
-                    isPinned = false,
-                    isFavorite = false,
-                    isDeleted = true,
-                    updatedAt = Instant.now(),
-                    createdAt = Instant.now(),
-                    taskCount = deleted.tasksRemoved
-                )
-            )
-            local.deleteBoard(entity)
-        }
+
+    override suspend fun deleteBoard(boardUuid: String): Result<DeletedBoardInfoDto> = runCatching {
+        val user = userManager.currentUser.value ?: throw Exception("User not logged in")
+        val deleted = remote.deleteBoard(boardUuid).getOrNull()
+            ?: throw Exception("Failed to delete board remotely")
+
+        val tombstone = Board(
+            uuid = boardUuid,
+            title = deleted.title,
+            color = "#FFFFFF",
+            userUuid = user.uuid,
+            isPinned = false,
+            isFavorite = false,
+            isDeleted = true,
+            updatedAt = Instant.now(),
+            createdAt = Instant.now(),
+            taskCount = deleted.tasksRemoved
+        )
+        local.deleteBoard(BoardMapper.toEntity(tombstone))
+        deleted
+    }
 }

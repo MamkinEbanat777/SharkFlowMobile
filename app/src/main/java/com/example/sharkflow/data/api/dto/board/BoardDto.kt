@@ -5,6 +5,7 @@ import java.time.Instant
 
 data class BoardDto(
     @SerializedName("uuid") val uuid: String,
+    @SerializedName("serverUuid") val serverUuid: String?,
     @SerializedName("title") val title: String,
     @SerializedName("color") val color: String? = "FFFFFF",
     @SerializedName("userUuid") val userUuid: String,

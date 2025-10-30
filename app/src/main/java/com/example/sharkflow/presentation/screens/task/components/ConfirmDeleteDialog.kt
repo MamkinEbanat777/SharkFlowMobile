@@ -1,6 +1,7 @@
 package com.example.sharkflow.presentation.screens.task.components
 
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import com.example.sharkflow.presentation.common.*
 
@@ -13,6 +14,7 @@ fun ConfirmDeleteDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = colorScheme.background,
         title = { Text(title) },
         text = { Text(message) },
         confirmButton = {

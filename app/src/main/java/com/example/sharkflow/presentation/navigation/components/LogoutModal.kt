@@ -1,7 +1,6 @@
 package com.example.sharkflow.presentation.navigation.components
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.example.sharkflow.R
 import com.example.sharkflow.core.common.Lang
@@ -12,9 +11,8 @@ import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewMo
 fun LogoutModal(
     onDismiss: () -> Unit,
     navController: NavHostController,
+    authStateViewModel: AuthStateViewModel
 ) {
-    val authStateViewModel: AuthStateViewModel = hiltViewModel()
-
     ConfirmationModal(
         title = Lang.string(R.string.logout_modal_title),
         message = Lang.string(R.string.logout_modal_message),

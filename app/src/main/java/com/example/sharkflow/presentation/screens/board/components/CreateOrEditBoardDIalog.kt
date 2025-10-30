@@ -1,8 +1,10 @@
 package com.example.sharkflow.presentation.screens.board.components
 
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
@@ -43,15 +45,14 @@ fun CreateOrEditBoardDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = colorScheme.background,
         confirmButton = {
-            TextButton(onClick = {
+            AppButton(onClick = {
                 onConfirm(title.trim(), selectedColor)
-            }) {
-                Text("Сохранить")
-            }
+            }, text = "Сохранить", variant = AppButtonVariant.Text)
         },
         dismissButton = {
-            TextButton(onClick = onDismiss) { Text("Отмена") }
+            AppButton(onClick = onDismiss, text = "Отмена", variant = AppButtonVariant.Text)
         },
         title = {
             Text(if (initialTitle.isEmpty()) "Создание доски" else "Редактирование доски")
@@ -68,7 +69,15 @@ fun CreateOrEditBoardDialog(
                     Box(
                         modifier = Modifier
                             .size(40.dp)
-                            .background(Color("#${selectedColor}".toColorInt()))
+                            .background(
+                                Color("#${selectedColor}".toColorInt()),
+                                shape = CircleShape
+                            )
+                            .border(
+                                width = 1.dp,
+                                shape = CircleShape,
+                                color = colorScheme.onSurface
+                            )
                     )
 
                     Spacer(Modifier.width(12.dp))
@@ -78,7 +87,8 @@ fun CreateOrEditBoardDialog(
                         availableColors = availableColors,
                         label = "HEX",
                         onColorSelected = { selectedColor = it },
-                        modifier = Modifier.width(180.dp)
+                        modifier = Modifier
+                            .width(180.dp)
                     )
 
                     Spacer(Modifier.weight(1f))

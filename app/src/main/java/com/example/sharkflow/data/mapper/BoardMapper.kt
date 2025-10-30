@@ -7,6 +7,7 @@ import com.example.sharkflow.domain.model.Board
 object BoardMapper {
     fun fromDto(dto: BoardDto): Board = Board(
         uuid = dto.uuid,
+        serverUuid = dto.serverUuid,
         title = dto.title,
         color = dto.color,
         userUuid = dto.userUuid,
@@ -42,6 +43,7 @@ object BoardMapper {
 
     fun toDto(board: Board): BoardDto = BoardDto(
         uuid = board.uuid,
+        serverUuid = board.serverUuid,
         title = board.title,
         color = board.color,
         userUuid = board.userUuid,
@@ -55,6 +57,7 @@ object BoardMapper {
 
     fun fromEntity(entity: BoardEntity): Board = Board(
         uuid = entity.uuid,
+        serverUuid = entity.serverUuid,
         title = entity.title,
         color = entity.color,
         userUuid = entity.userUuid,

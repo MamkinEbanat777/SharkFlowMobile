@@ -2,75 +2,99 @@ package com.example.sharkflow.presentation.screens.board
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.example.sharkflow.core.presentation.ToastManager
+import com.example.sharkflow.core.validators.BoardValidator
 import com.example.sharkflow.data.api.dto.board.UpdateBoardRequestDto
-import com.example.sharkflow.domain.model.Board
+import com.example.sharkflow.presentation.common.*
 import com.example.sharkflow.presentation.screens.board.components.*
-import com.example.sharkflow.presentation.screens.board.viewmodel.*
-import com.google.accompanist.swiperefresh.*
-import kotlinx.coroutines.flow.collectLatest
+import com.example.sharkflow.presentation.screens.board.viewmodel.BoardsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BoardsScreen(
     navController: NavController,
-    vm: BoardsViewModel = hiltViewModel()
+    boardsViewModel: BoardsViewModel
 ) {
-    val uiState by vm.uiState.collectAsState()
+    val uiState by boardsViewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
-    val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+    var searchQuery by remember { mutableStateOf("") }
 
-    LaunchedEffect(Unit) {
-        vm.events.collectLatest { event ->
-            when (event) {
-                is BoardsUiEvent.ShowMessage -> {
-                    snackbarHostState.showSnackbar(event.text)
-                }
+    val filteredBoards = remember(uiState.boards, searchQuery) {
+        val filtered = if (searchQuery.isBlank()) uiState.boards
+        else uiState.boards.filter { it.title.contains(searchQuery, ignoreCase = true) }
+        filtered.sortedByDescending { it.updatedAt }
+    }
 
-                is BoardsUiEvent.ShowCreateDialog -> {
-                }
-
-                is BoardsUiEvent.NavigateToBoard -> {
-                    navController.navigate("board/${event.boardUuid}")
-                }
-
-                is BoardsUiEvent.NavigateToBoard -> TODO()
-                BoardsUiEvent.ShowCreateDialog -> TODO()
-                is BoardsUiEvent.ShowMessage -> TODO()
-            }
+    // Навигация
+    LaunchedEffect(uiState.navigateToBoardUuid) {
+        uiState.navigateToBoardUuid?.let { uuid ->
+            navController.navigate("board/$uuid")
+            boardsViewModel.clearNavigation()
         }
     }
 
-    var showCreateDialog by remember { mutableStateOf(false) }
-    var editingBoard by remember { mutableStateOf<Board?>(null) }
-    var showConfirmDelete by remember { mutableStateOf<Board?>(null) }
+    // Сообщения
+    LaunchedEffect(uiState.message) {
+        uiState.message?.let { msg ->
+            if (uiState.isMessageSuccess) ToastManager.success(context, msg)
+            else ToastManager.error(context, msg)
+            boardsViewModel.clearMessage()
+        }
+    }
 
-    val refreshing = uiState.isLoading
-    val swipeState = rememberSwipeRefreshState(isRefreshing = refreshing)
+    LaunchedEffect(Unit) {
+        boardsViewModel.refreshOnce()
+    }
 
+    // UI
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         topBar = {
-            TopAppBar(
-                title = { Text("Ваши доски") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = colorScheme.background,
-                    titleContentColor = colorScheme.primary,
-                    actionIconContentColor = colorScheme.onPrimary
-                ),
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 8.dp)
+            ) {
+                Surface(
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                    color = colorScheme.primary,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            "Мои доски",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = colorScheme.onPrimary
+                        )
+                    }
+                }
+                AppField(
+                    searchQuery,
+                    { searchQuery = it },
+                    "Поиск доски",
+                    modifier = Modifier.padding(0.dp)
+                )
+            }
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { showCreateDialog = true },
+                onClick = { boardsViewModel.onAddBoardClick() },
                 containerColor = colorScheme.primary,
                 contentColor = colorScheme.onPrimary
             ) {
@@ -78,19 +102,9 @@ fun BoardsScreen(
             }
         }
     ) { innerPadding ->
-        SwipeRefresh(
-            state = swipeState,
-            onRefresh = { vm.refresh() },
-            modifier = Modifier
-                .fillMaxSize(),
-            indicator = { s, _ ->
-                SwipeRefreshIndicator(
-                    state = s,
-                    refreshTriggerDistance = 80.dp,
-                    contentColor = colorScheme.primary,
-                    backgroundColor = colorScheme.background
-                )
-            }
+        AppSwipeRefresh(
+            isRefreshing = uiState.isLoading,
+            onRefresh = { boardsViewModel.refresh() }
         ) {
             Box(
                 modifier = Modifier
@@ -99,68 +113,90 @@ fun BoardsScreen(
             ) {
                 if (uiState.isLoading) {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                } else if (uiState.boards.isEmpty()) {
-                    Text(
-                        text = "Пока нет досок",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = colorScheme.onSurfaceVariant,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
                 } else {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(12.dp)
                     ) {
-                        items(uiState.boards, key = { it.uuid }) { board ->
-                            BoardRow(
-                                board = board,
-                                onClick = { vm.openBoard(board.uuid) },
-                                onEdit = { editingBoard = board },
-                                onDelete = { showConfirmDelete = board }
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
+                        if (filteredBoards.isEmpty()) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillParentMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = "Пока нет досок",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                        } else {
+                            items(filteredBoards, key = { it.uuid }) { board ->
+
+                                BoardRow(
+                                    board = board,
+                                    onClick = { boardsViewModel.openBoard(board.uuid) },
+                                    onEdit = { boardsViewModel.onEditBoardClick(board) },
+                                    onDelete = { boardsViewModel.onDeleteBoardClick(board) },
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
                         }
                     }
                 }
             }
 
-            if (showCreateDialog) {
+            // Создание доски
+            if (uiState.showCreateDialog) {
                 CreateOrEditBoardDialog(
-                    onDismiss = { showCreateDialog = false },
+                    onDismiss = { boardsViewModel.dismissDialogs() },
                     onConfirm = { title, color ->
-                        vm.createBoard(title, color)
-                        showCreateDialog = false
+                        if (BoardValidator.validateTitle(title, context, uiState.boards)) {
+                            boardsViewModel.createBoard(title.trim(), color)
+                            boardsViewModel.dismissDialogs()
+                        }
                     }
                 )
             }
 
-            if (editingBoard != null) {
+            // Редактирование доски
+            uiState.editingBoard?.let { board ->
                 CreateOrEditBoardDialog(
-                    initialTitle = editingBoard!!.title,
-                    initialColor = editingBoard!!.color ?: "FFFFFF",
-                    onDismiss = { editingBoard = null },
+                    initialTitle = board.title,
+                    initialColor = board.color ?: "FFFFFF",
+                    onDismiss = { boardsViewModel.dismissDialogs() },
                     onConfirm = { title, color ->
-                        vm.updateBoard(
-                            editingBoard!!.uuid,
-                            UpdateBoardRequestDto(title = title, color = color)
-                        )
-                        editingBoard = null
+                        if (BoardValidator.validateTitle(
+                                title,
+                                context,
+                                uiState.boards,
+                                board.uuid
+                            )
+                        ) {
+                            boardsViewModel.updateBoard(
+                                board.uuid,
+                                UpdateBoardRequestDto(title.trim(), color)
+                            )
+                            boardsViewModel.dismissDialogs()
+                        }
                     }
                 )
             }
 
-            if (showConfirmDelete != null) {
+            // Подтверждение удаления
+            uiState.confirmDeleteBoard?.let { board ->
                 ConfirmDeleteDialog(
                     title = "Удаление доски",
-                    message = "Удалить доску \"${showConfirmDelete!!.title}\"?",
+                    message = "Удалить доску \"${board.title}\"?",
                     onConfirm = {
-                        vm.deleteBoard(showConfirmDelete!!.uuid)
-                        showConfirmDelete = null
+                        boardsViewModel.deleteBoard(board.uuid)
                     },
-                    onDismiss = { showConfirmDelete = null }
+                    onDismiss = { boardsViewModel.dismissDialogs() }
                 )
             }
+
         }
     }
 }

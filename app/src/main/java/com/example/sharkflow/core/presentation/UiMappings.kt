@@ -18,7 +18,7 @@ fun TaskStatus.toUi(): StatusUi = when (this) {
 data class PriorityUi(val color: Color, val icon: ImageVector, val backgroundAlpha: Float = 0.1f)
 
 fun TaskPriority.toUi(): PriorityUi = when (this) {
-    TaskPriority.LOW -> PriorityUi(Color(0xFFB0BEC5), Icons.Filled.KeyboardArrowDown)
+    TaskPriority.LOW -> PriorityUi(Color.Gray, Icons.Filled.KeyboardArrowDown)
     TaskPriority.MEDIUM -> PriorityUi(Color(0xFFFFB74D), Icons.Filled.KeyboardArrowUp)
     TaskPriority.HIGH -> PriorityUi(Color(0xFFD32F2F), Icons.Filled.PriorityHigh)
 }

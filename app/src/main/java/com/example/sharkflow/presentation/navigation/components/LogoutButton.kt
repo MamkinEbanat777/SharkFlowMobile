@@ -13,10 +13,12 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.sharkflow.R
 import com.example.sharkflow.core.common.Lang
+import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewModel
 
 @Composable
 fun LogoutButton(
     navController: NavHostController,
+    authStateViewModel: AuthStateViewModel
 ) {
     var showDialog by remember { mutableStateOf(false) }
 
@@ -43,7 +45,7 @@ fun LogoutButton(
     }
 
     if (showDialog) {
-        LogoutModal(onDismiss = { showDialog = false }, navController)
+        LogoutModal(onDismiss = { showDialog = false }, navController, authStateViewModel)
     }
 
 }

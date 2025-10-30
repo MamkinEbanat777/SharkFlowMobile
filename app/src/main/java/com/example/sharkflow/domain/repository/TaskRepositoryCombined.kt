@@ -5,7 +5,6 @@ import com.example.sharkflow.domain.model.Task
 import kotlinx.coroutines.flow.Flow
 
 interface TaskRepositoryCombined {
-
     fun getTasksFlow(boardUuid: String): Flow<List<Task>>
 
     suspend fun refreshTasks(boardUuid: String)

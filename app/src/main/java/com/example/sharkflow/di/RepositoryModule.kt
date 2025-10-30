@@ -79,8 +79,13 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindTaskRepositoryCombinedImpl(
+    abstract fun bindTaskRepositoryCombined(
         impl: TaskRepositoryCombinedImpl
     ): TaskRepositoryCombined
 
+    @Binds
+    @Singleton
+    abstract fun bindTaskRepository(
+        impl: TaskRepositoryImpl
+    ): TaskRepository
 }

@@ -5,18 +5,19 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.*
+import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
 import com.example.sharkflow.core.presentation.ToastManager
 import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
@@ -27,7 +28,7 @@ fun ProfileAvatar(
     modifier: Modifier = Modifier,
     size: Dp = 240.dp,
     iconSize: Dp = 80.dp,
-    borderColor: Color = MaterialTheme.colorScheme.primary,
+    borderColor: Color = colorScheme.primary,
     userProfileViewModel: UserProfileViewModel
 ) {
     val avatarUrl by userProfileViewModel.avatarUrl.collectAsState(initial = "")
@@ -79,7 +80,7 @@ fun ProfileAvatar(
             modifier = Modifier
                 .size(size)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.surface)
+                .background(colorScheme.surface)
                 .border(BorderStroke(3.dp, borderColor), CircleShape)
                 .clickable { isImageExpanded = true }
         ) {
@@ -107,98 +108,132 @@ fun ProfileAvatar(
             }
         }
 
-        if (isImageExpanded && avatarUrl != null) {
-            AlertDialog(
-                onDismissRequest = { isImageExpanded = false },
-                title = { Text("Ваш аватар", style = MaterialTheme.typography.titleMedium) },
-                text = {
-                    AsyncImage(
-                        model = avatarUrl,
-                        contentDescription = "Expanded Avatar",
-                        contentScale = ContentScale.Fit,
+        if (isImageExpanded && !avatarUrl.isNullOrBlank()) {
+            Dialog(onDismissRequest = { isImageExpanded = false }) {
+                Surface(
+                    shape = RoundedCornerShape(16.dp),
+                    color = colorScheme.background,
+                    tonalElevation = 8.dp,
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                    )
-                },
-                confirmButton = {
-                    TextButton(onClick = { isImageExpanded = false }) {
-                        Text("Close")
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Text("Ваше фото", style = MaterialTheme.typography.titleMedium)
+
+                        AsyncImage(
+                            model = avatarUrl,
+                            contentDescription = "Expanded Avatar",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Button(
+                                onClick = { imagePickerLauncher.launch("image/*") },
+                                shape = CircleShape,
+                                modifier = Modifier.fillMaxWidth(),
+                                border = BorderStroke(1.dp, borderColor),
+                                contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
+                            ) {
+                                Icon(
+                                    Icons.Default.CameraAlt,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp),
+                                )
+                                Spacer(Modifier.width(6.dp))
+                                Text("Изменить", fontSize = 14.sp)
+                            }
+
+                            if (!avatarUrl.isNullOrBlank()) {
+                                OutlinedButton(
+                                    onClick = { showDeleteConfirm = true },
+                                    shape = CircleShape,
+                                    border = BorderStroke(1.dp, Color.Red),
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentPadding = PaddingValues(
+                                        horizontal = 20.dp,
+                                        vertical = 8.dp
+                                    )
+                                ) {
+                                    Icon(
+                                        Icons.Default.Delete,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(18.dp),
+                                        tint = Color.Red
+                                    )
+                                    Spacer(Modifier.width(6.dp))
+                                    Text("Удалить", color = Color.Red, fontSize = 14.sp)
+                                }
+                            }
+                        }
+
+                        TextButton(
+                            onClick = { isImageExpanded = false },
+                            modifier = Modifier.align(Alignment.End)
+                        ) {
+                            Text("Закрыть")
+                        }
                     }
                 }
-            )
+            }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            OutlinedButton(
+        if (avatarUrl.isNullOrBlank()) {
+            Button(
                 onClick = { imagePickerLauncher.launch("image/*") },
                 shape = CircleShape,
                 border = BorderStroke(1.dp, borderColor),
                 contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
             ) {
                 Icon(
-                    imageVector = Icons.Default.CameraAlt,
-                    contentDescription = "Change photo",
+                    Icons.Default.CameraAlt,
+                    contentDescription = null,
                     modifier = Modifier.size(18.dp),
-                    tint = borderColor
                 )
-                Spacer(modifier = Modifier.width(6.dp))
-                Text(
-                    "Изменить",
-                    color = borderColor,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium
-                )
+                Spacer(Modifier.width(6.dp))
+                Text("Загрузить фото", fontSize = 14.sp)
             }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
             Spacer(modifier = Modifier.width(12.dp))
-            if (!avatarUrl.isNullOrBlank()) {
-                OutlinedButton(
-                    onClick = { showDeleteConfirm = true },
-                    shape = CircleShape,
-                    border = BorderStroke(1.dp, Color.Red),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Delete,
-                        contentDescription = "Delete photo",
-                        modifier = Modifier.size(18.dp),
-                        tint = Color.Red
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text(
-                        "Удалить",
-                        color = Color.Red,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
+
+            if (showDeleteConfirm) {
+                AlertDialog(
+                    onDismissRequest = { showDeleteConfirm = false },
+                    containerColor = colorScheme.background,
+                    title = { Text("Подтверждение") },
+                    text = { Text("Вы точно хотите удалить аватар?") },
+                    confirmButton = {
+                        TextButton(onClick = {
+                            showDeleteConfirm = false
+                            userProfileViewModel.deleteUserAvatar { success, msg ->
+                                ToastManager.error(context, msg ?: "Ошибка при удалении")
+                            }
+                        }) { Text("Да") }
+                    },
+                    dismissButton = {
+                        TextButton(onClick = {
+                            showDeleteConfirm = false
+                        }) { Text("Отмена") }
+                    }
+                )
             }
-        }
 
-        if (showDeleteConfirm) {
-            AlertDialog(
-                onDismissRequest = { showDeleteConfirm = false },
-                title = { Text("Подтверждение") },
-                text = { Text("Вы точно хотите удалить аватар?") },
-                confirmButton = {
-                    TextButton(onClick = {
-                        showDeleteConfirm = false
-                        userProfileViewModel.deleteUserAvatar { success, msg ->
-                            ToastManager.error(context, msg ?: "Ошибка при удалении")
-                        }
-                    }) { Text("Да") }
-                },
-                dismissButton = {
-                    TextButton(onClick = {
-                        showDeleteConfirm = false
-                    }) { Text("Отмена") }
-                }
-            )
         }
-
     }
 }

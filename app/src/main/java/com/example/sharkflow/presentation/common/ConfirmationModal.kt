@@ -1,6 +1,7 @@
 package com.example.sharkflow.presentation.common
 
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 
 @Composable
@@ -15,6 +16,7 @@ fun ConfirmationModal(
 ) {
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = colorScheme.background,
         title = { Text(title, style = MaterialTheme.typography.titleMedium) },
         text = {
             if (content != null) {
@@ -27,12 +29,12 @@ fun ConfirmationModal(
             AppButton(onClick = {
                 onConfirm()
                 onDismiss()
-            }, text = confirmButtonText)
+            }, text = confirmButtonText, variant = AppButtonVariant.Text)
         },
         dismissButton = {
             AppButton(onClick = {
                 onDismiss()
-            }, text = dismissButtonText)
+            }, text = dismissButtonText, variant = AppButtonVariant.Text)
         }
     )
 }

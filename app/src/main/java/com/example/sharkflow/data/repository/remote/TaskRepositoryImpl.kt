@@ -23,19 +23,15 @@ class TaskRepositoryImpl @Inject constructor(
         boardUuid: String,
         createDto: CreateTaskRequestDto
     ): Result<Task> = runCatching {
-        println("📌 [Remote createTask] Отправка запроса: boardUuid=$boardUuid, title='${createDto.title}', description='${createDto.description}'")
-
         val resp = api.createTask(boardUuid, createDto)
         if (!resp.isSuccessful) throw Exception("Create failed")
 
         val body = resp.body() ?: throw Exception("Response body is null")
         val taskDto = body.task
         val task = TaskMapper.fromResponseDto(taskDto, boardUuid)
-
-        println("✅ [Remote createTask] Таска получена с сервера: uuid=${task.uuid}, title=${task.title}")
         task
     }.onFailure { e ->
-        println("❌ [Remote createTask] Ошибка при создании таски: ${e.message}")
+        println("[Remote createTask] Ошибка при создании таски: ${e.message}")
     }
 
     override suspend fun updateTask(
@@ -52,12 +48,7 @@ class TaskRepositoryImpl @Inject constructor(
         boardUuid: String,
         taskUuid: String
     ): Result<DeletedTaskInfoDto> = runCatching {
-        AppLog.d("RemoteRepo", "Calling API deleteTask(board=$boardUuid, id=$taskUuid)")
         val resp = api.deleteTask(boardUuid, taskUuid)
-        AppLog.d(
-            "RemoteRepo",
-            "HTTP response code=${resp.code()}, isSuccessful=${resp.isSuccessful}"
-        )
         val body = resp.body()
         AppLog.d("RemoteRepo", "HTTP body=${body}")
         if (!resp.isSuccessful) {

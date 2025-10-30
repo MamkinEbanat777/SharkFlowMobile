@@ -1,36 +1,49 @@
 package com.example.sharkflow.presentation.screens.task.viewmodel
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.*
+import androidx.lifecycle.viewModelScope
+import com.example.sharkflow.core.common.DateUtils
 import com.example.sharkflow.core.common.DateUtils.formatDateTimeReadable
-import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.data.api.dto.task.UpdateTaskRequestDto
 import com.example.sharkflow.domain.model.Task
-import com.example.sharkflow.domain.repository.TaskRepositoryCombined
+import com.example.sharkflow.domain.usecase.task.*
+import com.example.sharkflow.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import java.time.Instant
 
 @HiltViewModel
 class TaskDetailViewModel @Inject constructor(
-    private val repo: TaskRepositoryCombined
-) : ViewModel() {
+    private val getTasksFlowUseCase: GetTasksFlowUseCase,
+    private val refreshTasksUseCase: RefreshTasksUseCase,
+    private val updateTaskUseCase: UpdateTaskUseCase,
+    private val deleteTaskUseCase: DeleteTaskUseCase,
+) : BaseViewModel() {
+    data class TaskDetailUiState(
+        val isLoading: Boolean = true,
+        val task: Task? = null,
+        val dueDateFormatted: String = "—",
+        val showEditDialog: Boolean = false,
+        val showConfirmDeleteDialog: Boolean = false,
+        val message: String? = null,
+        val isMessageSuccess: Boolean = true
+    )
 
     private val _uiState = MutableStateFlow(TaskDetailUiState())
     val uiState = _uiState.asStateFlow()
 
-    val editingTask = mutableStateOf<Task?>(null)
-    val showConfirmDelete = mutableStateOf<Task?>(null)
-
     fun start(boardUuid: String, taskUuid: String) {
         viewModelScope.launch {
-            try {
-                repo.refreshTasks(boardUuid)
-            } catch (_: Exception) {
+            val initial = getTasksFlowUseCase(boardUuid).firstOrNull()?.find { it.uuid == taskUuid }
+            if (initial == null) {
+                try {
+                    refreshTasksUseCase(boardUuid)
+                } catch (_: Exception) {
+                }
             }
 
-            repo.getTasksFlow(boardUuid)
+            getTasksFlowUseCase(boardUuid)
                 .map { it.find { t -> t.uuid == taskUuid } }
                 .collect { task ->
                     val formatted: String? = formatDateTimeReadable(task?.dueDate)
@@ -48,75 +61,104 @@ class TaskDetailViewModel @Inject constructor(
     }
 
     fun updateTask(taskUuid: String, update: UpdateTaskRequestDto) {
-        viewModelScope.launch {
-            _uiState.update { ui ->
-                val current = ui.task
-                if (current == null) return@update ui.copy(isLoading = true)
-                val optimistic = current.copy(
+        val boardUuid = _uiState.value.task?.boardUuid ?: return
+
+        _uiState.update { state ->
+            val current = state.task ?: return@update state
+            state.copy(
+                task = current.copy(
                     title = update.title ?: current.title,
                     description = update.description ?: current.description,
                     dueDate = update.dueDate ?: current.dueDate,
                     status = update.status ?: current.status,
-                    priority = update.priority ?: current.priority
+                    priority = update.priority ?: current.priority,
+                    updatedAt = Instant.now().toString()
                 )
-                ui.copy(isLoading = true, task = optimistic)
-            }
-
-            val boardUuid = _uiState.value.task?.boardUuid
-            if (boardUuid == null) {
-                _uiState.update { it.copy(isLoading = false) }
-                return@launch
-            }
-
-            try {
-                val res = repo.updateTask(boardUuid, taskUuid, update)
-//                try {
-//                    repo.refreshTasks(boardUuid)
-//                } catch (refreshEx: Exception) {
-//                    android.util.Log.e(
-//                        "TaskDetailVM",
-//                        "refresh after update failed: ${refreshEx.message}"
-//                    )
-//                }
-
-            } catch (e: Exception) {
-                AppLog.e("updateTask failed: ${e.message}", e)
-                _uiState.update { it.copy(isLoading = false) }
-                return@launch
-            }
-
-            _uiState.update { it.copy(isLoading = false) }
+            )
         }
-    }
 
+        val normalizedUpdate = update.copy(
+            dueDate = DateUtils.toServerInstantString(update.dueDate),
+            updatedAt = Instant.now().toString()
+        )
+
+        launchResult(
+            block = { updateTaskUseCase(boardUuid, taskUuid, normalizedUpdate) },
+            onSuccess = {
+                _uiState.update {
+                    it.copy(
+                        message = "Задача обновлена",
+                        isMessageSuccess = true
+                    )
+                }
+            },
+            onFailure = {
+                _uiState.update {
+                    it.copy(
+                        message = "Не удалось обновить задачу",
+                        isMessageSuccess = false
+                    )
+                }
+            }
+        )
+    }
 
     fun deleteTask(taskUuid: String, hardDelete: Boolean = false) {
-        viewModelScope.launch {
-            _uiState.value.task?.let { task ->
-                repo.deleteTask(task.boardUuid, taskUuid, hardDelete)
+        val boardUuid = _uiState.value.task?.boardUuid ?: return
+        launchResult(
+            block = { deleteTaskUseCase(boardUuid, taskUuid, hardDelete); Result.success(Unit) },
+            onSuccess = {
+                _uiState.update {
+                    it.copy(
+                        showConfirmDeleteDialog = false,
+                        message = "Задача удалена",
+                        isMessageSuccess = true
+                    )
+                }
+            },
+            onFailure = {
+                _uiState.update {
+                    it.copy(
+                        message = "Не удалось удалить задачу",
+                        isMessageSuccess = false
+                    )
+                }
             }
-        }
+        )
     }
 
-    fun showEditDialog(task: Task) {
-        editingTask.value = task
+
+    fun refreshOnly(boardUuid: String) {
+        launchResult(
+            block = { refreshTasksUseCase(boardUuid); Result.success(Unit) },
+            onFailure = {
+                _uiState.update {
+                    it.copy(
+                        message = "Не удалось обновить задачи",
+                        isMessageSuccess = false
+                    )
+                }
+            }
+        )
+    }
+
+    fun showEditDialog() {
+        _uiState.update { it.copy(showEditDialog = true) }
     }
 
     fun dismissEditDialog() {
-        editingTask.value = null
+        _uiState.update { it.copy(showEditDialog = false) }
     }
 
-    fun showConfirmDelete(task: Task) {
-        showConfirmDelete.value = task
+    fun showConfirmDelete() {
+        _uiState.update { it.copy(showConfirmDeleteDialog = true) }
     }
 
-    fun dismissDeleteDialog() {
-        showConfirmDelete.value = null
+    fun dismissConfirmDelete() {
+        _uiState.update { it.copy(showConfirmDeleteDialog = false) }
+    }
+
+    fun clearMessage() {
+        _uiState.update { it.copy(message = null) }
     }
 }
-
-data class TaskDetailUiState(
-    val isLoading: Boolean = true,
-    val task: Task? = null,
-    val dueDateFormatted: String = "—"
-)

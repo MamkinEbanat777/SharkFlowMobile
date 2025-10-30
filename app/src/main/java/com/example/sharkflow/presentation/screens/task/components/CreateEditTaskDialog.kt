@@ -6,12 +6,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.sharkflow.core.common.DateUtils
-import com.example.sharkflow.core.presentation.AppDropdownField
 import com.example.sharkflow.domain.model.*
 import com.example.sharkflow.presentation.common.*
 import java.time.*
@@ -100,6 +100,7 @@ fun CreateEditTaskDialog(
 
     AlertDialog(
         onDismissRequest = onDismiss,
+        containerColor = colorScheme.background,
         title = { Text(if (initialTitle.isEmpty()) "Создание задачи" else "Редактирование задачи") },
         text = {
             Column(
@@ -117,7 +118,7 @@ fun CreateEditTaskDialog(
                         .height(56.dp)
                         .border(
                             1.dp,
-                            MaterialTheme.colorScheme.onSurfaceVariant,
+                            colorScheme.onSurfaceVariant,
                             RoundedCornerShape(12.dp)
                         )
                         .background(
@@ -135,17 +136,16 @@ fun CreateEditTaskDialog(
                         Text(
                             text = dueDateText,
                             modifier = Modifier.weight(1f),
-                            color = MaterialTheme.colorScheme.onSurface
+                            color = colorScheme.onSurface
                         )
                         Icon(
                             Icons.Default.CalendarMonth,
                             contentDescription = "Календарь",
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = colorScheme.onSurfaceVariant
                         )
                     }
                 }
-
-
+                
                 AppDropdownField(
                     value = status,
                     options = TaskStatus.entries,

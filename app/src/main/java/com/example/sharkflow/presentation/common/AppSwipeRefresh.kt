@@ -1,7 +1,6 @@
-package com.example.sharkflow.core.presentation
+package com.example.sharkflow.presentation.common
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.lazy.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -9,29 +8,29 @@ import androidx.compose.ui.unit.dp
 import com.google.accompanist.swiperefresh.*
 
 @Composable
-fun <T> PullRefresh(
+fun AppSwipeRefresh(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
-    items: List<T>,
     modifier: Modifier = Modifier,
-    itemContent: @Composable (T) -> Unit
+    content: @Composable () -> Unit
 ) {
-    val swipeState = rememberSwipeRefreshState(isRefreshing)
+    val swipeState = rememberSwipeRefreshState(isRefreshing = isRefreshing)
+
     SwipeRefresh(
         state = swipeState,
         onRefresh = onRefresh,
-        indicator = { s, trigger ->
+        modifier = modifier.fillMaxSize(),
+        indicator = { state, trigger ->
             SwipeRefreshIndicator(
-                state = s,
-                refreshTriggerDistance = trigger,
+                state = state,
+                refreshTriggerDistance = 80.dp,
                 contentColor = MaterialTheme.colorScheme.primary,
                 backgroundColor = MaterialTheme.colorScheme.background
             )
-        },
-        modifier = modifier
+        }
     ) {
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            items(items) { item -> itemContent(item) }
+        Box(modifier = Modifier.fillMaxSize()) {
+            content()
         }
     }
 }

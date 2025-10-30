@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.*
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.example.sharkflow.core.common.DateUtils.formatDateTimeReadable
@@ -27,42 +28,85 @@ fun BoardRow(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .border(
-                color = boardColor,
-                width = 2.dp,
-                shape = RoundedCornerShape(12.dp)
-            ),
+            .padding(horizontal = 8.dp, vertical = 6.dp)
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(6.dp),
         colors = CardDefaults.cardColors(containerColor = colorScheme.primary),
-        shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(4.dp)
+        border = BorderStroke(1.5.dp, boardColor.copy(alpha = 0.6f))
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = board.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = colorScheme.onPrimary
-                )
-                board.taskCount?.let {
-                    Text(
-                        text = "Задач: $it",
-                        style = MaterialTheme.typography.titleSmall,
-                        color = colorScheme.onPrimary
+                Row(
+                    modifier = Modifier.weight(1f),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(10.dp)
+                            .background(boardColor, RoundedCornerShape(50))
                     )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = board.title,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            color = colorScheme.onPrimary
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    board.taskCount?.let {
+                        Text(
+                            text = "$it задач",
+                            style = MaterialTheme.typography.labelMedium,
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    IconButton(
+                        onClick = onEdit,
+                        modifier = Modifier.size(26.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Edit,
+                            contentDescription = "Редактировать",
+                            tint = colorScheme.onPrimary
+                        )
+                    }
+                    IconButton(
+                        onClick = onDelete,
+                        modifier = Modifier.size(26.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.Delete,
+                            contentDescription = "Удалить",
+                            tint = colorScheme.error
+                        )
+                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             Column {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Default.Schedule,
+                        Icons.Default.Schedule,
                         contentDescription = "Создано",
                         tint = colorScheme.onPrimary,
                         modifier = Modifier.size(16.dp)
@@ -72,16 +116,12 @@ fun BoardRow(
                         text = board.createdAt?.let { formatDateTimeReadable(it.toString()) }
                             ?: "—",
                         style = MaterialTheme.typography.bodySmall,
-                        color = colorScheme.onPrimary
                     )
-
                 }
-
-                Spacer(modifier = Modifier.height(4.dp))
-
+                Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Icon(
-                        imageVector = Icons.Default.Update,
+                        Icons.Default.Update,
                         contentDescription = "Обновлено",
                         tint = colorScheme.onPrimary,
                         modifier = Modifier.size(16.dp)
@@ -91,24 +131,6 @@ fun BoardRow(
                         text = board.updatedAt?.let { formatDateTimeReadable(it.toString()) }
                             ?: "—",
                         style = MaterialTheme.typography.bodySmall,
-                        color = colorScheme.onPrimary
-                    )
-                }
-            }
-
-            Row(horizontalArrangement = Arrangement.End, modifier = Modifier.fillMaxWidth()) {
-                IconButton(onClick = onEdit) {
-                    Icon(
-                        Icons.Default.Edit,
-                        tint = colorScheme.onPrimary,
-                        contentDescription = "Редактировать"
-                    )
-                }
-                IconButton(onClick = onDelete) {
-                    Icon(
-                        imageVector = Icons.Filled.Delete,
-                        tint = colorScheme.error,
-                        contentDescription = "Удалить"
                     )
                 }
             }

@@ -18,6 +18,6 @@ class InstantAdapter : JsonSerializer<Instant>, JsonDeserializer<Instant> {
         typeOfT: Type?,
         context: JsonDeserializationContext?
     ): Instant {
-        return Instant.parse(json!!.asString)
+        return Instant.parse(json?.asString)
     }
 }

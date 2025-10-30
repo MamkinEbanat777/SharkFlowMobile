@@ -1,4 +1,4 @@
-package com.example.sharkflow.core.presentation
+package com.example.sharkflow.presentation.common
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.icons.Icons
@@ -7,7 +7,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.PopupProperties
-import com.example.sharkflow.presentation.common.AppField
 
 @Composable
 fun <T> AppDropdownField(

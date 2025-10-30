@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -17,6 +18,7 @@ fun LogoutAllDevicesModal(
 ) {
     AlertDialog(
         onDismissRequest = { onDismiss() },
+        containerColor = colorScheme.background,
         title = {
             Text("Вы уверены что хотите выйти со всех устройств?", style = typography.titleMedium)
         },

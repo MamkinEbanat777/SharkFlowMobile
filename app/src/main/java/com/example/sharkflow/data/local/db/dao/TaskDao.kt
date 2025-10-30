@@ -38,5 +38,4 @@ interface TaskDao {
 
     @Query("SELECT * FROM tasks WHERE boardUuid = :boardUuid")
     suspend fun getTasksForBoardOnce(boardUuid: String): List<TaskEntity>
-
 }

@@ -8,6 +8,10 @@ import kotlinx.coroutines.flow.Flow
 class BoardLocalRepositoryImpl @Inject constructor(
     private val boardDao: BoardDao
 ) {
+    suspend fun deleteBoardByUuid(boardUuid: String) {
+        val board = boardDao.getBoardByUuid(boardUuid) ?: return
+        boardDao.updateBoard(board.copy(isDeleted = true))
+    }
 
     fun getBoardsFlow(userUuid: String): Flow<List<BoardEntity>> =
         boardDao.getBoardsForUser(userUuid)
@@ -28,4 +32,6 @@ class BoardLocalRepositoryImpl @Inject constructor(
     suspend fun clearBoardsForUser(userUuid: String) {
         boardDao.clearBoardsForUser(userUuid)
     }
+
+
 }

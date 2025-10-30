@@ -1,6 +1,5 @@
 package com.example.sharkflow.presentation.navigation
 
-import android.app.Activity
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
@@ -9,10 +8,9 @@ import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
-import androidx.navigation.compose.*
+import androidx.navigation.compose.rememberNavController
 import com.example.sharkflow.R
 import com.example.sharkflow.core.common.Lang
 import com.example.sharkflow.core.system.*
@@ -20,18 +18,24 @@ import com.example.sharkflow.presentation.navigation.components.*
 import com.example.sharkflow.presentation.screens.auth.*
 import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewModel
 import com.example.sharkflow.presentation.screens.board.*
+import com.example.sharkflow.presentation.screens.board.viewmodel.BoardsViewModel
 import com.example.sharkflow.presentation.screens.hero.HeroScreen
 import com.example.sharkflow.presentation.screens.marketing.*
 import com.example.sharkflow.presentation.screens.profile.ProfileScreen
 import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
 import com.example.sharkflow.presentation.screens.support.SupportScreen
 import com.example.sharkflow.presentation.screens.task.TaskDetailScreen
+import com.example.sharkflow.presentation.screens.task.viewmodel.*
+import com.google.accompanist.navigation.animation.AnimatedNavHost
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
 fun AppNavHost(
     authStateViewModel: AuthStateViewModel,
     userProfileViewModel: UserProfileViewModel,
+    tasksViewModel: TasksViewModel,
+    taskDetailViewModel: TaskDetailViewModel,
+    boardsViewModel: BoardsViewModel,
     isDarkTheme: Boolean,
     onThemeChange: (Boolean) -> Unit
 ) {
@@ -40,8 +44,17 @@ fun AppNavHost(
     val isLoggedIn by authStateViewModel.isLoggedIn.collectAsState()
     val bottomNavItems = if (isLoggedIn) userBottomNavItems else publicBottomNavItems
     val startDestination = if (isLoggedIn) "boards" else "hero"
-    val context = LocalContext.current
-    val activity = remember { context as? Activity }
+
+    val publicOrder = listOf(
+        "hero", "login", "register", "how-it-works", "features", "advantages",
+        "about", "security", "faq", "support"
+    )
+
+    val userOrder = listOf(
+        "profile", "boards", "task", "support"
+    )
+
+    val navOrder = if (isLoggedIn) userOrder else publicOrder
 
     LaunchedEffect(Unit) {
         IntentBus.flow.collect { intent ->
@@ -106,44 +119,64 @@ fun AppNavHost(
             )
         },
     ) { innerPadding ->
-        NavHost(
+        AnimatedNavHost(
             navController = navController,
             startDestination = startDestination,
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(16.dp)
+                .padding(horizontal = 16.dp)
         ) {
-            composable("hero") { HeroScreen(navController) }
-            composable("how_it_works") { HowItWorksScreen() }
-            composable("features") { FeaturesScreen() }
-            composable("advantages") { AdvantagesScreen() }
-            composable("about") { AboutScreen() }
-            composable("security") { SecurityScreen() }
-            composable("faq") { FAQScreen() }
-            composable("support") { SupportScreen() }
-            composable("login") { LoginScreen(navController) }
-            composable("register") { RegisterScreen(navController = navController) }
-            composable("boards") { BoardsScreen(navController) }
-            composable("board/{boardUuid}") { backStackEntry ->
-                val boardUuid = backStackEntry.arguments?.getString("boardUuid") ?: ""
-                BoardDetailScreen(navController, boardUuid)
+            animatedComposable("hero", navOrder = navOrder) {
+                HeroScreen(
+                    navController,
+                    authStateViewModel
+                )
             }
-            composable(
+            animatedComposable("how-it-works", navOrder = navOrder) { HowItWorksScreen() }
+            animatedComposable("features", navOrder = navOrder) { FeaturesScreen() }
+            animatedComposable("advantages", navOrder = navOrder) { AdvantagesScreen() }
+            animatedComposable("about", navOrder = navOrder) { AboutScreen() }
+            animatedComposable("security", navOrder = navOrder) { SecurityScreen() }
+            animatedComposable("faq", navOrder = navOrder) { FAQScreen() }
+            animatedComposable("support", navOrder = navOrder) { SupportScreen() }
+            animatedComposable("login", navOrder = navOrder) { LoginScreen(navController) }
+            animatedComposable(
+                "register",
+                navOrder = navOrder
+            ) { RegisterScreen(navController = navController) }
+            animatedComposable("boards", navOrder = navOrder) {
+                BoardsScreen(
+                    navController,
+                    boardsViewModel
+                )
+            }
+            animatedComposable(
+                "board/{boardUuid}",
+                navOrder = navOrder,
+                arguments = listOf(navArgument("boardUuid") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val boardUuid = backStackEntry.arguments?.getString("boardUuid") ?: ""
+                BoardDetailScreen(navController, boardUuid, boardsViewModel, tasksViewModel)
+            }
+            animatedComposable(
                 route = "task/{boardUuid}/{taskUuid}",
+                navOrder = navOrder,
                 arguments = listOf(
                     navArgument("boardUuid") { type = NavType.StringType },
                     navArgument("taskUuid") { type = NavType.StringType }
                 )
             ) { backStackEntry ->
-                val boardUuid = backStackEntry.arguments?.getString("boardUuid")!!
-                val taskUuid = backStackEntry.arguments?.getString("taskUuid")!!
+                val boardUuid = backStackEntry.arguments?.getString("boardUuid") ?: ""
+                val taskUuid = backStackEntry.arguments?.getString("taskUuid") ?: ""
                 TaskDetailScreen(
                     navController = navController,
                     boardUuid = boardUuid,
-                    taskUuid = taskUuid
+                    taskUuid = taskUuid,
+                    tasksViewModel = tasksViewModel,
+                    taskDetailViewModel = taskDetailViewModel
                 )
             }
-            composable("profile") {
+            animatedComposable("profile", navOrder = navOrder) {
                 ProfileScreen(
                     userProfileViewModel = userProfileViewModel,
                     navController = navController,

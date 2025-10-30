@@ -39,6 +39,7 @@ fun UserSessionsModal(
 
     AlertDialog(
         onDismissRequest = { if (!isLoading) onDismiss() },
+        containerColor = colorScheme.background,
         title = {
             Text("Ваши сессии", style = typography.titleMedium)
         },
@@ -60,7 +61,7 @@ fun UserSessionsModal(
 
                 if (!errorMessage.isNullOrEmpty()) {
                     Text(
-                        text = errorMessage!!,
+                        text = errorMessage ?: "Ошибка загрузки сессий",
                         color = colorScheme.error,
                         style = typography.bodySmall,
                         modifier = Modifier.padding(vertical = 8.dp)

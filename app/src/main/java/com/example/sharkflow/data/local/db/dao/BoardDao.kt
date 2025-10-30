@@ -17,4 +17,9 @@ interface BoardDao {
 
     @Query("DELETE FROM boards WHERE userUuid = :userUuid")
     suspend fun clearBoardsForUser(userUuid: String)
+
+    @Query("SELECT * FROM boards WHERE uuid = :uuid")
+    suspend fun getBoardByUuid(uuid: String): BoardEntity?
+
+
 }

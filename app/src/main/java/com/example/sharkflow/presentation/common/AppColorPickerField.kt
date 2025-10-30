@@ -2,7 +2,7 @@ package com.example.sharkflow.presentation.common
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -52,11 +52,11 @@ fun AppColorPickerField(
                         modifier = Modifier
                             .size(48.dp)
                             .padding(2.dp)
-                            .background(Color("#$hex".toColorInt()), RoundedCornerShape(8.dp))
+                            .background(Color("#$hex".toColorInt()), CircleShape)
                             .border(
                                 width = if (isSelected) 2.dp else 0.dp,
                                 color = if (isSelected) MaterialTheme.colorScheme.primary else Color.Transparent,
-                                shape = RoundedCornerShape(8.dp)
+                                shape = CircleShape
                             )
                             .clickable {
                                 onColorSelected(hex)

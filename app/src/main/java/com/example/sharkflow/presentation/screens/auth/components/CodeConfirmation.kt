@@ -1,17 +1,21 @@
 package com.example.sharkflow.presentation.screens.auth.components
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.*
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.*
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.sharkflow.R
 import com.example.sharkflow.core.common.Lang
 import com.example.sharkflow.core.presentation.ToastManager
+import com.example.sharkflow.core.validators.RegisterValidator
 import com.example.sharkflow.presentation.common.*
 import com.example.sharkflow.presentation.screens.auth.viewmodel.ConfirmationCodeViewModel
 
@@ -24,17 +28,27 @@ fun CodeConfirmation(
 
     var confirmationCode by remember { mutableStateOf("") }
     var confirmationCodeError by remember { mutableStateOf(false) }
-    var showEmptyFieldWarning by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val warningMessage = Lang.string(R.string.code_confirmation_warning)
+
+    val animatedCharColor by animateColorAsState(
+        targetValue = if (confirmationCodeError) colorScheme.error else colorScheme.primary,
+        label = "otp_char_color"
+    )
 
     val isLoading by confirmationCodeViewModel.isLoading.collectAsState()
     val errorMessage by confirmationCodeViewModel.errorMessage.collectAsState()
 
+    LaunchedEffect(Unit) {
+        ToastManager.info(
+            context,
+            "На вашу почту отправлен код подтверждения",
+            true
+        )
+    }
+
     Column(
-        modifier = Modifier
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = Lang.string(R.string.code_confirmation_title),
@@ -42,62 +56,64 @@ fun CodeConfirmation(
             color = colorScheme.onBackground
         )
 
-        AppField(
-            value = confirmationCode,
-            onValueChange = {
-                confirmationCode = it
-                if (confirmationCodeError) confirmationCodeError = false
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OtpView(
+            otpText = confirmationCode,
+            onOtpTextChange = { code ->
+                confirmationCode = code
+                if (confirmationCodeError && code.isNotEmpty()) {
+                    confirmationCodeError =
+                        false
+                }
             },
-            label = Lang.string(R.string.code_confirmation_label),
-            isError = confirmationCodeError
+            otpCount = 6,
+            containerSize = 40.dp,
+            charSize = 28.sp,
+            type = OTP_VIEW_TYPE_UNDERLINE,
+            charColor = animatedCharColor,
+            charBackground = colorScheme.surfaceVariant.copy(alpha = 0.1f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(12.dp))
         )
+
+        Spacer(modifier = Modifier.height(4.dp))
 
         errorMessage?.let {
             Text(it, color = colorScheme.error)
         }
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+            horizontalArrangement = Arrangement.Center
         ) {
-            OutlinedButton(
-                onClick = onBack,
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(16.dp, 16.dp, 16.dp, 8.dp),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = colorScheme.primary
-                )
-
-            ) {
-                Text(Lang.string(R.string.code_confirmation_back))
-
-                AppButton(
-                    onClick = {
-                        if (confirmationCode.isEmpty()) {
-                            confirmationCodeError = true
-                            ToastManager.warning(context, warningMessage)
-                        } else {
-                            confirmationCodeError = false
-                            confirmationCodeViewModel.confirmationCode(confirmationCode) {
-                                onNext()
-                            }
+            AppButton(
+                onBack,
+                text = Lang.string(R.string.code_confirmation_back),
+                variant = AppButtonVariant.Outlined
+            )
+            AppButton(
+                onClick = {
+                    val codeValid =
+                        RegisterValidator.validateConfirmationCode(confirmationCode, context)
+                    if (!codeValid) {
+                        confirmationCodeError = true
+                    } else {
+                        confirmationCodeError = false
+                        confirmationCodeViewModel.confirmationCode(confirmationCode) {
+                            onNext()
                         }
-                    },
-                    text = if (isLoading)
-                        Lang.string(R.string.code_confirmation_checking)
-                    else
-                        Lang.string(R.string.code_confirmation_send),
-                    enabled = !isLoading
-                )
-
-                if (showEmptyFieldWarning) {
-                    LaunchedEffect(Unit) {
-                        ToastManager.warning(context, warningMessage)
                     }
-                }
-
-            }
+                },
+                text = if (isLoading)
+                    Lang.string(R.string.code_confirmation_checking)
+                else
+                    Lang.string(R.string.code_confirmation_send),
+                enabled = !isLoading
+            )
         }
     }
 }

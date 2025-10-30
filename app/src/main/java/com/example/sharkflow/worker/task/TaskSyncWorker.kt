@@ -5,7 +5,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.*
 import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.data.api.dto.task.*
-import com.example.sharkflow.data.repository.combined.TaskRepositoryCombinedImpl
+import com.example.sharkflow.domain.usecase.task.*
 import dagger.assisted.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.*
@@ -15,16 +15,19 @@ import java.util.concurrent.atomic.AtomicBoolean
 class TaskSyncWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    private val repository: TaskRepositoryCombinedImpl
+    private val createTaskUseCase: CreateTaskUseCase,
+    private val deleteTaskUseCase: DeleteTaskUseCase,
+    private val updateTaskUseCase: UpdateTaskUseCase,
+    private val getUnsyncedTasksUseCase: GetUnsyncedTasksUseCase,
+    private val getDeletedTasksUseCase: GetDeletedTasksUseCase,
 ) : CoroutineWorker(context, workerParams) {
-
     override suspend fun doWork(): Result = coroutineScope {
         withContext(Dispatchers.IO) {
 
             val hasErrors = AtomicBoolean(false)
             val semaphore = Semaphore(5)
 
-            val deletedTasks = repository.getDeletedTasks()
+            val deletedTasks = getDeletedTasksUseCase()
             AppLog.d("TaskSyncWorker", "Found ${deletedTasks.size} deleted tasks total")
 
             deletedTasks.map { task ->
@@ -37,7 +40,7 @@ class TaskSyncWorker @AssistedInject constructor(
                             )
                             val hardDelete = task.serverUuid == null
                             val result =
-                                repository.deleteTask(task.boardUuid, task.uuid, hardDelete)
+                                deleteTaskUseCase(task.boardUuid, task.uuid, hardDelete)
                             AppLog.d(
                                 "TaskSyncWorker",
                                 "DeleteTask result for ${task.uuid}: $result"
@@ -54,30 +57,26 @@ class TaskSyncWorker @AssistedInject constructor(
                 }
             }.awaitAll()
 
-
-            val unsyncedTasks = repository.getUnsyncedTasks().filter { !it.isDeleted }
+            val unsyncedTasks = getUnsyncedTasksUseCase().filter { !it.isDeleted }
             unsyncedTasks.map { task ->
                 async {
                     semaphore.withPermit {
                         try {
                             if (task.serverUuid == null) {
-                                repository.createTask(
-                                    task.boardUuid,
-                                    CreateTaskRequestDto(
+                                createTaskUseCase(
+                                    task.boardUuid, CreateTaskRequestDto(
                                         title = task.title,
                                         description = task.description,
                                         dueDate = task.dueDate,
                                         status = task.status,
                                         priority = task.priority
                                     ),
-                                    localUuid = task.uuid // <- ключевая правка
+                                    localUuid = task.uuid
                                 )
                                 AppLog.d("TaskSyncWorker", "Created task ${task.uuid}")
                             } else {
-                                repository.updateTask(
-                                    task.boardUuid,
-                                    task.uuid,
-                                    UpdateTaskRequestDto(
+                                updateTaskUseCase(
+                                    task.boardUuid, task.uuid, UpdateTaskRequestDto(
                                         title = task.title,
                                         description = task.description,
                                         dueDate = task.dueDate,
@@ -94,7 +93,6 @@ class TaskSyncWorker @AssistedInject constructor(
                     }
                 }
             }.awaitAll()
-
 
             if (hasErrors.get()) Result.retry() else Result.success()
         }

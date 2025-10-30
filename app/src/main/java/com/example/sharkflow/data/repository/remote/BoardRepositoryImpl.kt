@@ -10,7 +10,6 @@ import jakarta.inject.Inject
 class BoardRepositoryImpl @Inject constructor(
     private val api: BoardApi
 ) : BoardRepository {
-
     override suspend fun getBoards(): Result<List<Board>> = runCatching {
         val response = api.getBoards()
         if (response.isSuccessful) {

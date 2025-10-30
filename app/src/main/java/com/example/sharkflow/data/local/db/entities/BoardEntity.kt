@@ -6,6 +6,7 @@ import java.time.Instant
 @Entity(tableName = "boards")
 data class BoardEntity(
     @PrimaryKey val uuid: String,
+    val serverUuid: String? = null,
     val title: String,
     val color: String? = "FFFFFF",
     val userUuid: String,

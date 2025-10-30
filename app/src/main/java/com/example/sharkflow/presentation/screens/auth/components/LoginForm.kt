@@ -14,14 +14,13 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.sharkflow.R
 import com.example.sharkflow.core.common.Lang
-import com.example.sharkflow.core.presentation.ToastManager
+import com.example.sharkflow.core.validators.RegisterValidator
 import com.example.sharkflow.presentation.common.*
 import com.example.sharkflow.presentation.screens.auth.viewmodel.LoginViewModel
 
 @Composable
 fun LoginForm(navController: NavController) {
     val loginViewModel: LoginViewModel = hiltViewModel()
-    val emptyFieldWarning = Lang.string(R.string.login_empty_fields_warning)
 
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
@@ -82,20 +81,13 @@ fun LoginForm(navController: NavController) {
 
         AppButton(
             onClick = {
-                var hasError = false
-                if (email.isEmpty()) {
-                    emailError = true
-                    hasError = true
-                }
-                if (password.isEmpty()) {
-                    passwordError = true
-                    hasError = true
-                }
+                emailError = false
+                passwordError = false
 
-                if (hasError) {
-                    ToastManager.warning(context, emptyFieldWarning)
-                } else {
-                    loginViewModel.login(email, password)
+                when {
+                    !RegisterValidator.validateEmail(email, context) -> emailError = true
+                    !RegisterValidator.validatePassword(password, context) -> passwordError = true
+                    else -> loginViewModel.login(email, password)
                 }
             },
             modifier = Modifier.fillMaxWidth(),

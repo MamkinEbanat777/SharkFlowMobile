@@ -108,7 +108,7 @@ fun BottomNavBar(
                     }
                 }
                 if (isLoggedIn) {
-                    LogoutButton(navController)
+                    LogoutButton(navController, authStateViewModel)
                 }
             }
         }

@@ -66,7 +66,5 @@ class UserRepositoryImpl @Inject constructor(
                 UserSessionMapper.fromWrapper(wrapperDto)
             }
     }
-
-
 }
 

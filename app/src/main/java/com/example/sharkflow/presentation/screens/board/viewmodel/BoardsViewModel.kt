@@ -1,119 +1,204 @@
 package com.example.sharkflow.presentation.screens.board.viewmodel
 
-import androidx.lifecycle.*
+import androidx.lifecycle.viewModelScope
+import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.data.api.dto.board.UpdateBoardRequestDto
 import com.example.sharkflow.domain.manager.UserManager
 import com.example.sharkflow.domain.model.Board
-import com.example.sharkflow.domain.repository.BoardRepositoryCombined
+import com.example.sharkflow.domain.usecase.board.*
+import com.example.sharkflow.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
-sealed class BoardsUiEvent {
-    data class ShowMessage(val text: String) : BoardsUiEvent()
-    object ShowCreateDialog : BoardsUiEvent()
-    data class NavigateToBoard(val boardUuid: String) : BoardsUiEvent()
-}
-
-data class BoardsUiState(
-    val isLoading: Boolean = false,
-    val boards: List<Board> = emptyList()
-)
-
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class BoardsViewModel @Inject constructor(
-    private val repo: BoardRepositoryCombined,
+    private val refreshBoardsUseCase: RefreshBoardsUseCase,
+    private val getBoardsFlowUseCase: GetBoardsFlowUseCase,
+    private val createBoardUseCase: CreateBoardUseCase,
+    private val updateBoardUseCase: UpdateBoardUseCase,
+    private val deleteBoardUseCase: DeleteBoardUseCase,
     private val userManager: UserManager
-) : ViewModel() {
+) : BaseViewModel() {
+    data class BoardsUiState(
+        val isLoading: Boolean = false,
+        val boards: List<Board> = emptyList(),
+        val showCreateDialog: Boolean = false,
+        val editingBoard: Board? = null,
+        val confirmDeleteBoard: Board? = null,
+        val message: String? = null,
+        val isMessageSuccess: Boolean = true,
+        val navigateToBoardUuid: String? = null
+    )
 
     private val _uiState = MutableStateFlow(BoardsUiState(isLoading = true))
     val uiState: StateFlow<BoardsUiState> = _uiState.asStateFlow()
 
-    private val _events = Channel<BoardsUiEvent>(Channel.BUFFERED)
-    val events = _events.receiveAsFlow()
+    private val userUuidFlow: Flow<String?> by lazy { userManager.currentUser.map { it?.uuid } }
 
-    private val userUuidFlow: Flow<String?> = userManager.currentUser.map { it?.uuid }
+    private val hasRefreshed = AtomicBoolean(false)
 
     init {
         viewModelScope.launch {
-            userUuidFlow.collectLatest { uuid ->
-                if (uuid == null) {
-                    _uiState.update { it.copy(isLoading = false, boards = emptyList()) }
-                } else {
-                    repo.getBoardsFlow(userId = 0)
-                    repo.getBoardsFlow(userId = 0)
-                        .catch { e ->
-                            _uiState.update { it.copy(isLoading = false) }
-                            _events.send(BoardsUiEvent.ShowMessage("Ошибка загрузки досок: ${e.message}"))
-                        }
-                        .collect { boards ->
-                            _uiState.update { it.copy(isLoading = false, boards = boards) }
-                        }
+            userUuidFlow
+                .filterNotNull()
+                .flatMapLatest {
+                    getBoardsFlowUseCase()
                 }
-            }
+                .collect { boards ->
+                    _uiState.update { it.copy(isLoading = false, boards = boards) }
+                }
         }
     }
 
-    fun onCreateClicked() {
-        viewModelScope.launch { _events.send(BoardsUiEvent.ShowCreateDialog) }
+    fun refreshOnce() {
+        if (!hasRefreshed.compareAndSet(false, true)) return
+
+        viewModelScope.launch {
+            try {
+                userUuidFlow.filterNotNull().first()
+
+                launchResult(
+                    block = {
+                        refreshBoardsUseCase()
+                        Result.success(Unit)
+                    },
+                    onFailure = { throwable ->
+                        _uiState.update {
+                            it.copy(
+                                message = throwable?.message ?: "Ошибка обновления досок",
+                                isMessageSuccess = false
+                            )
+                        }
+                    }
+                )
+            } catch (e: Exception) {
+                AppLog.e("refreshOnce: failed to wait userUuid: ${e.message}", e)
+            }
+        }
     }
 
     fun refresh() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            val userUuid = userManager.currentUser.value?.uuid ?: run {
-                _events.send(BoardsUiEvent.ShowMessage("Пользователь не залогинен"))
-                _uiState.update { it.copy(isLoading = false) }
-                return@launch
+        launchResult(
+            block = {
+                refreshBoardsUseCase()
+                Result.success(Unit)
+            },
+            onFailure = { throwable ->
+                _uiState.update {
+                    it.copy(
+                        message = throwable?.message ?: "Ошибка обновления досок",
+                        isMessageSuccess = false
+                    )
+                }
             }
-            repo.refreshBoards(userId = 0)
-            _uiState.update { it.copy(isLoading = false) }
-        }
+        )
     }
 
+
     fun createBoard(title: String, colorHex: String) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            val res = repo.createBoard(title, colorHex)
-            res.onSuccess {
-                _events.send(BoardsUiEvent.ShowMessage("Доска успешно создана"))
-            }.onFailure {
-                _events.send(BoardsUiEvent.ShowMessage("Ошибка создания доски: ${it.message}"))
+        launchResult(
+            block = { createBoardUseCase(title, colorHex) },
+            onSuccess = {
+                _uiState.update {
+                    it.copy(
+                        showCreateDialog = false,
+                        message = "Доска успешно создана",
+                        isMessageSuccess = true
+                    )
+                }
+            },
+            onFailure = {
+                _uiState.update {
+                    it.copy(
+                        message = "Ошибка создания доски: ${it.message}",
+                        isMessageSuccess = false
+                    )
+                }
             }
-            _uiState.update { it.copy(isLoading = false) }
-        }
+        )
     }
 
     fun updateBoard(boardUuid: String, update: UpdateBoardRequestDto) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            val res = repo.updateBoard(boardUuid, update)
-            res.onSuccess {
-                _events.send(BoardsUiEvent.ShowMessage("Доска успешно обновлена"))
-            }.onFailure {
-                _events.send(BoardsUiEvent.ShowMessage("Ошибка обновления доски: ${it.message}"))
+        launchResult(
+            block = { updateBoardUseCase(boardUuid, update) },
+            onSuccess = {
+                _uiState.update {
+                    it.copy(
+                        message = "Доска успешно обновлена",
+                        isMessageSuccess = true,
+                        editingBoard = null
+                    )
+                }
+            },
+            onFailure = {
+                _uiState.update {
+                    it.copy(
+                        message = "Ошибка обновления доски: ${it.message}",
+                        isMessageSuccess = false
+                    )
+                }
             }
-            _uiState.update { it.copy(isLoading = false) }
-        }
+        )
     }
 
     fun deleteBoard(boardUuid: String) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
-            val res = repo.deleteBoard(boardUuid)
-            res.onSuccess {
-                _events.send(BoardsUiEvent.ShowMessage("Доска успешно удалена"))
-            }.onFailure {
-                _events.send(BoardsUiEvent.ShowMessage("Ошибка удаления доски: ${it.message}"))
+        launchResult(
+            block = { deleteBoardUseCase(boardUuid) },
+            onSuccess = {
+                _uiState.update {
+                    it.copy(
+                        message = "Доска успешно удалена",
+                        isMessageSuccess = true,
+                        confirmDeleteBoard = null
+                    )
+                }
+            },
+            onFailure = {
+                _uiState.update {
+                    it.copy(
+                        message = "Ошибка удаления доски: ${it.message}",
+                        isMessageSuccess = false
+                    )
+                }
             }
-            _uiState.update { it.copy(isLoading = false) }
-        }
+        )
     }
 
     fun openBoard(boardUuid: String) {
-        viewModelScope.launch { _events.send(BoardsUiEvent.NavigateToBoard(boardUuid)) }
+        _uiState.update { it.copy(navigateToBoardUuid = boardUuid) }
     }
 
+    fun onAddBoardClick() {
+        _uiState.update { it.copy(showCreateDialog = true) }
+    }
+
+    fun onEditBoardClick(board: Board) {
+        _uiState.update { it.copy(editingBoard = board) }
+    }
+
+    fun onDeleteBoardClick(board: Board) {
+        _uiState.update { it.copy(confirmDeleteBoard = board) }
+    }
+
+    fun dismissDialogs() {
+        _uiState.update {
+            it.copy(
+                showCreateDialog = false,
+                editingBoard = null,
+                confirmDeleteBoard = null
+            )
+        }
+    }
+
+    fun clearMessage() {
+        _uiState.update { it.copy(message = null) }
+    }
+
+    fun clearNavigation() {
+        _uiState.update { it.copy(navigateToBoardUuid = null) }
+    }
 }

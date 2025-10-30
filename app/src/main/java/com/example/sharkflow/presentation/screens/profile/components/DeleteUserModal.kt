@@ -2,6 +2,7 @@ package com.example.sharkflow.presentation.screens.profile.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -22,6 +23,7 @@ fun DeleteUserModal(
 
     AlertDialog(
         onDismissRequest = { if (!isLoading) onDismiss() },
+        containerColor = colorScheme.background,
         title = { Text("Введите код подтверждения", style = MaterialTheme.typography.titleMedium) },
         text = {
             Column {
@@ -36,7 +38,7 @@ fun DeleteUserModal(
                     onValueChange = { code = it },
                     label = "Код с почты",
                     isError = errorMessage != null,
-                    enabled = !isLoading,
+                    enabled = !isLoading
                 )
                 if (isLoading) {
                     Spacer(modifier = Modifier.height(8.dp))
@@ -44,8 +46,8 @@ fun DeleteUserModal(
                 }
                 if (errorMessage != null) {
                     Text(
-                        text = errorMessage!!,
-                        color = MaterialTheme.colorScheme.error,
+                        text = errorMessage ?: "Ошибка при удалении аккаунта",
+                        color = colorScheme.error,
                         style = MaterialTheme.typography.bodySmall
                     )
                 }

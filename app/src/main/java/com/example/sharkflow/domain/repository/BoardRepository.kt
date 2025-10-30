@@ -6,7 +6,6 @@ import com.example.sharkflow.domain.model.Board
 interface BoardRepository {
     suspend fun getBoards(): Result<List<Board>>
     suspend fun createBoard(title: String, color: String): Result<Board>
-
     suspend fun updateBoard(
         boardUuid: String,
         update: UpdateBoardRequestDto
