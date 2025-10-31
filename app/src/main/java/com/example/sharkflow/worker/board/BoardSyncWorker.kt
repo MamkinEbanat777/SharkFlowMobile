@@ -21,7 +21,6 @@ class BoardSyncWorker @AssistedInject constructor(
     private val getUnsyncedBoardsUseCase: GetUnsyncedBoardsUseCase,
     private val getDeletedBoardsUseCase: GetDeletedBoardsUseCase
 ) : CoroutineWorker(context, workerParams) {
-
     override suspend fun doWork(): Result = coroutineScope {
         withContext(Dispatchers.IO) {
             AppLog.d("BoardSyncWorker", "doWork START")

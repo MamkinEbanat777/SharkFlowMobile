@@ -33,8 +33,9 @@ interface BoardDao {
     @Query("SELECT * FROM boards WHERE isSynced = 0")
     suspend fun getUnsyncedBoards(): List<BoardEntity>
 
-    @Query("SELECT * FROM boards WHERE isDeleted = 1")
+    @Query("SELECT * FROM boards WHERE isDeleted = 1 AND isSynced = 0")
     suspend fun getDeletedBoards(): List<BoardEntity>
+
 
     @Query("SELECT * FROM boards")
     suspend fun getAllBoards(): List<BoardEntity>
