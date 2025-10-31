@@ -7,7 +7,7 @@ import com.example.sharkflow.data.mapper.TaskMapper
 import com.example.sharkflow.data.repository.local.*
 import com.example.sharkflow.data.repository.remote.TaskRepositoryImpl
 import com.example.sharkflow.domain.model.Task
-import com.example.sharkflow.domain.repository.*
+import com.example.sharkflow.domain.repository.TaskRepositoryCombined
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.*
 import java.time.Instant
@@ -16,9 +16,7 @@ class TaskRepositoryCombinedImpl @Inject constructor(
     private val local: TaskLocalRepositoryImpl,
     private val boardLocal: BoardLocalRepositoryImpl,
     private val remote: TaskRepositoryImpl,
-    private val boardRepositoryCombined: BoardRepositoryCombined
 ) : TaskRepositoryCombined {
-
     override fun getTasksFlow(boardUuid: String): Flow<List<Task>> =
         local.getTasksFlow(boardUuid).map { it.map(TaskMapper::fromEntity) }
 
