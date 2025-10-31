@@ -82,7 +82,7 @@ object TaskMapper {
 
     fun toEntityFromDto(dto: TaskResponseDto, boardUuid: String): TaskEntity {
         return TaskEntity(
-            uuid = java.util.UUID.randomUUID().toString(),
+            uuid = UUID.randomUUID().toString(),
             serverUuid = dto.uuid,
             title = dto.title,
             description = dto.description,
@@ -98,20 +98,21 @@ object TaskMapper {
     }
 
     fun mergeEntityWithUpdate(
-        entity: TaskEntity,
+        local: TaskEntity,
         update: UpdateTaskRequestDto,
-        remote: UpdateTaskRequestDto? = null
+        remoteResponse: UpdateTaskRequestDto? = null
     ): TaskEntity {
-        return entity.copy(
-            title = remote?.title ?: update.title ?: entity.title,
-            description = remote?.description ?: update.description ?: entity.description,
-            status = remote?.status?.name ?: update.status?.name ?: entity.status,
-            priority = remote?.priority?.name ?: update.priority?.name ?: entity.priority,
-            dueDate = remote?.dueDate ?: update.dueDate ?: entity.dueDate,
+        val merged = local.copy(
+            title = remoteResponse?.title ?: update.title ?: local.title,
+            description = remoteResponse?.description ?: update.description ?: local.description,
+            status = remoteResponse?.status?.name ?: update.status?.name ?: local.status,
+            priority = remoteResponse?.priority?.name ?: update.priority?.name ?: local.priority,
+            dueDate = remoteResponse?.dueDate ?: update.dueDate ?: local.dueDate,
             updatedAt = Instant.now().toString(),
-            isSynced = remote != null,
-            isDeleted = false
+            isDeleted = local.isDeleted,
+            isSynced = remoteResponse != null
         )
+        return merged
     }
 
     fun toLocalEntityForCreate(
@@ -136,35 +137,27 @@ object TaskMapper {
         )
     }
 
-    fun mergeLocalWithRemoteAfterCreate(
-        local: TaskEntity,
-        remoteServerUuid: String?
-    ): TaskEntity {
-        return if (remoteServerUuid != null) {
-            local.copy(
-                serverUuid = remoteServerUuid,
-                isSynced = true
-            )
-        } else {
-            local.copy(isSynced = false)
-        }
+    fun mergeLocalWithRemoteAfterCreate(local: TaskEntity, remoteServerUuid: String?): TaskEntity {
+        if (remoteServerUuid == null || local.serverUuid != null) return local
+        return local.copy(
+            serverUuid = remoteServerUuid,
+            isSynced = true,
+            updatedAt = Instant.now().toString()
+        )
     }
-
 
     fun mergeRemoteWithLocalList(
         boardUuid: String,
         remoteTasks: List<Task>,
         localTasks: List<TaskEntity>
     ): List<TaskEntity> {
-        val localByServer = localTasks
-            .filter { it.serverUuid != null }
-            .associateBy { it.serverUuid }
-
+        val localByServer =
+            localTasks.filter { it.serverUuid != null }.associateBy { it.serverUuid }
         val toInsertOrUpdate = mutableListOf<TaskEntity>()
 
         remoteTasks.forEach { remote ->
             val serverUuid =
-                remote.serverUuid ?: throw IllegalStateException("remote task must have serverUuid")
+                remote.serverUuid ?: throw IllegalStateException("Remote task must have serverUuid")
             val existing = localByServer[serverUuid]
 
             if (existing != null) {
@@ -177,7 +170,8 @@ object TaskMapper {
                         dueDate = remote.dueDate,
                         createdAt = remote.createdAt,
                         updatedAt = remote.updatedAt,
-                        isSynced = true
+                        isDeleted = existing.isDeleted,
+                        isSynced = existing.isSynced
                     )
                 )
             } else {
@@ -185,13 +179,10 @@ object TaskMapper {
                     it.serverUuid == null &&
                             !it.isDeleted &&
                             it.title == remote.title &&
-                            (it.description == remote.description ||
-                                    (it.description.isNullOrBlank() && remote.description.isNullOrBlank())) &&
+                            (it.description == remote.description || (it.description.isNullOrBlank() && remote.description.isNullOrBlank())) &&
                             it.dueDate == remote.dueDate
                 }
-
-                val uuidToUse = unsyncedLocal?.uuid ?: java.util.UUID.randomUUID().toString()
-
+                val uuidToUse = unsyncedLocal?.uuid ?: UUID.randomUUID().toString()
                 toInsertOrUpdate.add(
                     TaskEntity(
                         uuid = uuidToUse,
@@ -204,8 +195,8 @@ object TaskMapper {
                         dueDate = remote.dueDate,
                         createdAt = remote.createdAt,
                         updatedAt = remote.updatedAt,
-                        isSynced = true,
-                        isDeleted = false
+                        isDeleted = false,
+                        isSynced = true
                     )
                 )
             }
@@ -213,5 +204,4 @@ object TaskMapper {
 
         return toInsertOrUpdate
     }
-
 }

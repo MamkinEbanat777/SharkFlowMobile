@@ -20,7 +20,8 @@ object UserMapper {
         email = user.email,
         avatarUrl = user.avatarUrl,
         publicId = user.publicId,
-        role = user.role
+        role = user.role,
+        isActive = user.isActive
     )
 
     fun toDomain(entity: UserEntity): User = User(
@@ -29,6 +30,7 @@ object UserMapper {
         email = entity.email,
         avatarUrl = entity.avatarUrl,
         publicId = entity.publicId,
-        role = entity.role
+        role = entity.role,
+        isActive = entity.isActive
     )
 }

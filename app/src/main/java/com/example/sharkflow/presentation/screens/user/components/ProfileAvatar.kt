@@ -1,4 +1,4 @@
-package com.example.sharkflow.presentation.screens.profile.components
+package com.example.sharkflow.presentation.screens.user.components
 
 import android.app.Activity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
 import com.example.sharkflow.core.presentation.ToastManager
-import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
+import com.example.sharkflow.presentation.screens.user.viewmodel.UserProfileViewModel
 import com.theartofdev.edmodo.cropper.*
 
 @Composable

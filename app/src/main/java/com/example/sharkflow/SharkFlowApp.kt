@@ -7,6 +7,7 @@ import androidx.work.Configuration
 import com.example.sharkflow.core.common.*
 import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.domain.repository.LanguageRepository
+import com.example.sharkflow.worker.board.startBoardSyncWorker
 import com.example.sharkflow.worker.task.startTaskSyncWorker
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.firebase.*
@@ -30,6 +31,7 @@ class SharkFlowApp : Application(), Configuration.Provider {
 
         observeNetworkChanges()
         startTaskSyncWorker(this)
+        startBoardSyncWorker(this)
 //        startDeadlineReminderWorker(this)
 
         try {
@@ -56,6 +58,7 @@ class SharkFlowApp : Application(), Configuration.Provider {
             override fun onAvailable(network: Network) {
                 AppLog.d("Интернет появился!")
                 startTaskSyncWorker(this@SharkFlowApp)
+                startBoardSyncWorker(this@SharkFlowApp)
             }
         })
     }

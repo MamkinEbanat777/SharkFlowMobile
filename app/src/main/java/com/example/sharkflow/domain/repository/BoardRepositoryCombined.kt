@@ -7,11 +7,10 @@ import kotlinx.coroutines.flow.Flow
 interface BoardRepositoryCombined {
     fun getBoardsFlow(): Flow<List<Board>>
     suspend fun refreshBoards()
-    suspend fun createBoard(title: String, color: String): Result<BoardResponseDto>
-    suspend fun updateBoard(
-        boardUuid: String,
-        update: UpdateBoardRequestDto
-    ): Result<UpdateBoardRequestDto>
-
-    suspend fun deleteBoard(boardUuid: String): Result<DeletedBoardInfoDto>
+    suspend fun createBoard(title: String, color: String, localUuid: String? = null): Result<Board>
+    suspend fun updateBoard(boardUuid: String, update: UpdateBoardRequestDto): Result<Board>
+    suspend fun deleteBoard(boardUuid: String, hardDelete: Boolean): Result<DeletedBoardInfoDto>
+    suspend fun getAllBoards(): List<Board>
+    suspend fun getUnsyncedBoards(): List<Board>
+    suspend fun getDeletedBoards(): List<Board>
 }

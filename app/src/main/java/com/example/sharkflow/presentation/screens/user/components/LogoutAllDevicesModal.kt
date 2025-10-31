@@ -1,4 +1,4 @@
-package com.example.sharkflow.presentation.screens.profile.components
+package com.example.sharkflow.presentation.screens.user.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons

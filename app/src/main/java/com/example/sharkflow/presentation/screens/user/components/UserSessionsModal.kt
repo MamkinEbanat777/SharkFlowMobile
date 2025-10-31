@@ -1,4 +1,4 @@
-package com.example.sharkflow.presentation.screens.profile.components
+package com.example.sharkflow.presentation.screens.user.components
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -17,7 +17,7 @@ import com.example.sharkflow.core.common.UaParser
 import com.example.sharkflow.domain.model.UserSession
 import com.example.sharkflow.presentation.common.*
 import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewModel
-import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
+import com.example.sharkflow.presentation.screens.user.viewmodel.UserProfileViewModel
 import com.example.sharkflow.presentation.theme.SuccessColor
 
 @Composable

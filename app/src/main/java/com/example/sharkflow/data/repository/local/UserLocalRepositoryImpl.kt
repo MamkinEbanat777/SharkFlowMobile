@@ -32,4 +32,20 @@ class UserLocalRepositoryImpl @Inject constructor(
     }
 
     suspend fun clearAll() = userDao.clearUsers()
+
+    fun getActiveUserFlow(): Flow<User?> =
+        userDao.getActiveUser().map { it?.let(UserMapper::toDomain) }
+
+    suspend fun getActiveUserOnce(): User? =
+        userDao.getActiveUserOnce()?.let(UserMapper::toDomain)
+
+    suspend fun setActiveUser(user: User) {
+        userDao.clearActiveUser()
+        userDao.insertUser(UserMapper.fromDomain(user).copy(isActive = true))
+    }
+
+    suspend fun clearActiveUser() {
+        userDao.clearActiveUser()
+    }
+
 }

@@ -20,4 +20,14 @@ interface UserDao {
 
     @Query("SELECT * FROM users LIMIT 1")
     fun getFirstUser(): Flow<UserEntity?>
+
+    @Query("SELECT * FROM users WHERE isActive = 1 LIMIT 1")
+    fun getActiveUser(): Flow<UserEntity?>
+
+    @Query("SELECT * FROM users WHERE isActive = 1 LIMIT 1")
+    suspend fun getActiveUserOnce(): UserEntity?
+
+    @Query("UPDATE users SET isActive = 0")
+    suspend fun clearActiveUser()
+
 }

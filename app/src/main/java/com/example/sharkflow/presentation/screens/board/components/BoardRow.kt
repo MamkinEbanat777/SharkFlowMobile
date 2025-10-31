@@ -25,6 +25,9 @@ fun BoardRow(
 ) {
     val boardColor = Color("#${board.color ?: "FFFFFF"}".toColorInt())
 
+    val syncColor =
+        if (board.isSynced) colorScheme.secondary else colorScheme.error
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -134,6 +137,18 @@ fun BoardRow(
                     )
                 }
             }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = if (board.isSynced) "Синхронизировано" else "Не синхронизировано",
+                style = MaterialTheme.typography.labelSmall,
+                color = syncColor,
+                modifier = Modifier
+                    .background(
+                        color = colorScheme.background,
+                        shape = RoundedCornerShape(6.dp)
+                    )
+                    .padding(horizontal = 6.dp, vertical = 2.dp)
+            )
         }
     }
 }

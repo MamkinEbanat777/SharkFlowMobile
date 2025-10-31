@@ -1,4 +1,4 @@
-package com.example.sharkflow.presentation.screens.profile
+package com.example.sharkflow.presentation.screens.user
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -14,8 +14,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.sharkflow.presentation.common.*
 import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewModel
-import com.example.sharkflow.presentation.screens.profile.components.*
-import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
+import com.example.sharkflow.presentation.screens.user.components.*
+import com.example.sharkflow.presentation.screens.user.viewmodel.UserProfileViewModel
 
 @Composable
 fun ProfileScreen(

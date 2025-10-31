@@ -1,4 +1,4 @@
-package com.example.sharkflow.presentation.screens.profile.viewmodel
+package com.example.sharkflow.presentation.screens.user.viewmodel
 
 import com.example.sharkflow.core.common.UaParser
 import com.example.sharkflow.core.system.AppLog

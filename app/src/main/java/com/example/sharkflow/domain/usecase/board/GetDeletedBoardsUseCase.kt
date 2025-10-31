@@ -4,13 +4,9 @@ import com.example.sharkflow.domain.model.Board
 import com.example.sharkflow.domain.repository.BoardRepositoryCombined
 import javax.inject.Inject
 
-class CreateBoardUseCase @Inject constructor(
+class GetDeletedBoardsUseCase @Inject constructor(
     private val repository: BoardRepositoryCombined
 ) {
-    suspend operator fun invoke(
-        title: String,
-        color: String,
-        localUuid: String? = null
-    ): Result<Board> =
-        repository.createBoard(title, color, localUuid)
+    suspend operator fun invoke(): List<Board> =
+        repository.getDeletedBoards()
 }

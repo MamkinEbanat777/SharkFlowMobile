@@ -33,5 +33,22 @@ class BoardLocalRepositoryImpl @Inject constructor(
         boardDao.clearBoardsForUser(userUuid)
     }
 
+    suspend fun getBoardsOnce(userUuid: String): List<BoardEntity> =
+        boardDao.getBoardsForUserOnce(userUuid)
+
+    suspend fun getByServerUuid(serverUuid: String): BoardEntity? =
+        boardDao.getByServerUuid(serverUuid)
+
+    suspend fun getByLocalUuid(localUuid: String): BoardEntity? =
+        boardDao.getByLocalUuid(localUuid)
+
+    suspend fun getUnsyncedBoards(): List<BoardEntity> =
+        boardDao.getUnsyncedBoards()
+
+    suspend fun getDeletedBoards(): List<BoardEntity> =
+        boardDao.getDeletedBoards()
+
+    suspend fun getAllBoards(): List<BoardEntity> =
+        boardDao.getAllBoards()
 
 }

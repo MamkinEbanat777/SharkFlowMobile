@@ -21,11 +21,11 @@ import com.example.sharkflow.presentation.screens.board.*
 import com.example.sharkflow.presentation.screens.board.viewmodel.BoardsViewModel
 import com.example.sharkflow.presentation.screens.hero.HeroScreen
 import com.example.sharkflow.presentation.screens.marketing.*
-import com.example.sharkflow.presentation.screens.profile.ProfileScreen
-import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
 import com.example.sharkflow.presentation.screens.support.SupportScreen
 import com.example.sharkflow.presentation.screens.task.TaskDetailScreen
 import com.example.sharkflow.presentation.screens.task.viewmodel.*
+import com.example.sharkflow.presentation.screens.user.ProfileScreen
+import com.example.sharkflow.presentation.screens.user.viewmodel.UserProfileViewModel
 import com.google.accompanist.navigation.animation.AnimatedNavHost
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)

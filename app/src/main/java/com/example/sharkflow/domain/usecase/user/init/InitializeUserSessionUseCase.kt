@@ -11,6 +11,7 @@ class InitializeUserSessionUseCase @Inject constructor(
     private val checkTokenUseCase: CheckTokenUseCase,
     private val clearTokensUseCase: ClearTokensUseCase,
     private val loadUserUseCase: LoadUserUseCase,
+    private val setActiveUserUseCase: SetActiveUserUseCase,
     private val userManager: UserManager
 ) {
     suspend operator fun invoke(): Boolean {
@@ -24,7 +25,7 @@ class InitializeUserSessionUseCase @Inject constructor(
 
         val localUserResult = loadUserUseCase()
         val localUser: User? = localUserResult.getOrNull()
-        localUser?.let { userManager.setUser(it) }
+        localUser?.let { setActiveUserUseCase(it) }
         return localUser != null
     }
 }

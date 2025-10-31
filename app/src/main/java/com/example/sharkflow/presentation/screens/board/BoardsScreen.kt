@@ -134,7 +134,6 @@ fun BoardsScreen(
                             }
                         } else {
                             items(filteredBoards, key = { it.uuid }) { board ->
-
                                 BoardRow(
                                     board = board,
                                     onClick = { boardsViewModel.openBoard(board.uuid) },

@@ -7,6 +7,9 @@ import javax.inject.Inject
 class DeleteBoardUseCase @Inject constructor(
     private val repository: BoardRepositoryCombined
 ) {
-    suspend operator fun invoke(boardUuid: String): Result<DeletedBoardInfoDto> =
-        repository.deleteBoard(boardUuid)
+    suspend operator fun invoke(
+        boardUuid: String,
+        hardDelete: Boolean = false
+    ): Result<DeletedBoardInfoDto> =
+        repository.deleteBoard(boardUuid, hardDelete)
 }

@@ -21,5 +21,22 @@ interface BoardDao {
     @Query("SELECT * FROM boards WHERE uuid = :uuid")
     suspend fun getBoardByUuid(uuid: String): BoardEntity?
 
+    @Query("SELECT * FROM boards WHERE userUuid = :userUuid AND isDeleted = 0")
+    suspend fun getBoardsForUserOnce(userUuid: String): List<BoardEntity>
+
+    @Query("SELECT * FROM boards WHERE serverUuid = :serverUuid LIMIT 1")
+    suspend fun getByServerUuid(serverUuid: String): BoardEntity?
+
+    @Query("SELECT * FROM boards WHERE uuid = :localUuid LIMIT 1")
+    suspend fun getByLocalUuid(localUuid: String): BoardEntity?
+
+    @Query("SELECT * FROM boards WHERE isSynced = 0")
+    suspend fun getUnsyncedBoards(): List<BoardEntity>
+
+    @Query("SELECT * FROM boards WHERE isDeleted = 1")
+    suspend fun getDeletedBoards(): List<BoardEntity>
+
+    @Query("SELECT * FROM boards")
+    suspend fun getAllBoards(): List<BoardEntity>
 
 }

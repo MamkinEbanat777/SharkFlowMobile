@@ -44,7 +44,7 @@ class CreateTaskUseCase @Inject constructor(
 
         val mergedEntity = TaskMapper.mergeLocalWithRemoteAfterCreate(
             tempEntity,
-            remoteRes?.serverUuid ?: remoteRes?.uuid
+            remoteRes?.serverUuid
         )
 
         local.updateTask(mergedEntity)

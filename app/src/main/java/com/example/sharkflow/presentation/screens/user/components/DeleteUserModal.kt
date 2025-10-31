@@ -1,4 +1,4 @@
-package com.example.sharkflow.presentation.screens.profile.components
+package com.example.sharkflow.presentation.screens.user.components
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -9,7 +9,7 @@ import androidx.compose.ui.unit.dp
 import com.example.sharkflow.R
 import com.example.sharkflow.core.common.Lang
 import com.example.sharkflow.presentation.common.*
-import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
+import com.example.sharkflow.presentation.screens.user.viewmodel.UserProfileViewModel
 
 @Composable
 fun DeleteUserModal(

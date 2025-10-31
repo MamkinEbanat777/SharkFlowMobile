@@ -47,6 +47,9 @@ class BoardsViewModel @Inject constructor(
                 .filterNotNull()
                 .flatMapLatest {
                     getBoardsFlowUseCase()
+                        .catch { e ->
+                            emit(getBoardsFlowUseCase().first())
+                        }
                 }
                 .collect { boards ->
                     _uiState.update { it.copy(isLoading = false, boards = boards) }
@@ -97,7 +100,6 @@ class BoardsViewModel @Inject constructor(
             }
         )
     }
-
 
     fun createBoard(title: String, colorHex: String) {
         launchResult(

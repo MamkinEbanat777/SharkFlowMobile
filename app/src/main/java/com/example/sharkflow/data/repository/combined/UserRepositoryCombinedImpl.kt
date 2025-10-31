@@ -17,10 +17,10 @@ class UserRepositoryCombinedImpl @Inject constructor(
     override suspend fun loadUser(): Result<User> {
         return remote.loadUser()
             .mapCatching { user ->
-                local.insertOrUpdate(user)
+                local.setActiveUser(user)
                 user
             }.recoverCatching { e ->
-                val cachedUser = local.getFirstUserOnce()
+                val cachedUser = local.getActiveUserOnce()
                 cachedUser ?: throw e
             }
     }

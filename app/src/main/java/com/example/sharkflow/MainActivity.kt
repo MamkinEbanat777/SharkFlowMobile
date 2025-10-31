@@ -13,9 +13,9 @@ import com.example.sharkflow.core.system.*
 import com.example.sharkflow.presentation.navigation.AppNavHost
 import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewModel
 import com.example.sharkflow.presentation.screens.board.viewmodel.BoardsViewModel
-import com.example.sharkflow.presentation.screens.profile.viewmodel.UserProfileViewModel
 import com.example.sharkflow.presentation.screens.splash.SplashScreen
 import com.example.sharkflow.presentation.screens.task.viewmodel.*
+import com.example.sharkflow.presentation.screens.user.viewmodel.UserProfileViewModel
 import com.example.sharkflow.presentation.theme.SharkFlowTheme
 import com.example.sharkflow.viewmodel.*
 import dagger.hilt.android.AndroidEntryPoint
