@@ -63,10 +63,6 @@ fun AppNavHost(
                 if (navigate) {
                     val boardUuid = intent.getStringExtra("board_uuid")
                     val taskUuid = intent.getStringExtra("task_uuid")
-                    AppLog.d(
-                        "AppNavHost",
-                        "IntentBus received navigate_to_task board=$boardUuid task=$taskUuid"
-                    )
                     if (!boardUuid.isNullOrBlank() && !taskUuid.isNullOrBlank()) {
                         navController.navigate("task/$boardUuid/$taskUuid") {
                             launchSingleTop = true

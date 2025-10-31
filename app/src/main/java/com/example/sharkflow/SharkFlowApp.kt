@@ -56,7 +56,6 @@ class SharkFlowApp : Application(), Configuration.Provider {
 
         cm.registerNetworkCallback(request, object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                AppLog.d("Интернет появился!")
                 startTaskSyncWorker(this@SharkFlowApp)
                 startBoardSyncWorker(this@SharkFlowApp)
             }

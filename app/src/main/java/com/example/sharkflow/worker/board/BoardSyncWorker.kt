@@ -23,15 +23,10 @@ class BoardSyncWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result = coroutineScope {
         withContext(Dispatchers.IO) {
-            AppLog.d("BoardSyncWorker", "doWork START")
             val hasErrors = AtomicBoolean(false)
             val semaphore = Semaphore(3)
 
             val deleted = getDeletedBoardsUseCase()
-            AppLog.d(
-                "BoardSyncWorker",
-                "Deleted boards found: ${deleted.size} -> ${deleted.map { it.uuid + "/" + it.serverUuid }}"
-            )
 
             // удаление
             deleted.map { board ->
@@ -39,12 +34,7 @@ class BoardSyncWorker @AssistedInject constructor(
                     semaphore.withPermit {
                         try {
                             val hardDelete = board.serverUuid == null
-                            AppLog.d(
-                                "BoardSyncWorker",
-                                "Deleting board ${board.uuid} serverUuid=${board.serverUuid} hard=$hardDelete"
-                            )
                             val res = deleteBoardUseCase(board.uuid, true)
-                            AppLog.d("BoardSyncWorker", "delete result for ${board.uuid}: $res")
                         } catch (e: Exception) {
                             hasErrors.set(true)
                             AppLog.e("BoardSyncWorker", "Failed to delete board ${board.uuid}", e)
@@ -54,22 +44,13 @@ class BoardSyncWorker @AssistedInject constructor(
             }.awaitAll()
 
             val unsynced = getUnsyncedBoardsUseCase().filter { !it.isDeleted }
-            AppLog.d(
-                "BoardSyncWorker",
-                "Unsynced boards found: ${unsynced.size} -> ${unsynced.map { it.uuid + "/" + it.serverUuid + ":" + it.title }}"
-            )
 
             unsynced.map { board ->
                 async {
                     semaphore.withPermit {
                         try {
                             if (board.serverUuid == null) {
-                                AppLog.d(
-                                    "BoardSyncWorker",
-                                    "Creating remote board for local ${board.uuid} (title='${board.title}')"
-                                )
                                 createBoardUseCase(board.title, board.color ?: "FFFFFF", board.uuid)
-                                AppLog.d("BoardSyncWorker", "Created remote for ${board.uuid}")
                             } else {
                                 val updateDto = UpdateBoardRequestDto(
                                     title = board.title,
@@ -77,12 +58,7 @@ class BoardSyncWorker @AssistedInject constructor(
                                     isPinned = board.isPinned,
                                     isFavorite = board.isFavorite
                                 )
-                                AppLog.d(
-                                    "BoardSyncWorker",
-                                    "Updating remote board serverUuid=${board.serverUuid} for local ${board.uuid}"
-                                )
                                 updateBoardUseCase(board.serverUuid, updateDto)
-                                AppLog.d("BoardSyncWorker", "Updated remote for ${board.uuid}")
                             }
                         } catch (e: Exception) {
                             hasErrors.set(true)
@@ -92,7 +68,6 @@ class BoardSyncWorker @AssistedInject constructor(
                 }
             }.awaitAll()
 
-            AppLog.d("BoardSyncWorker", "doWork END hasErrors=${hasErrors.get()}")
             if (hasErrors.get()) Result.retry() else Result.success()
         }
     }

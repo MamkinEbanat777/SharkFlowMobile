@@ -39,21 +39,17 @@ class DeadlineReminderWorker @AssistedInject constructor(
     }
 
     override suspend fun doWork(): Result {
-        AppLog.d("DeadlineReminder", "Worker started at ${Instant.now()}")
         createNotificationChannel()
 
         val tasks = getAllTasksUseCase()
-        AppLog.d("DeadlineReminder", "Tasks loaded: ${tasks.size}")
 
         val now = Instant.now()
         val activeTasks = tasks.filter {
             !it.isDeleted && it.status != TaskStatus.COMPLETED && it.status != TaskStatus.CANCELLED && it.dueDate != null
         }
 
-        AppLog.d("DeadlineReminder", "Active tasks for notification: ${activeTasks.size}")
 
         activeTasks.forEach { task ->
-            AppLog.d("DeadlineReminder", "Processing task: ${task.title}, dueDate=${task.dueDate}")
 
             val dueInstant = try {
                 Instant.parse(task.dueDate)
@@ -71,7 +67,6 @@ class DeadlineReminderWorker @AssistedInject constructor(
                     else -> null
                 }
                 message?.let {
-                    AppLog.d("DeadlineReminder", "Showing notification: $it")
                     showNotification(task, it)
                 }
             }
@@ -90,7 +85,6 @@ class DeadlineReminderWorker @AssistedInject constructor(
                 .build()
 
             WorkManager.getInstance(context).enqueue(work)
-            AppLog.d("SnoozeReceiver", "Snooze for $taskUuid for $minutes minutes")
         }
     }
 

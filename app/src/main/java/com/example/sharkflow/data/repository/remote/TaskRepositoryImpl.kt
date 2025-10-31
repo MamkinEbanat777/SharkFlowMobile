@@ -50,7 +50,6 @@ class TaskRepositoryImpl @Inject constructor(
     ): Result<DeletedTaskInfoDto> = runCatching {
         val resp = api.deleteTask(boardUuid, taskUuid)
         val body = resp.body()
-        AppLog.d("RemoteRepo", "HTTP body=${body}")
         if (!resp.isSuccessful) {
             val err = resp.errorBody()?.string()
             AppLog.e("RemoteRepo", "Delete failed with code=${resp.code()}, error=$err")

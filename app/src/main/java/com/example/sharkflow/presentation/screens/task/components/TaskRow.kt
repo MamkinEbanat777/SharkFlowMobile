@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.dp
 import com.example.sharkflow.core.common.DateUtils
 import com.example.sharkflow.core.common.DateUtils.formatDateTimeReadable
 import com.example.sharkflow.core.presentation.toUi
-import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.domain.model.Task
 import java.time.*
 import java.util.concurrent.TimeUnit
@@ -73,8 +72,6 @@ fun TaskRow(
                     task.dueDate?.let { rawDate ->
                         val dueInstant = DateUtils.parseToInstant(rawDate)
                         val dueDateFormatted = formatDateTimeReadable(rawDate) ?: rawDate
-
-                        AppLog.d("TaskRow", "rawDate='$rawDate' instant=$dueInstant")
 
                         val now = ZonedDateTime.now()
                         val dueZdt = dueInstant?.atZone(ZoneId.systemDefault())

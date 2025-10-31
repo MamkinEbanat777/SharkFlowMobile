@@ -28,23 +28,14 @@ class TaskSyncWorker @AssistedInject constructor(
             val semaphore = Semaphore(5)
 
             val deletedTasks = getDeletedTasksUseCase()
-            AppLog.d("TaskSyncWorker", "Found ${deletedTasks.size} deleted tasks total")
 
             deletedTasks.map { task ->
                 async {
                     semaphore.withPermit {
                         try {
-                            AppLog.d(
-                                "TaskSyncWorker",
-                                "Processing task ${task.uuid}, serverUuid=${task.serverUuid}"
-                            )
                             val hardDelete = task.serverUuid == null
                             val result =
                                 deleteTaskUseCase(task.boardUuid, task.uuid, hardDelete)
-                            AppLog.d(
-                                "TaskSyncWorker",
-                                "DeleteTask result for ${task.uuid}: $result"
-                            )
                         } catch (e: Exception) {
                             hasErrors.set(true)
                             AppLog.e(
@@ -73,7 +64,6 @@ class TaskSyncWorker @AssistedInject constructor(
                                     ),
                                     localUuid = task.uuid
                                 )
-                                AppLog.d("TaskSyncWorker", "Created task ${task.uuid}")
                             } else {
                                 updateTaskUseCase(
                                     task.boardUuid, task.uuid, UpdateTaskRequestDto(
@@ -84,7 +74,6 @@ class TaskSyncWorker @AssistedInject constructor(
                                         priority = task.priority
                                     )
                                 )
-                                AppLog.d("TaskSyncWorker", "Updated task ${task.uuid}")
                             }
                         } catch (e: Exception) {
                             hasErrors.set(true)

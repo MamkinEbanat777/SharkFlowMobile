@@ -8,8 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.example.sharkflow.core.presentation.requestNotificationPermissionIfNeeded
-import com.example.sharkflow.core.system.*
+import com.example.sharkflow.core.system.IntentBus
 import com.example.sharkflow.presentation.navigation.AppNavHost
 import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewModel
 import com.example.sharkflow.presentation.screens.board.viewmodel.BoardsViewModel
@@ -27,16 +26,8 @@ class MainActivity : ComponentActivity() {
 
         intent?.let {
             IntentBus.flow.tryEmit(it)
-            AppLog.d("MainActivity", "onCreate: emitted initial intent extras=${it.extras}")
         }
 
-        requestNotificationPermissionIfNeeded { granted ->
-            if (granted) {
-                AppLog.d("NotificationPermission", "granted")
-            } else {
-                AppLog.d("NotificationPermission", "denied")
-            }
-        }
         setContent {
             val authStateViewModel: AuthStateViewModel = hiltViewModel()
             val userProfileViewModel: UserProfileViewModel = hiltViewModel()
@@ -95,7 +86,6 @@ class MainActivity : ComponentActivity() {
         intent.let {
             setIntent(it)
             IntentBus.flow.tryEmit(it)
-            AppLog.d("MainActivity", "onNewIntent: emitted intent extras=${it.extras}")
         }
     }
 }
