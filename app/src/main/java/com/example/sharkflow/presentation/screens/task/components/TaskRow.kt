@@ -16,6 +16,7 @@ import com.example.sharkflow.core.common.DateUtils
 import com.example.sharkflow.core.common.DateUtils.formatDateTimeReadable
 import com.example.sharkflow.core.presentation.toUi
 import com.example.sharkflow.domain.model.Task
+import com.example.sharkflow.presentation.theme.SuccessColor
 import java.time.*
 import java.util.concurrent.TimeUnit
 
@@ -33,7 +34,7 @@ fun TaskRow(
     val priorityColor = priorityUi.color
 
     val syncColor =
-        if (task.isSynced) colorScheme.secondary else colorScheme.error
+        if (task.isSynced) SuccessColor else colorScheme.error
 
     Card(
         modifier = Modifier

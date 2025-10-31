@@ -5,6 +5,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.*
 import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.data.api.dto.task.*
+import com.example.sharkflow.data.repository.local.BoardLocalRepositoryImpl
 import com.example.sharkflow.domain.usecase.task.*
 import dagger.assisted.*
 import kotlinx.coroutines.*
@@ -20,6 +21,8 @@ class TaskSyncWorker @AssistedInject constructor(
     private val updateTaskUseCase: UpdateTaskUseCase,
     private val getUnsyncedTasksUseCase: GetUnsyncedTasksUseCase,
     private val getDeletedTasksUseCase: GetDeletedTasksUseCase,
+    private val boardLocal: BoardLocalRepositoryImpl
+
 ) : CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result = coroutineScope {
         withContext(Dispatchers.IO) {
@@ -33,9 +36,7 @@ class TaskSyncWorker @AssistedInject constructor(
                 async {
                     semaphore.withPermit {
                         try {
-                            val hardDelete = task.serverUuid == null
-                            val result =
-                                deleteTaskUseCase(task.boardUuid, task.uuid, hardDelete)
+                            deleteTaskUseCase(task.boardUuid, task.uuid)
                         } catch (e: Exception) {
                             hasErrors.set(true)
                             AppLog.e(
@@ -48,7 +49,10 @@ class TaskSyncWorker @AssistedInject constructor(
                 }
             }.awaitAll()
 
-            val unsyncedTasks = getUnsyncedTasksUseCase().filter { !it.isDeleted }
+            val unsyncedTasks = getUnsyncedTasksUseCase().filter { !it.isDeleted }.filter { task ->
+                val board = boardLocal.getByLocalUuid(task.boardUuid)
+                board?.serverUuid != null
+            }
             unsyncedTasks.map { task ->
                 async {
                     semaphore.withPermit {

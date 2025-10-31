@@ -66,7 +66,6 @@ object NetworkModule {
         return AuthInterceptor(tokenRepository)
     }
 
-
     @Provides
     @Singleton
     fun provideBaseClient(
@@ -78,7 +77,7 @@ object NetworkModule {
         val loggingInterceptor = HttpLoggingInterceptor { message -> AppLog.d("HTTP_LOG", message) }
             .apply {
                 level =
-                    if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.BODY
+                    if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.BODY // не забыть убрать BODY в проде
             }
 
         return OkHttpClient.Builder()

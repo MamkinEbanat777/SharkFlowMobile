@@ -103,10 +103,10 @@ class TaskDetailViewModel @Inject constructor(
         )
     }
 
-    fun deleteTask(taskUuid: String, hardDelete: Boolean = false) {
+    fun deleteTask(taskUuid: String) {
         val boardUuid = _uiState.value.task?.boardUuid ?: return
         launchResult(
-            block = { deleteTaskUseCase(boardUuid, taskUuid, hardDelete); Result.success(Unit) },
+            block = { deleteTaskUseCase(boardUuid, taskUuid); Result.success(Unit) },
             onSuccess = {
                 _uiState.update {
                     it.copy(

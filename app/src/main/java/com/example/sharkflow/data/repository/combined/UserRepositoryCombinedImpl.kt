@@ -1,5 +1,6 @@
 package com.example.sharkflow.data.repository.combined
 
+import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.data.api.dto.user.*
 import com.example.sharkflow.data.repository.local.UserLocalRepositoryImpl
 import com.example.sharkflow.data.repository.remote.UserRepositoryImpl
@@ -36,10 +37,17 @@ class UserRepositoryCombinedImpl @Inject constructor(
     ): Result<UpdateUserResponseDto> {
         val result = remote.confirmUpdateUser(code, email, login)
         result.onSuccess { updateResponse ->
-            updateResponse.user.let { user ->
+            val user = updateResponse.user
+            if (user != null) {
                 local.insertOrUpdate(user)
+            } else {
+                AppLog.w(
+                    "UserRepository",
+                    "confirmUpdateUser: server returned null user. response.message=${updateResponse.message}"
+                )
             }
         }
+
         return result
     }
 

@@ -7,8 +7,7 @@ import androidx.work.Configuration
 import com.example.sharkflow.core.common.*
 import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.domain.repository.LanguageRepository
-import com.example.sharkflow.worker.board.startBoardSyncWorker
-import com.example.sharkflow.worker.task.startTaskSyncWorker
+import com.example.sharkflow.worker.startFullSyncChain
 import com.google.crypto.tink.aead.AeadConfig
 import com.google.firebase.*
 import com.google.firebase.analytics.analytics
@@ -30,8 +29,7 @@ class SharkFlowApp : Application(), Configuration.Provider {
         Lang.init(languageRepository)
 
         observeNetworkChanges()
-        startTaskSyncWorker(this)
-        startBoardSyncWorker(this)
+        startFullSyncChain(this)
 //        startDeadlineReminderWorker(this)
 
         try {
@@ -56,8 +54,7 @@ class SharkFlowApp : Application(), Configuration.Provider {
 
         cm.registerNetworkCallback(request, object : ConnectivityManager.NetworkCallback() {
             override fun onAvailable(network: Network) {
-                startTaskSyncWorker(this@SharkFlowApp)
-                startBoardSyncWorker(this@SharkFlowApp)
+                startFullSyncChain(this@SharkFlowApp)
             }
         })
     }

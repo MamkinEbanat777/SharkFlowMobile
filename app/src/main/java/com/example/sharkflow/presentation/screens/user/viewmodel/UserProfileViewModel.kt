@@ -1,7 +1,9 @@
 package com.example.sharkflow.presentation.screens.user.viewmodel
 
+import android.content.Context
+import androidx.lifecycle.viewModelScope
 import com.example.sharkflow.core.common.UaParser
-import com.example.sharkflow.core.system.AppLog
+import com.example.sharkflow.core.system.*
 import com.example.sharkflow.domain.manager.UserManager
 import com.example.sharkflow.domain.model.UserSession
 import com.example.sharkflow.domain.usecase.auth.DeviceIdUseCase
@@ -11,8 +13,11 @@ import com.example.sharkflow.domain.usecase.user.init.InitializeUserSessionUseCa
 import com.example.sharkflow.domain.usecase.user.update.*
 import com.example.sharkflow.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import jakarta.inject.Inject
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import java.io.File
 
 @HiltViewModel
 class UserProfileViewModel @Inject constructor(
@@ -27,7 +32,8 @@ class UserProfileViewModel @Inject constructor(
     private val deleteUserAccountUseCase: DeleteUserAccountUseCase,
     private val loadUserSessionsUseCase: LoadUserSessionsUseCase,
     private val loadUserUseCase: LoadUserUseCase,
-    private val deviceIdUseCase: DeviceIdUseCase
+    private val deviceIdUseCase: DeviceIdUseCase,
+    @param:ApplicationContext private val appContext: Context
 ) : BaseViewModel() {
     val currentUser = userManager.currentUser
     private var hasLoadedUser = false
@@ -40,6 +46,9 @@ class UserProfileViewModel @Inject constructor(
 
     private val _lastUpload = MutableStateFlow<Pair<String, String>?>(null)
     val lastUpload: StateFlow<Pair<String, String>?> = _lastUpload.asStateFlow()
+
+    private val _localAvatarPath = MutableStateFlow<String?>(null)
+    val localAvatarPath: StateFlow<String?> = _localAvatarPath.asStateFlow()
 
     val avatarUrl = userManager.currentUser.map { it?.avatarUrl }
     val avatarPublicId = userManager.currentUser.map { it?.publicId }
@@ -193,6 +202,52 @@ class UserProfileViewModel @Inject constructor(
     fun markSessionInactive(deviceId: String) {
         _sessions.value = _sessions.value.map { session ->
             if (session.deviceId == deviceId) session.copy(isActive = false) else session
+        }
+    }
+
+    fun fetchAndSaveLocalAvatar(url: String, publicId: String?) {
+        viewModelScope.launch {
+            try {
+                val oldPath = _localAvatarPath.value
+                val saved = downloadAndSaveToCache(appContext, url, publicId)
+                if (!saved.isNullOrBlank()) {
+                    if (!oldPath.isNullOrBlank() && oldPath != saved) {
+                        try {
+                            val of = File(oldPath)
+                            if (of.exists()) of.delete()
+                        } catch (e: Exception) {
+                            AppLog.e("UserProfileViewModel", "Failed delete old avatar", e)
+                        }
+                    }
+                    _localAvatarPath.value = saved
+                    AppLog.d("UserProfileViewModel", "Saved local avatar: $saved")
+                } else {
+                    AppLog.e("UserProfileViewModel", "fetchAndSaveLocalAvatar: saved is null")
+                }
+            } catch (e: Exception) {
+                AppLog.e("UserProfileViewModel", "fetchAndSaveLocalAvatar failed", e)
+            }
+        }
+    }
+
+    fun clearLocalAvatarPath() {
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val path = _localAvatarPath.value
+                if (!path.isNullOrBlank()) {
+                    try {
+                        val f = File(path)
+                        if (f.exists()) {
+                            f.delete()
+                            AppLog.d("UserProfileViewModel", "Deleted local avatar file: $path")
+                        }
+                    } catch (e: Exception) {
+                        AppLog.e("UserProfileViewModel", "Failed to delete file $path", e)
+                    }
+                }
+            } finally {
+                _localAvatarPath.value = null
+            }
         }
     }
 }

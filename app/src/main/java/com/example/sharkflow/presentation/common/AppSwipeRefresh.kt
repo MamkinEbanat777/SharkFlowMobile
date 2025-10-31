@@ -3,12 +3,12 @@ package com.example.sharkflow.presentation.common
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
+import androidx.compose.ui.*
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.swiperefresh.*
 
 @Composable
-fun AppSwipeRefresh(
+fun AppSwipeRefreshOGO(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
@@ -28,6 +28,30 @@ fun AppSwipeRefresh(
                 backgroundColor = MaterialTheme.colorScheme.background
             )
         }
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(1f)
+        ) {
+            content()
+        }
+    }
+}
+
+
+@Composable
+fun AppSwipeRefresh(
+    state: SwipeRefreshState,
+    onRefresh: () -> Unit,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    SwipeRefresh(
+        state = state,
+        onRefresh = onRefresh,
+        modifier = modifier.fillMaxSize(),
+        indicator = { _, _ -> }
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
             content()

@@ -9,9 +9,8 @@ class DeleteTaskUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(
         boardUuid: String,
-        taskUuid: String,
-        hardDelete: Boolean
+        taskUuid: String
     ): Result<DeletedTaskInfoDto> {
-        return repo.deleteTask(boardUuid, taskUuid, hardDelete)
+        return repo.deleteTask(boardUuid, taskUuid)
     }
 }

@@ -9,6 +9,7 @@ import com.example.sharkflow.data.repository.remote.TaskRepositoryImpl
 import com.example.sharkflow.domain.model.Task
 import com.example.sharkflow.domain.repository.TaskRepositoryCombined
 import jakarta.inject.Inject
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.time.Instant
 
@@ -17,25 +18,23 @@ class TaskRepositoryCombinedImpl @Inject constructor(
     private val boardLocal: BoardLocalRepositoryImpl,
     private val remote: TaskRepositoryImpl,
 ) : TaskRepositoryCombined {
+    private val ioScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+
     override fun getTasksFlow(boardUuid: String): Flow<List<Task>> =
         local.getTasksFlow(boardUuid).map { it.map(TaskMapper::fromEntity) }
 
     override suspend fun refreshTasks(boardUuid: String) {
-        val boardServerUuid = boardLocal.getByLocalUuid(boardUuid)?.serverUuid
-        if (boardServerUuid == null) {
-            return
-        }
+        val boardServerUuid = boardLocal.getByLocalUuid(boardUuid)?.serverUuid ?: return
 
-        val remoteTasks = try {
-            remote.getTasks(boardServerUuid).getOrNull()
-        } catch (e: Exception) {
-            AppLog.e(
-                "TaskRepository",
-                "refreshTasks: failed to fetch remote tasks for boardServerUuid=$boardServerUuid",
-                e
-            )
-            null
-        } ?: return
+        val remoteTasks = runCatching { remote.getTasks(boardServerUuid).getOrNull() }
+            .getOrElse {
+                AppLog.e(
+                    "TaskRepository",
+                    "refreshTasks failed for boardServerUuid=$boardServerUuid",
+                    it
+                )
+                return
+            } ?: return
 
         val localEntities = local.getTasksFlow(boardUuid).first()
         val merged = TaskMapper.mergeRemoteWithLocalList(boardUuid, remoteTasks, localEntities)
@@ -66,8 +65,7 @@ class TaskRepositoryCombinedImpl @Inject constructor(
 
         val remoteTask = if (boardServerUuid != null) {
             try {
-                remote.createTask(boardServerUuid, createDto).getOrNull().also {
-                }
+                remote.createTask(boardServerUuid, createDto).getOrNull()
             } catch (e: Exception) {
                 AppLog.e(
                     "TaskRepository",
@@ -76,9 +74,7 @@ class TaskRepositoryCombinedImpl @Inject constructor(
                 )
                 null
             }
-        } else {
-            null
-        }
+        } else null
 
         val currentFromDb = local.getByLocalUuid(tempEntity.uuid) ?: tempEntity
 
@@ -111,72 +107,67 @@ class TaskRepositoryCombinedImpl @Inject constructor(
         val localEntity = local.getByLocalUuid(taskUuid)
             ?: throw IllegalStateException("Task not found locally for uuid: $taskUuid")
 
-        val serverUuid = localEntity.serverUuid
-        if (serverUuid == null) {
-            val updated = TaskMapper.mergeEntityWithUpdate(localEntity, update)
-                .copy(isSynced = false)
-            local.updateTask(updated)
-            return@runCatching TaskMapper.fromEntity(updated)
+        val updatedLocal = TaskMapper.mergeEntityWithUpdate(localEntity, update)
+            .copy(isSynced = false, updatedAt = Instant.now().toString())
+        local.updateTask(updatedLocal)
+
+        ioScope.launch {
+            val serverUuid = localEntity.serverUuid
+            val boardServerUuid = boardLocal.getByLocalUuid(boardUuid)?.serverUuid
+            if (serverUuid == null || boardServerUuid == null) return@launch
+
+            val remoteResponseAny = runCatching {
+                remote.updateTask(boardServerUuid, serverUuid, update).getOrNull()
+            }.getOrNull()
+
+            if (remoteResponseAny != null) {
+                val current = local.getByLocalUuid(taskUuid) ?: updatedLocal
+                val merged = TaskMapper.mergeEntityWithUpdate(current, update, remoteResponseAny)
+                    .copy(isSynced = true, updatedAt = Instant.now().toString())
+                local.updateTask(merged)
+            } else {
+                AppLog.w(
+                    "TaskRepository",
+                    "Background update failed for task=${taskUuid}, will remain unsynced"
+                )
+            }
         }
 
-        val boardServerUuid = boardLocal.getByLocalUuid(boardUuid)?.serverUuid
-        if (boardServerUuid == null) {
-            val updated =
-                TaskMapper.mergeEntityWithUpdate(localEntity, update).copy(isSynced = false)
-            local.updateTask(updated)
-            return@runCatching TaskMapper.fromEntity(updated)
-        }
-
-        val remoteResponseAny = try {
-            remote.updateTask(boardServerUuid, serverUuid, update).getOrNull()
-        } catch (e: Exception) {
-            AppLog.e(
-                "TaskRepository",
-                "updateTask: remote update failed for boardServerUuid=$boardServerUuid taskServerUuid=$serverUuid",
-                e
-            )
-            null
-        }
-
-        val mergedEntity = if (remoteResponseAny == null) {
-            TaskMapper.mergeEntityWithUpdate(localEntity, update).copy(isSynced = false)
-        } else {
-            TaskMapper.mergeEntityWithUpdate(localEntity, update, remoteResponseAny)
-                .copy(isSynced = true)
-        }
-
-        local.updateTask(mergedEntity)
-        TaskMapper.fromEntity(mergedEntity)
+        TaskMapper.fromEntity(updatedLocal)
     }
 
     override suspend fun deleteTask(
         boardUuid: String,
-        taskUuid: String,
-        hardDelete: Boolean
+        taskUuid: String
     ): Result<DeletedTaskInfoDto> = runCatching {
         val task = local.getTasksOnce(boardUuid)
             .find { it.uuid == taskUuid || it.serverUuid == taskUuid }
             ?: return@runCatching DeletedTaskInfoDto("Unknown task", removedFromBoard = true)
 
-        var remoteResult: DeletedTaskInfoDto? = null
-        val boardServerUuid = boardLocal.getByLocalUuid(boardUuid)?.serverUuid
+        if (task.serverUuid == null) local.deleteTask(task)
+        else local.updateTask(task.copy(isDeleted = true, isSynced = false))
 
-        if (task.serverUuid != null && boardServerUuid != null) {
-            try {
-                remoteResult = remote.deleteTask(boardServerUuid, task.serverUuid).getOrNull()
-            } catch (e: Exception) {
-                local.updateTask(task.copy(isDeleted = true, isSynced = false))
+        ioScope.launch {
+            val serverUuid = task.serverUuid
+            val boardServerUuid = boardLocal.getByLocalUuid(boardUuid)?.serverUuid
+            if (serverUuid == null || boardServerUuid == null) return@launch
+
+            val remoteResult = runCatching {
+                remote.deleteTask(boardServerUuid, serverUuid).getOrNull()
+            }.getOrNull()
+
+            if (remoteResult != null) {
+                val current = local.getByLocalUuid(task.uuid) ?: task
+                local.updateTask(current.copy(isSynced = true))
+            } else {
+                AppLog.d(
+                    "TaskRepository",
+                    "Background delete failed for task=${task.uuid}, will remain marked deleted"
+                )
             }
         }
 
-        if (hardDelete) {
-            local.deleteTask(task)
-        } else {
-            val isSynced = remoteResult != null
-            local.updateTask(task.copy(isDeleted = true, isSynced = isSynced))
-        }
-
-        remoteResult ?: DeletedTaskInfoDto(title = task.title, removedFromBoard = true)
+        DeletedTaskInfoDto(title = task.title, removedFromBoard = true)
     }
 
     override suspend fun getAllTasks(): List<Task> =

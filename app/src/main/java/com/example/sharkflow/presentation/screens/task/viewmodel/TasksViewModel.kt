@@ -155,10 +155,10 @@ class TasksViewModel @Inject constructor(
         )
     }
 
-    fun deleteTask(taskUuid: String, hardDelete: Boolean = false) {
+    fun deleteTask(taskUuid: String) {
         val boardUuid = boardUuidFlow.value ?: return
         launchResult(
-            block = { deleteTaskUseCase(boardUuid, taskUuid, hardDelete) },
+            block = { deleteTaskUseCase(boardUuid, taskUuid) },
             onSuccess = {
                 _uiState.update {
                     it.copy(

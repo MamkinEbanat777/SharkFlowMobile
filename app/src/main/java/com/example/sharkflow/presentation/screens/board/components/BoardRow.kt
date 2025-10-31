@@ -14,19 +14,23 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import com.example.sharkflow.core.common.DateUtils.formatDateTimeReadable
+import com.example.sharkflow.data.api.dto.board.UpdateBoardRequestDto
 import com.example.sharkflow.domain.model.Board
+import com.example.sharkflow.presentation.screens.board.viewmodel.BoardsViewModel
+import com.example.sharkflow.presentation.theme.SuccessColor
 
 @Composable
 fun BoardRow(
     board: Board,
     onClick: () -> Unit,
     onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    boardsViewModel: BoardsViewModel
 ) {
     val boardColor = Color("#${board.color ?: "FFFFFF"}".toColorInt())
 
     val syncColor =
-        if (board.isSynced) colorScheme.secondary else colorScheme.error
+        if (board.isSynced) SuccessColor else colorScheme.error
 
     Card(
         modifier = Modifier
@@ -101,6 +105,7 @@ fun BoardRow(
                             tint = colorScheme.error
                         )
                     }
+
                 }
             }
 
@@ -137,18 +142,76 @@ fun BoardRow(
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = if (board.isSynced) "Синхронизировано" else "Не синхронизировано",
-                style = MaterialTheme.typography.labelSmall,
-                color = syncColor,
-                modifier = Modifier
-                    .background(
-                        color = colorScheme.background,
-                        shape = RoundedCornerShape(6.dp)
-                    )
-                    .padding(horizontal = 6.dp, vertical = 2.dp)
-            )
+            Spacer(modifier = Modifier.weight(1f))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = if (board.isSynced) "Синхронизировано" else "Не синхронизировано",
+                    style = MaterialTheme.typography.labelSmall,
+                    color = syncColor,
+                    modifier = Modifier
+                        .background(
+                            color = MaterialTheme.colorScheme.background,
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                        .padding(horizontal = 6.dp, vertical = 2.dp)
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    IconButton(
+                        onClick = {
+                            boardsViewModel.updateBoard(
+                                board.uuid,
+                                UpdateBoardRequestDto(
+                                    isPinned = !board.isPinned,
+                                    isFavorite = board.isFavorite
+                                )
+                            )
+                        },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        val pinTint =
+                            if (board.isPinned) SuccessColor else colorScheme.onPrimary
+                        Icon(
+                            Icons.Default.PushPin,
+                            contentDescription = if (board.isPinned) "Открепить" else "Закрепить",
+                            tint = pinTint,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
+                    IconButton(
+                        onClick = {
+                            boardsViewModel.updateBoard(
+                                board.uuid,
+                                UpdateBoardRequestDto(
+                                    isPinned = board.isPinned,
+                                    isFavorite = !board.isFavorite
+                                )
+                            )
+                        },
+                        modifier = Modifier.size(36.dp)
+                    ) {
+                        val starTint =
+                            if (board.isFavorite) Color(0xFFFFD700) else colorScheme.onPrimary
+                        val starIcon =
+                            if (board.isFavorite) Icons.Default.Star else Icons.Default.StarBorder
+                        Icon(
+                            starIcon,
+                            contentDescription = if (board.isFavorite) "Убрать из избранного" else "В избранное",
+                            tint = starTint,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                }
+            }
         }
     }
 }

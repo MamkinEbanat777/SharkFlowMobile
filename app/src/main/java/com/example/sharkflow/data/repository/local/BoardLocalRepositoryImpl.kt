@@ -25,8 +25,7 @@ class BoardLocalRepositoryImpl @Inject constructor(
     }
 
     suspend fun deleteBoard(board: BoardEntity) {
-        val deletedBoard = board.copy(isDeleted = true)
-        boardDao.updateBoard(deletedBoard)
+        boardDao.deleteBoard(board)
     }
 
     suspend fun clearBoardsForUser(userUuid: String) {

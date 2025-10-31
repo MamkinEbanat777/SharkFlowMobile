@@ -24,7 +24,6 @@ interface TaskRepositoryCombined {
     suspend fun deleteTask(
         boardUuid: String,
         taskUuid: String,
-        hardDelete: Boolean = false
     ): Result<DeletedTaskInfoDto>
 
     suspend fun getUnsyncedTasks(): List<Task>

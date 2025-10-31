@@ -42,7 +42,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-//            isDebuggable = true
+            isDebuggable = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -80,6 +80,16 @@ android {
     kapt {
         arguments {
             arg("room.schemaLocation", "$projectDir/schemas")
+        }
+    }
+
+    applicationVariants.all {
+        outputs.all {
+            if (buildType.name == "release") {
+                val timestamp = System.currentTimeMillis()
+                (this as com.android.build.gradle.internal.api.BaseVariantOutputImpl).outputFileName =
+                    "SharkFlow-v${versionName}-b${versionCode}-${timestamp}.apk"
+            }
         }
     }
 }

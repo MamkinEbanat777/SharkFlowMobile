@@ -19,19 +19,23 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.*
 import androidx.compose.ui.window.Dialog
 import coil3.compose.AsyncImage
+import coil3.request.*
 import com.example.sharkflow.core.presentation.ToastManager
 import com.example.sharkflow.presentation.screens.user.viewmodel.UserProfileViewModel
 import com.theartofdev.edmodo.cropper.*
+import java.io.File
 
 @Composable
 fun ProfileAvatar(
     modifier: Modifier = Modifier,
     size: Dp = 240.dp,
-    iconSize: Dp = 80.dp,
+    iconSize: Dp = 100.dp,
     borderColor: Color = colorScheme.primary,
     userProfileViewModel: UserProfileViewModel
 ) {
     val avatarUrl by userProfileViewModel.avatarUrl.collectAsState(initial = "")
+    val localAvatarPath by userProfileViewModel.localAvatarPath.collectAsState(initial = null)
+    val lastUpload by userProfileViewModel.lastUpload.collectAsState()
     val isUploading by userProfileViewModel.isUploading.collectAsState()
 
     val context = LocalContext.current
@@ -71,6 +75,21 @@ fun ProfileAvatar(
         }
     }
 
+    LaunchedEffect(lastUpload) {
+        lastUpload?.let { (url, publicId) ->
+            if (url.isNotBlank()) {
+                userProfileViewModel.fetchAndSaveLocalAvatar(url, publicId)
+            }
+        }
+    }
+
+    val modelData: Any? = remember(localAvatarPath, avatarUrl) {
+        localAvatarPath?.takeIf { it.isNotBlank() }?.let { path ->
+            val f = File(path)
+            if (f.exists()) f else null
+        } ?: avatarUrl?.takeIf { it.isNotBlank() }
+    }
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -82,33 +101,50 @@ fun ProfileAvatar(
                 .clip(CircleShape)
                 .background(colorScheme.surface)
                 .border(BorderStroke(3.dp, borderColor), CircleShape)
-                .clickable { isImageExpanded = true }
+                .clickable {
+                    if (modelData != null) {
+                        isImageExpanded = true
+                    } else {
+                        imagePickerLauncher.launch("image/*")
+                    }
+                }
         ) {
             if (isUploading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(32.dp),
-                    color = borderColor
-                )
-            } else if (!avatarUrl.isNullOrEmpty()) {
-                AsyncImage(
-                    model = avatarUrl,
-                    contentDescription = "User Avatar",
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(CircleShape),
+                ProfileAvatarSkeleton(
+                    size = size,
+                    borderColor = borderColor,
+                    isUploading = true
                 )
             } else {
-                Icon(
-                    imageVector = Icons.Default.Person,
-                    contentDescription = "Default Avatar",
-                    tint = borderColor.copy(alpha = 0.8f),
-                    modifier = Modifier.size(iconSize)
-                )
+                if (modelData != null) {
+                    val request = ImageRequest.Builder(context)
+                        .data(modelData)
+                        .diskCachePolicy(CachePolicy.ENABLED)
+                        .memoryCachePolicy(CachePolicy.ENABLED)
+                        .crossfade(true)
+                        .allowHardware(false)
+                        .build()
+
+                    AsyncImage(
+                        model = request,
+                        contentDescription = "User Avatar",
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(CircleShape),
+                    )
+                } else {
+                    Icon(
+                        imageVector = Icons.Default.Person,
+                        contentDescription = "No avatar",
+                        modifier = Modifier.size(iconSize),
+                        tint = colorScheme.primary
+                    )
+                }
             }
         }
 
-        if (isImageExpanded && !avatarUrl.isNullOrBlank()) {
+        if (isImageExpanded && modelData != null) {
             Dialog(onDismissRequest = { isImageExpanded = false }) {
                 Surface(
                     shape = RoundedCornerShape(16.dp),
@@ -125,7 +161,12 @@ fun ProfileAvatar(
                         Text("Ваше фото", style = MaterialTheme.typography.titleMedium)
 
                         AsyncImage(
-                            model = avatarUrl,
+                            model = ImageRequest.Builder(context)
+                                .data(modelData)
+                                .diskCachePolicy(CachePolicy.ENABLED)
+                                .memoryCachePolicy(CachePolicy.ENABLED)
+                                .crossfade(true)
+                                .build(),
                             contentDescription = "Expanded Avatar",
                             contentScale = ContentScale.Fit,
                             modifier = Modifier.fillMaxWidth()
@@ -151,7 +192,7 @@ fun ProfileAvatar(
                                 Text("Изменить", fontSize = 14.sp)
                             }
 
-                            if (!avatarUrl.isNullOrBlank()) {
+                            if (!avatarUrl.isNullOrBlank() || modelData is File) {
                                 OutlinedButton(
                                     onClick = { showDeleteConfirm = true },
                                     shape = CircleShape,
@@ -222,7 +263,12 @@ fun ProfileAvatar(
                         TextButton(onClick = {
                             showDeleteConfirm = false
                             userProfileViewModel.deleteUserAvatar { success, msg ->
-                                ToastManager.error(context, msg ?: "Ошибка при удалении")
+                                if (!success) {
+                                    ToastManager.error(context, msg ?: "Ошибка при удалении")
+                                } else {
+                                    ToastManager.success(context, msg ?: "Аватар удалён")
+                                    userProfileViewModel.clearLocalAvatarPath()
+                                }
                             }
                         }) { Text("Да") }
                     },

@@ -3,16 +3,20 @@ package com.example.sharkflow.presentation.navigation
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.*
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.*
 import androidx.navigation.compose.rememberNavController
 import com.example.sharkflow.R
 import com.example.sharkflow.core.common.Lang
+import com.example.sharkflow.core.presentation.ToastManager
+import com.example.sharkflow.core.presentation.ToastManager.isSoundOn
 import com.example.sharkflow.core.system.*
 import com.example.sharkflow.presentation.navigation.components.*
 import com.example.sharkflow.presentation.screens.auth.*
@@ -44,6 +48,8 @@ fun AppNavHost(
     val isLoggedIn by authStateViewModel.isLoggedIn.collectAsState()
     val bottomNavItems = if (isLoggedIn) userBottomNavItems else publicBottomNavItems
     val startDestination = if (isLoggedIn) "boards" else "hero"
+    val context = LocalContext.current
+    var isSoundOn by remember { mutableStateOf(ToastManager.isSoundOn(context)) }
 
     val publicOrder = listOf(
         "hero", "login", "register", "how-it-works", "features", "advantages",
@@ -86,6 +92,18 @@ fun AppNavHost(
                     )
                 },
                 actions = {
+                    IconButton(onClick = {
+                        ToastManager.toggleSound(context)
+                        isSoundOn = isSoundOn(context)
+                    }) {
+                        Crossfade(targetState = isSoundOn, label = "sound_toggle") { soundEnabled ->
+                            Icon(
+                                imageVector = if (soundEnabled) Icons.AutoMirrored.Filled.VolumeUp else Icons.AutoMirrored.Filled.VolumeOff,
+                                contentDescription = if (soundEnabled) "Звук включен" else "Звук выключен",
+                                modifier = Modifier.animateContentSize()
+                            )
+                        }
+                    }
                     IconButton(onClick = { onThemeChange(!isDarkTheme) }) {
                         Crossfade(targetState = isDarkTheme) { darkMode ->
                             Icon(
@@ -120,7 +138,7 @@ fun AppNavHost(
             startDestination = startDestination,
             modifier = Modifier
                 .padding(innerPadding)
-                .padding(horizontal = 16.dp)
+                .padding(16.dp)
         ) {
             animatedComposable("hero", navOrder = navOrder) {
                 HeroScreen(

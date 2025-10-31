@@ -33,8 +33,7 @@ class BoardSyncWorker @AssistedInject constructor(
                 async {
                     semaphore.withPermit {
                         try {
-                            val hardDelete = board.serverUuid == null
-                            val res = deleteBoardUseCase(board.uuid, true)
+                            deleteBoardUseCase(board.uuid)
                         } catch (e: Exception) {
                             hasErrors.set(true)
                             AppLog.e("BoardSyncWorker", "Failed to delete board ${board.uuid}", e)
@@ -72,4 +71,3 @@ class BoardSyncWorker @AssistedInject constructor(
         }
     }
 }
-

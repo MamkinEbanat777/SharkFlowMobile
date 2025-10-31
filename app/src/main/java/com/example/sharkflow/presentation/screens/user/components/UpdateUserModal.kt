@@ -83,7 +83,7 @@ fun UpdateUserModal(
                     AppField(
                         value = login,
                         onValueChange = { login = it },
-                        label = "Вход",
+                        label = "Логин",
                         enabled = !isLoading
                     )
 

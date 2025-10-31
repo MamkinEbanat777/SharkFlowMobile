@@ -12,6 +12,9 @@ interface BoardDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBoards(boards: List<BoardEntity>)
 
+    @Delete
+    suspend fun deleteBoard(board: BoardEntity)
+
     @Update
     suspend fun updateBoard(board: BoardEntity)
 
@@ -35,7 +38,6 @@ interface BoardDao {
 
     @Query("SELECT * FROM boards WHERE isDeleted = 1 AND isSynced = 0")
     suspend fun getDeletedBoards(): List<BoardEntity>
-
 
     @Query("SELECT * FROM boards")
     suspend fun getAllBoards(): List<BoardEntity>
