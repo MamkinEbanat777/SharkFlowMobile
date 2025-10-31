@@ -23,10 +23,6 @@ class TaskRepositoryCombinedImpl @Inject constructor(
     override suspend fun refreshTasks(boardUuid: String) {
         val boardServerUuid = boardLocal.getByLocalUuid(boardUuid)?.serverUuid
         if (boardServerUuid == null) {
-            AppLog.d(
-                "TaskRepository",
-                "refreshTasks: board not synced (local=$boardUuid) -> skipping remote refresh"
-            )
             return
         }
 
@@ -51,11 +47,6 @@ class TaskRepositoryCombinedImpl @Inject constructor(
         createDto: CreateTaskRequestDto,
         localUuid: String?
     ): Result<Task> = runCatching {
-        AppLog.d(
-            "TaskRepository",
-            "createTask START: localUuid=$localUuid, boardUuid=$boardUuid, title=${createDto.title}"
-        )
-
         val existingLocal: TaskEntity? = localUuid?.let { local.getByLocalUuid(it) }
         val tempEntity = existingLocal?.copy(
             title = createDto.title,
@@ -68,22 +59,14 @@ class TaskRepositoryCombinedImpl @Inject constructor(
             updatedAt = Instant.now().toString()
         ) ?: TaskMapper.toLocalEntityForCreate(boardUuid, createDto, existingUuid = localUuid)
 
-        AppLog.d("TaskRepository", "Temp local entity prepared: $tempEntity")
         local.insertOrUpdateTasks(listOf(tempEntity))
-        AppLog.d("TaskRepository", "Inserted/updated temp local entity into DB")
 
         val boardEntity = boardLocal.getByLocalUuid(boardUuid)
         val boardServerUuid = boardEntity?.serverUuid
-        AppLog.d("TaskRepository", "Board localUuid=$boardUuid serverUuid=$boardServerUuid")
 
         val remoteTask = if (boardServerUuid != null) {
             try {
-                AppLog.d(
-                    "TaskRepository",
-                    "Sending create request to remote for boardServerUuid=$boardServerUuid"
-                )
                 remote.createTask(boardServerUuid, createDto).getOrNull().also {
-                    AppLog.d("TaskRepository", "Remote create result: $it")
                 }
             } catch (e: Exception) {
                 AppLog.e(
@@ -94,12 +77,10 @@ class TaskRepositoryCombinedImpl @Inject constructor(
                 null
             }
         } else {
-            AppLog.d("TaskRepository", "Board not synced yet — skipping remote create")
             null
         }
 
         val currentFromDb = local.getByLocalUuid(tempEntity.uuid) ?: tempEntity
-        AppLog.d("TaskRepository", "Current from DB before merge: $currentFromDb")
 
         val serverUuidFromRemote = remoteTask?.serverUuid
         val now = Instant.now().toString()
@@ -116,15 +97,9 @@ class TaskRepositoryCombinedImpl @Inject constructor(
             )
         }
 
-        AppLog.d("TaskRepository", "Merged entity to write to DB: $mergedEntity")
         local.updateTask(mergedEntity)
-        AppLog.d("TaskRepository", "Local entity updated after merge")
-
-        val after = local.getByLocalUuid(mergedEntity.uuid)
-        AppLog.d("TaskRepository", "Current from DB after update: $after")
 
         val result = TaskMapper.fromEntity(mergedEntity)
-        AppLog.d("TaskRepository", "createTask END: result=$result")
         result
     }
 
