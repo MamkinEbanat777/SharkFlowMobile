@@ -47,12 +47,16 @@ jobs:
           echo "sha256=$SHA" >> $GITHUB_OUTPUT
 
       - name: Prepare update.json
+        env:
+          RELEASE_BODY: ${{ github.event.release.body }}
+          TAG: ${{ steps.rel.outputs.tag }}
+          REPO: ${{ github.repository }}
+          SHA256: ${{ steps.hash.outputs.sha256 }}
         run: |
-          TAG=${{ steps.rel.outputs.tag }}
           VNAME=${TAG#v}
           VCODE=$(date +%s)
-          APK_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}/$(basename release.apk)"
-          NOTES=$(echo "${{ github.event.release.body }}" | jq -Rs .)
+          APK_URL="https://github.com/${REPO}/releases/download/${TAG}/$(basename release.apk)"
+          NOTES=$(echo "$RELEASE_BODY" | jq -Rs .)
           mkdir -p docs
           cat > docs/update.json <<EOF
 {
@@ -60,7 +64,7 @@ jobs:
   "versionName": "${VNAME}",
   "notes": ${NOTES},
   "apkUrl": "${APK_URL}",
-  "sha256": "${{ steps.hash.outputs.sha256 }}",
+  "sha256": "${SHA256}",
   "minSdk": 28
 }
 EOF
