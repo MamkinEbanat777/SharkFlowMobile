@@ -1,6 +1,5 @@
 # SharkFlow 
-Версия: 1.0
-Автор: Karen
+Версия: 1.2
 
 Описание
 --------
@@ -37,5 +36,4 @@ apksigner verify --print-certs app-release.apk
 
 Контакты
 --------
-Email: <ваш_email>
-GitHub/страница: <ссылка при наличии>
+Email: ipepela1@mail.ru
