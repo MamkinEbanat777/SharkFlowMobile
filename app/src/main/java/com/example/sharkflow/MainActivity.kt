@@ -19,6 +19,7 @@ import com.example.sharkflow.presentation.screens.user.UpdateAvailableDialog
 import com.example.sharkflow.presentation.screens.user.viewmodel.UserProfileViewModel
 import com.example.sharkflow.presentation.theme.SharkFlowTheme
 import com.example.sharkflow.viewmodel.*
+import com.example.sharkflow.worker.updateApp.startUpdateAppWorker
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -27,6 +28,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        startUpdateAppWorker(applicationContext, manifestUrl)
 
         intent?.let {
             IntentBus.flow.tryEmit(it)
