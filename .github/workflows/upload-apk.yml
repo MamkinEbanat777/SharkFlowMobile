@@ -8,7 +8,7 @@ jobs:
   gen_update:
     runs-on: ubuntu-latest
     permissions:
-      contents: write   # нужно, чтобы пушить файл
+      contents: write
 
     steps:
       - name: Checkout
@@ -25,13 +25,13 @@ jobs:
             return { tag }
 
       - name: Download APK asset from release
+        id: download_apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -e
           TAG=${{ steps.rel.outputs.tag }}
           echo "Tag: $TAG"
-          # Получаем список assets и находим apk
           ASSET_URL=$(jq -r '.assets[] | select(.name | test("\\.apk$")) | .browser_download_url' <<< "${{ toJson(github.event.release) }}")
           if [ -z "$ASSET_URL" ]; then
             echo "No APK asset found in release"
@@ -41,6 +41,7 @@ jobs:
           curl -L -o release.apk "$ASSET_URL"
 
       - name: Compute sha256
+        id: hash
         run: |
           SHA=$(sha256sum release.apk | awk '{print $1}')
           echo "sha256=$SHA" >> $GITHUB_OUTPUT
@@ -49,15 +50,17 @@ jobs:
         run: |
           TAG=${{ steps.rel.outputs.tag }}
           VNAME=${TAG#v}
-          VCODE=$(date +%s)  # fallback: timestamp as versionCode; можно заменить на своё правило
-          APK_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}/$(ls release.apk)"
+          VCODE=$(date +%s)
+          APK_URL="https://github.com/${{ github.repository }}/releases/download/${TAG}/$(basename release.apk)"
+          NOTES=$(echo "${{ github.event.release.body }}" | jq -Rs .)
+          mkdir -p docs
           cat > docs/update.json <<EOF
 {
   "versionCode": ${VCODE},
   "versionName": "${VNAME}",
-  "notes": "${{ github.event.release.body | jq -sR . }}",
+  "notes": ${NOTES},
   "apkUrl": "${APK_URL}",
-  "sha256": "${{ steps.gen_update.outputs.sha256 }}",
+  "sha256": "${{ steps.hash.outputs.sha256 }}",
   "minSdk": 28
 }
 EOF
@@ -67,5 +70,5 @@ EOF
           git config user.name "github-actions"
           git config user.email "actions@github.com"
           git add docs/update.json
-          git commit -m "Update update.json for ${TAG}" || echo "no changes to commit"
+          git commit -m "Update update.json for ${{ steps.rel.outputs.tag }}" || echo "No changes to commit"
           git push origin HEAD:main
