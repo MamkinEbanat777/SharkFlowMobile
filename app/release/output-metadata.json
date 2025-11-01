@@ -13,9 +13,25 @@
       "attributes": [],
       "versionCode": 1,
       "versionName": "1.0",
-      "outputFile": "app-release.apk"
+      "outputFile": "SharkFlow-v1.0-b1-1761953698758.apk"
     }
   ],
   "elementType": "File",
+  "baselineProfiles": [
+    {
+      "minApi": 28,
+      "maxApi": 30,
+      "baselineProfiles": [
+        "baselineProfiles/1/SharkFlow-v1.0-b1-1761953698758.dm"
+      ]
+    },
+    {
+      "minApi": 31,
+      "maxApi": 2147483647,
+      "baselineProfiles": [
+        "baselineProfiles/0/SharkFlow-v1.0-b1-1761953698758.dm"
+      ]
+    }
+  ],
   "minSdkVersionForDexing": 28
 }

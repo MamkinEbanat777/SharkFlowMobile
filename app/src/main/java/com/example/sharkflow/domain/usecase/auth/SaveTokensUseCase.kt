@@ -6,7 +6,7 @@ import jakarta.inject.Inject
 class SaveTokensUseCase @Inject constructor(
     private val tokenManager: TokenManager
 ) {
-    operator fun invoke(accessToken: String?, csrfToken: String?) {
+    suspend operator fun invoke(accessToken: String?, csrfToken: String?) {
         tokenManager.setTokens(accessToken, csrfToken)
     }
 }

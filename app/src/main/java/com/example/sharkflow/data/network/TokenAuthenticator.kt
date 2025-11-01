@@ -1,7 +1,7 @@
 package com.example.sharkflow.data.network
 
 import com.example.sharkflow.data.api.dto.auth.RefreshResponseDto
-import com.example.sharkflow.domain.repository.TokenRepository
+import com.example.sharkflow.domain.manager.TokenManager
 import com.google.gson.Gson
 import jakarta.inject.Inject
 import kotlinx.coroutines.*
@@ -12,7 +12,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.IOException
 
 class TokenAuthenticator @Inject constructor(
-    private val tokenRepo: TokenRepository,
+    private val tokenManager: TokenManager,
     private val baseUrl: String,
     private val refreshClient: OkHttpClient
 ) : Authenticator {
@@ -21,20 +21,28 @@ class TokenAuthenticator @Inject constructor(
     override fun authenticate(route: Route?, response: Response): Request? {
         if (response.request.header("X-Auth-Retry") != null) return null
 
-        val refreshed = runBlocking { refreshMutex.withLock { performRefresh() } }
+        val refreshed = runBlocking {
+            refreshMutex.withLock {
+                performRefresh()
+            }
+        }
+
         if (!refreshed) {
-            tokenRepo.clearTokens()
+            runBlocking {
+                tokenManager.clearTokens()
+            }
             return null
         }
 
-        val (newAccess, newCsrf) = tokenRepo.loadTokens()
+        val newAccess = tokenManager.getCurrentAccessToken()
+        val newCsrf = tokenManager.getCurrentCsrfToken()
+
         return response.request.newBuilder()
-            .header("Authorization", "Bearer $newAccess")
+            .header("Authorization", "Bearer ${newAccess ?: ""}")
             .apply { newCsrf?.let { header("X-CSRF-TOKEN", it) } }
             .header("X-Auth-Retry", "1")
             .build()
     }
-
 
     private suspend fun performRefresh(): Boolean = withContext(Dispatchers.IO) {
         try {
@@ -46,16 +54,17 @@ class TokenAuthenticator @Inject constructor(
 
             refreshClient.newCall(request).execute().use { resp ->
                 if (!resp.isSuccessful) return@withContext false
-                val refreshResponse =
-                    Gson().fromJson(resp.body.string(), RefreshResponseDto::class.java)
+                val bodyStr = resp.body.string().orEmpty()
+                val refreshResponse = Gson().fromJson(bodyStr, RefreshResponseDto::class.java)
                 val newAccess = refreshResponse?.accessToken
                 val newCsrf = refreshResponse?.csrfToken
                 if (!newAccess.isNullOrBlank()) {
-                    tokenRepo.saveTokens(newAccess, newCsrf)
+                    // Сохраняем токены через TokenManager (suspend)
+                    tokenManager.setTokens(newAccess, newCsrf)
                     true
                 } else false
             }
-        } catch (_: IOException) {
+        } catch (e: IOException) {
             false
         }
     }

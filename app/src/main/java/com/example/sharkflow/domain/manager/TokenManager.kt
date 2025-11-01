@@ -1,7 +1,9 @@
 package com.example.sharkflow.domain.manager
 
+import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.domain.repository.TokenRepository
 import jakarta.inject.Inject
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import javax.inject.Singleton
 
@@ -9,30 +11,47 @@ import javax.inject.Singleton
 class TokenManager @Inject constructor(
     private val tokenRepository: TokenRepository
 ) {
-    private val _hasToken = MutableStateFlow(false)
-    val hasToken: StateFlow<Boolean> = _hasToken.asStateFlow()
+    private val _accessToken = MutableStateFlow<String?>(null)
+    private val _csrfToken = MutableStateFlow<String?>(null)
+
+    val hasToken: StateFlow<Boolean> = _accessToken
+        .map { !it.isNullOrBlank() }
+        .stateIn(
+            CoroutineScope(Dispatchers.Default + SupervisorJob()),
+            SharingStarted.Eagerly,
+            false
+        )
+
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     init {
-        val (access, _) = tokenRepository.loadTokens()
-        _hasToken.value = !access.isNullOrBlank()
+        scope.launch {
+            try {
+                val (a, c) = tokenRepository.loadTokens()
+                _accessToken.value = a
+                _csrfToken.value = c
+            } catch (e: Throwable) {
+                AppLog.e("TokenManager", "Ошибка загрузки токенов", e)
+            }
+        }
     }
 
-    fun setTokens(accessToken: String?, csrfToken: String?) {
+    fun getCurrentAccessToken(): String? = _accessToken.value
+    fun getCurrentCsrfToken(): String? = _csrfToken.value
+
+    suspend fun setTokens(accessToken: String?, csrfToken: String?) {
         if (accessToken.isNullOrBlank()) {
             clearTokens()
             return
         }
         tokenRepository.saveTokens(accessToken, csrfToken)
-        _hasToken.value = true
+        _accessToken.value = accessToken
+        _csrfToken.value = csrfToken
     }
 
-    fun clearTokens() {
+    suspend fun clearTokens() {
         tokenRepository.clearTokens()
-        _hasToken.value = false
-    }
-
-    fun refreshState() {
-        val (access, _) = tokenRepository.loadTokens()
-        _hasToken.value = !access.isNullOrBlank()
+        _accessToken.value = null
+        _csrfToken.value = null
     }
 }

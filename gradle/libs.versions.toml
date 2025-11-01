@@ -48,6 +48,7 @@ uiautomator = "2.2.0"
 benchmarkMacroJunit4 = "1.2.4"
 baselineprofile = "1.2.4"
 workRuntimeKtx = "2.11.0"
+material3 = "1.4.0"
 
 
 [libraries]
@@ -113,6 +114,7 @@ androidx-media3-exoplayer-dash = { group = "androidx.media3", name = "media3-exo
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 androidx-uiautomator = { group = "androidx.test.uiautomator", name = "uiautomator", version.ref = "uiautomator" }
 androidx-benchmark-macro-junit4 = { group = "androidx.benchmark", name = "benchmark-macro-junit4", version.ref = "benchmarkMacroJunit4" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

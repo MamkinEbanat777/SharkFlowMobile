@@ -8,12 +8,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import com.example.sharkflow.core.system.IntentBus
+import com.example.sharkflow.core.system.*
+import com.example.sharkflow.domain.model.UpdateInfo
 import com.example.sharkflow.presentation.navigation.AppNavHost
 import com.example.sharkflow.presentation.screens.auth.viewmodel.AuthStateViewModel
 import com.example.sharkflow.presentation.screens.board.viewmodel.BoardsViewModel
 import com.example.sharkflow.presentation.screens.splash.SplashScreen
 import com.example.sharkflow.presentation.screens.task.viewmodel.*
+import com.example.sharkflow.presentation.screens.user.UpdateAvailableDialog
 import com.example.sharkflow.presentation.screens.user.viewmodel.UserProfileViewModel
 import com.example.sharkflow.presentation.theme.SharkFlowTheme
 import com.example.sharkflow.viewmodel.*
@@ -21,6 +23,8 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    private val manifestUrl = "https://MamkinEbanat777.github.io/SharkflowMobile/update.json"
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -36,6 +40,21 @@ class MainActivity : ComponentActivity() {
             val taskDetailViewModel: TaskDetailViewModel = hiltViewModel()
             val themeViewModel: ThemeViewModel = hiltViewModel()
             val appViewModel: AppViewModel = hiltViewModel()
+            var updateInfo by remember { mutableStateOf<UpdateInfo?>(null) }
+            var showDialog by remember { mutableStateOf(false) }
+
+            LaunchedEffect(Unit) {
+                try {
+                    val info = fetchUpdateInfo(manifestUrl)
+                    info?.let {
+                        if (it.versionCode > BuildConfig.VERSION_CODE) {
+                            updateInfo = it
+                            showDialog = true
+                        }
+                    }
+                } catch (_: Exception) { /* fail quietly */
+                }
+            }
 
             LaunchedEffect(Unit) {
                 userProfileViewModel.loadUser()
@@ -74,6 +93,32 @@ class MainActivity : ComponentActivity() {
                                 themeViewModel.setTheme(newTheme)
                             }
                         )
+                        updateInfo?.let { info ->
+                            if (showDialog) {
+                                UpdateAvailableDialog(
+                                    updateInfo = info,
+                                    onDismiss = { showDialog = false },
+                                    onDownload = {
+                                        val file = downloadApkToCache(
+                                            applicationContext,
+                                            info.apkUrl,
+                                            "update-${info.versionName}.apk"
+                                        )
+                                        if (file != null) {
+                                            info.sha256?.let { expected ->
+                                                val actual = sha256OfFile(file)
+                                                if (!actual.equals(expected, ignoreCase = true)) {
+                                                    file.delete()
+                                                    // toast ошибку
+                                                    return@UpdateAvailableDialog
+                                                }
+                                            }
+                                            promptInstallApk(applicationContext, file)
+                                        }
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }

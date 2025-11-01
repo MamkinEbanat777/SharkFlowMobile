@@ -42,7 +42,7 @@ android {
         release {
             isMinifyEnabled = true
             isShrinkResources = true
-            isDebuggable = true
+            //isDebuggable = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -127,6 +127,7 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.hilt.lifecycle.viewmodel)
     implementation("com.google.dagger:hilt-android:2.57.2")
+    implementation(libs.androidx.material3)
     kapt("com.google.dagger:hilt-compiler:2.57.2")
 
     implementation("com.github.mukeshsolanki.android-otpview-pinview:otpview-compose:3.1.0")

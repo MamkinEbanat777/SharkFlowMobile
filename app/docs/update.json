@@ -1,0 +1,8 @@
+{
+  "versionCode": 42,
+  "versionName": "1.2",
+  "notes": "Исправлен баг с логином, улучшен кеш аватаров",
+  "apkUrl": "https://github.com/owner/repo/releases/download/v1.0.3/SharkFlow-v1.0-b1-1761953698758.apk",
+  "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "minSdk": 28
+}

@@ -7,7 +7,7 @@ import com.example.sharkflow.core.system.AppLog
 import com.example.sharkflow.data.api.*
 import com.example.sharkflow.data.local.preference.DeviceIdPreference
 import com.example.sharkflow.data.network.*
-import com.example.sharkflow.domain.repository.TokenRepository
+import com.example.sharkflow.domain.manager.TokenManager
 import com.google.gson.*
 import dagger.*
 import dagger.hilt.InstallIn
@@ -53,17 +53,17 @@ object NetworkModule {
     @Provides
     @Singleton
     fun provideTokenAuthenticator(
-        tokenRepository: TokenRepository,
+        tokenManager: TokenManager,
         baseUrl: String,
         @Named("refreshClient") refreshClient: OkHttpClient
-    ): TokenAuthenticator = TokenAuthenticator(tokenRepository, baseUrl, refreshClient)
+    ): TokenAuthenticator = TokenAuthenticator(tokenManager, baseUrl, refreshClient)
 
     @Provides
     @Singleton
     fun provideAuthInterceptor(
-        tokenRepository: TokenRepository,
+        tokenManager: TokenManager,
     ): AuthInterceptor {
-        return AuthInterceptor(tokenRepository)
+        return AuthInterceptor(tokenManager)
     }
 
     @Provides
@@ -77,7 +77,7 @@ object NetworkModule {
         val loggingInterceptor = HttpLoggingInterceptor { message -> AppLog.d("HTTP_LOG", message) }
             .apply {
                 level =
-                    if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.BODY // не забыть убрать BODY в проде
+                    if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE // не забыть убрать BODY в проде
             }
 
         return OkHttpClient.Builder()

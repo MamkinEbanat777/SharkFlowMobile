@@ -12,7 +12,6 @@ class LoginUseCase @Inject constructor(
     private val tokenManager: TokenManager,
     private val loadUserUseCase: LoadUserUseCase,
     private val setActiveUserUseCase: SetActiveUserUseCase
-
 ) {
     suspend operator fun invoke(email: String, password: String): Result<String> {
         return authRepository.login(email, password).flatMap { loginDto ->
@@ -21,6 +20,7 @@ class LoginUseCase @Inject constructor(
                 Result.failure(IllegalArgumentException("Token missing or invalid"))
             } else {
                 tokenManager.setTokens(authToken.accessToken, authToken.csrfToken)
+
                 loadUserUseCase().map { user ->
                     setActiveUserUseCase(user)
                     "Добро пожаловать, ${user.login}"

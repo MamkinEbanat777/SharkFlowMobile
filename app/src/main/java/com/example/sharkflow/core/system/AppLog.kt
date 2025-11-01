@@ -10,13 +10,12 @@ object AppLog {
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         } else {
-            Timber.plant(Timber.DebugTree()) // временно не забыть убрать!
-//            Timber.plant(CrashlyticsTree())
+            Timber.plant(CrashlyticsTree())
         }
     }
 
     private fun getCallerInfo(): String {
-//        if (!BuildConfig.DEBUG) return "" // временно не забыть убрать!
+        if (!BuildConfig.DEBUG) return ""
         val stack = Throwable().stackTrace
         val skip =
             listOf(AppLog::class.java.name, "timber.log.Timber", "java.lang.Thread", "kotlin.")

@@ -55,7 +55,13 @@ class AuthStateViewModel @Inject constructor(
         launchResult(
             block = { logoutFromAllDevicesUseCase() },
             onSuccess = { responseDto ->
-                clearTokensUseCase()
+                viewModelScope.launch {
+                    try {
+                        clearTokensUseCase()
+                    } catch (e: Throwable) {
+                        // лог или обработка
+                    }
+                }
                 onResult(true, (responseDto as? Any)?.toString())
             },
             onFailure = { throwable ->

@@ -6,7 +6,7 @@ import jakarta.inject.Inject
 class ClearTokensUseCase @Inject constructor(
     private val tokenManager: TokenManager
 ) {
-    operator fun invoke() {
+    suspend operator fun invoke() {
         tokenManager.clearTokens()
     }
 }
