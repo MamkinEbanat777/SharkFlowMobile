@@ -1,0 +1,36 @@
+name: Build and Upload APK
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # срабатывает на теги вида v1.2.3
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Grant execute
+        run: chmod +x gradlew
+
+      - name: Build APK
+        env:
+          # если нужен ключ — добавь secrets и настрой signingConfig в gradle
+          # KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+        run: |
+          ./gradlew assembleRelease
+
+      - name: Upload artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          files: app/build/outputs/apk/release/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
